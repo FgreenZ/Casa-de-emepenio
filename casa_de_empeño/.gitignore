@@ -1,1 +1,23 @@
-/bin/
+# Archivos compilados de Java
+*.class
+bin/
+target/
+build/
+
+# Configuración de Eclipse
+.settings/
+.classpath
+.project
+.metadata/
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+*.swp
+
+# Logs
+*.log
+
+# Archivos temporales
+*.tmp
+*~
