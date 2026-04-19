@@ -1,4 +1,4 @@
-package casa_de_empeño;
+package views;
 
 
 import java.awt.BasicStroke;
@@ -46,6 +46,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+
+//import models.AuthModel;
+
 import javax.swing.ImageIcon;
 
 import javax.swing.border.AbstractBorder;
@@ -66,9 +69,17 @@ class RoundedBorder extends AbstractBorder {
 }
 
 
-public class Frames extends JFrame{ 
+public class AuthView extends JFrame{ 
 	
-
+	//private AuthModel model;
+	
+	public AuthView() { 
+		//this.menu(); 
+		//this.router("registro");
+		
+		//model = new AuthModel();
+	}
+	
 	public void Ventana() {
 		
 		this.setSize(1150, 800);
@@ -122,8 +133,6 @@ public class Frames extends JFrame{
         JLabel fondo2 = new JLabel(new ImageIcon(img2));
         fondo2.setBounds(600, -20, 550, 300);
         add(fondo2);
-        
-      
         
         // 2. Contenedor del Login (El cuadro central)
         // Ajusta las coordenadas (x, y) si necesitas mover el cuadro en la pantalla de 1440x1024
