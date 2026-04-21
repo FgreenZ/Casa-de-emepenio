@@ -104,31 +104,41 @@ public class AuthView extends JFrame{
 	public void VentanaLogin() {
         // 1. Configuración de la Ventana Principal
         setTitle("Inicio de Sesión");
-        setSize(1150, 800);
+        setSize(1150, 660);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); // Centra la ventana en la pantalla
         setLayout(null); // Diseño absoluto para usar setBounds, igual que en tu archivo
         getContentPane().setBackground(Color.WHITE); // Fondo base de la ventana
         
-        ImageIcon icon4 = new ImageIcon("lock1.png");
+        ImageIcon icon4 = new ImageIcon("src/img/lock1.png");
         Image img4 = icon4.getImage().getScaledInstance(100, 172, Image.SCALE_SMOOTH);
         JLabel fondo4 = new JLabel(new ImageIcon(img4));
-        fondo4.setBounds(200, 500, 100, 172);
+        fondo4.setBounds(200, 420, 100, 172);
         add(fondo4);
         
-        ImageIcon icon3 = new ImageIcon("img (2).png");
-        Image img3 = icon3.getImage().getScaledInstance(500, 385, Image.SCALE_SMOOTH);
+        ImageIcon icon3 = new ImageIcon("src/img/img (2).png");
+        Image img3 = icon3.getImage().getScaledInstance(400, 307, Image.SCALE_SMOOTH);
         JLabel fondo3 = new JLabel(new ImageIcon(img3));
-        fondo3.setBounds(20, 50, 500, 385);
+        fondo3.setBounds(15, 10, 500, 385);
         add(fondo3);
         
-        ImageIcon icon = new ImageIcon("fondoadorno4.png");
-        JLabel fondo = new JLabel(icon);
-        fondo.setBounds(0, 0, 647, 800);
+        
+        ImageIcon fondo1 = new ImageIcon("src/img/fondoadorno123.png");
+        Image img21 = fondo1.getImage().getScaledInstance(620, 650, Image.SCALE_SMOOTH);
+        JLabel fondo21 = new JLabel(new ImageIcon(img21));
+        fondo21.setBounds(-5, -75, 620, 800);
+        fondo21.setVisible(true);
+        add(fondo21);
+        
+        ImageIcon icon = new ImageIcon("src/img/fondoadorno4.png");
+        Image icon23 = icon.getImage().getScaledInstance(620, 650, Image.SCALE_SMOOTH);
+        JLabel fondo = new JLabel(new ImageIcon(icon23));
+        fondo.setBounds(0, -75, 647, 800);
         fondo.setVisible(true);
         add(fondo);
+  
         
-        ImageIcon icon2 = new ImageIcon("logo y titulo.png");
+        ImageIcon icon2 = new ImageIcon("src/img/logo y titulo.png");
         Image img2 = icon2.getImage().getScaledInstance(550, 300, Image.SCALE_SMOOTH);
         JLabel fondo2 = new JLabel(new ImageIcon(img2));
         fondo2.setBounds(600, -20, 550, 300);
@@ -198,7 +208,8 @@ public class AuthView extends JFrame{
         this.setVisible(true);
         
     }
-
+	
+	
 
 
 	
