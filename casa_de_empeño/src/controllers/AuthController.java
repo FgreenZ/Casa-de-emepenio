@@ -25,4 +25,9 @@ public class AuthController {
 		prueba.bienvenidoDashboard();
 	}
 	
+	public void articulos()
+	{
+		prueba.dashboardArticulos();
+	}
+	
 }

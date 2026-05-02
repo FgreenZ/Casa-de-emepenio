@@ -1,23 +1,16 @@
 package views;
 
-import java.awt.BorderLayout;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
@@ -53,7 +46,13 @@ class PanelRedondeado extends JPanel {
         this.colorFondo = colorFondo;
         setOpaque(false);
     }
-
+    private void limpiarPanelTabla(JPanel panel) {
+        if (panel != null) {
+            panel.removeAll(); // Elimina todos los componentes (etiquetas, botones, etc.)
+            panel.revalidate(); // Recalcula la estructura interna del panel
+            panel.repaint();    // Borra visualmente lo que quedó en pantalla
+        }
+    }
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
@@ -90,7 +89,15 @@ public class HomeView extends JPanel{
             new String[]{"Carlos Rodríguez Martínez", "6122898724", "carlos.rdgz@email.com", "9/3/2025", "0", "#AEE7B8"},
             new String[]{"Emmanuel García", "6125551234", "emmanuel@email.com", "10/4/2025", "2", "#AEE7B8"}
         ));
-    private JPanel panelTablaGlobal;
+    
+    private List<String[]> baseDatosArticulos = new ArrayList<>(Arrays.asList(
+    		new String[]{"Anillo de Oro 14K", "Juan Pérez García", "Joyería", "$5,000", "14/6/2025", "Empeñado", "#FFF9C4", "#FBC02D","$10,000","20/13/2027","Sin descripcion por el momento"},
+    		new String[]{"Laptop Dell XPS 15", "Juan Pérez García", "Electrónica", "$8,000", "30/4/2025", "Recuperado", "#C8E6C9", "#388E3C","$10,000","20/13/2027","Sin descripcion por el momento"},
+    		new String[]{"Collar de Perlas", "María López Hernández", "Joyería", "$3,500", "19/6/2025", "Empeñado", "#FFF9C4", "#FBC02D","$10,000","20/13/2027","Sin descripcion por el momento"},
+    		new String[] {"iPhone 14 Pro", "Carlos Rodríguez Martínez", "Electrónica", "$10,000", "9/4/2025", "Rematado", "#FFCDD2", "#D32F2F","$10,000","20/13/2027","Sin descripcion por el momento"}
+    		));
+    
+    private JPanel panelTablaGlobal,panelTablaArticulos;
 
 	public HomeView() {
 		// TODO Auto-generated constructor stub
@@ -199,6 +206,13 @@ public class HomeView extends JPanel{
         lblMenuArticulos.setFocusPainted(false);
         lblMenuArticulos.setBorder(null);
         lblMenuArticulos.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        lblMenuArticulos.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ventana.dispose();       // 1. Cierra la ventana actual (Dashboard)
+                dashboardArticulos();     // 2. Abre la ventana de Clientes
+            }
+        });
         panelMenu.add(lblMenuArticulos);
 
         // Botón: Pagos
@@ -290,7 +304,6 @@ public class HomeView extends JPanel{
         
     }
     
-    
     public void dashboardClientes() {
         // 1. Configuración de la Ventana Principal
         JFrame ventana = new JFrame();
@@ -367,6 +380,13 @@ public class HomeView extends JPanel{
         lblMenuArticulos.setFocusPainted(false);
         lblMenuArticulos.setBorder(null);
         lblMenuArticulos.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        lblMenuArticulos.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ventana.dispose();       // 1. Cierra la ventana actual (Dashboard)
+                dashboardArticulos();     // 2. Abre la ventana de Clientes
+            }
+        });
         panelMenu.add(lblMenuArticulos);
 
         // Botón: Pagos
@@ -380,26 +400,26 @@ public class HomeView extends JPanel{
         lblMenuPagos.setBorder(null);
         lblMenuPagos.setCursor(new Cursor(Cursor.HAND_CURSOR));
         panelMenu.add(lblMenuPagos);
-
+        
         // 5. Contenedor Principal (El área derecha)
         JPanel panelContenido = new JPanel();
         panelContenido.setLayout(null);
         panelContenido.setBounds(220, 0, 930, 660); 
         panelContenido.setBackground(Color.decode("#F4F6F9"));
         ventana.add(panelContenido);
-
+        
         // 6. Header Derecho (Usuario y Cerrar Sesión)
         JLabel lblAdmin = new JLabel("Administrador", SwingConstants.RIGHT);
         lblAdmin.setFont(new Font("Inter", Font.BOLD, 12));
         lblAdmin.setBounds(580, 25, 130, 20);
         panelContenido.add(lblAdmin);
-
+        
         JLabel lblEmail = new JLabel("1234@email.com", SwingConstants.RIGHT);
         lblEmail.setFont(new Font("Inter", Font.PLAIN, 10));
         lblEmail.setForeground(Color.GRAY);
         lblEmail.setBounds(580, 45, 130, 20);
         panelContenido.add(lblEmail);
-
+        
         PanelRedondeado btnCerrarSesion = new PanelRedondeado(10, Color.decode("#8AACED"));
         btnCerrarSesion.setLayout(null);
         btnCerrarSesion.setBounds(730, 25, 160, 40);
@@ -474,7 +494,7 @@ public class HomeView extends JPanel{
             }
         });
 
-     // ... (código previo del input de busqueda)
+        // ... (código previo del input de busqueda)
         inputBusqueda.add(txtBusqueda);
         panelBusquedaC.add(inputBusqueda);
         panelContenido.add(panelBusquedaC);
@@ -495,12 +515,272 @@ public class HomeView extends JPanel{
         ventana.setVisible(true);
         ventana.repaint();
         ventana.revalidate();
-    
     }
     
+    public void dashboardArticulos() {
+        // 1. Configuración de la Ventana Principal
+        JFrame ventana = new JFrame();
+        ventana.setTitle("Sistema Administrativo - Artículos");
+        ventana.setSize(1150, 660);
+        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ventana.setLocationRelativeTo(null);
+        ventana.setLayout(null);
+        ventana.getContentPane().setBackground(Color.decode("#F4F6F9")); 
+
+        // 2. Panel Izquierdo (Menú lateral)
+        JPanel panelMenu = new JPanel();
+        panelMenu.setLayout(null);
+        panelMenu.setBounds(0, 140, 220, 540); 
+        panelMenu.setBackground(Color.decode("#375A9B"));
+        ventana.add(panelMenu);
+        
+        // 3. Logo y Título del Sistema
+        ImageIcon icon = new ImageIcon("src/img/logo (1).png");
+        Image img = icon.getImage().getScaledInstance(67, 100, Image.SCALE_SMOOTH);
+        JLabel logo = new JLabel(new ImageIcon(img));
+        logo.setBounds(80, 20, 67, 100);
+        ventana.add(logo);
+        
+        JLabel titleimg = new JLabel("Sistema administrativo");
+        titleimg.setFont(new Font("Inter", Font.PLAIN, 12));
+        titleimg.setBounds(55, 105, 200, 14);
+        titleimg.setForeground(Color.GRAY);
+        ventana.add(titleimg);
+        //////////////////////////////////////////////
+        // 4. Botones del Menú
+        JButton lblMenuDash = new JButton("  \u25A6  Dashboard");
+        lblMenuDash.setForeground(Color.decode("#C8C8C8"));
+        lblMenuDash.setFont(new Font("Inter", Font.PLAIN, 18));
+        lblMenuDash.setBounds(20, 42, 200, 40);
+        lblMenuDash.setBackground(Color.decode("#375A9B"));
+        lblMenuDash.setBorderPainted(false);
+        lblMenuDash.setFocusPainted(false);
+        lblMenuDash.setBorder(null);
+        lblMenuDash.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        panelMenu.add(lblMenuDash);
+        lblMenuDash.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ventana.dispose();       // 1. Cierra la ventana actual (Clientes)
+                bienvenidoDashboard();   // 2. Abre la ventana del Dashboard
+            }
+        });
+
+        // Botón: Clientes (Activo)
+        
+        JButton lblMenuClientes = new JButton("  \u25A6  Clientes");
+        lblMenuClientes.setForeground(Color.decode("#C8C8C8"));
+        lblMenuClientes.setFont(new Font("Inter", Font.PLAIN, 18));
+        lblMenuClientes.setBounds(20, 150, 200, 40);
+        lblMenuClientes.setBackground(Color.decode("#375A9B"));
+        lblMenuClientes.setBorderPainted(false);
+        lblMenuClientes.setFocusPainted(false);
+        lblMenuClientes.setBorder(null);
+        lblMenuClientes.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        panelMenu.add(lblMenuClientes);
+        lblMenuClientes.addActionListener(e -> {
+            ventana.dispose();
+            dashboardClientes();
+        });
+        
+        PanelRedondeado btnMenuArticulos = new PanelRedondeado(10, new Color(138, 172, 235, 100));
+        btnMenuArticulos.setLayout(null);
+        btnMenuArticulos.setBounds(20, 270, 200, 40);
+        JButton lblMenuArticulos = new JButton("  \u25A6  Artículos");
+        lblMenuArticulos.setForeground(Color.WHITE);
+        lblMenuArticulos.setFont(new Font("Inter", Font.BOLD, 18));
+        lblMenuArticulos.setBounds(20, 270, 200, 40);
+        lblMenuArticulos.setContentAreaFilled(false);
+        lblMenuArticulos.setBorderPainted(false);
+        lblMenuArticulos.setFocusPainted(false);
+        lblMenuArticulos.setBorder(null);
+        btnMenuArticulos.add(lblMenuArticulos);
+        panelMenu.add(lblMenuArticulos);
+        panelMenu.add(btnMenuArticulos);
+        
+        // Botón: Pagos
+        JButton lblMenuPagos = new JButton("  \u25A6  Pagos");
+        lblMenuPagos.setForeground(Color.decode("#C8C8C8"));
+        lblMenuPagos.setFont(new Font("Inter", Font.PLAIN, 18));
+        lblMenuPagos.setBounds(20, 390, 200, 40);
+        lblMenuPagos.setBackground(Color.decode("#375A9B"));
+        lblMenuPagos.setBorderPainted(false);
+        lblMenuPagos.setFocusPainted(false);
+        lblMenuPagos.setBorder(null);
+        lblMenuPagos.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        panelMenu.add(lblMenuPagos);
+        
+        // 5. Contenedor Principal Derecho
+        JPanel panelContenido = new JPanel();
+        panelContenido.setLayout(null);
+        panelContenido.setBounds(220, 0, 930, 660); 
+        panelContenido.setBackground(Color.decode("#F4F6F9"));
+        ventana.add(panelContenido);
+
+        // 6. Header Derecho (Usuario y Cerrar Sesión)
+        JLabel lblAdmin = new JLabel("Administrador", SwingConstants.RIGHT);
+        lblAdmin.setFont(new Font("Inter", Font.BOLD, 12));
+        lblAdmin.setBounds(580, 25, 130, 20);
+        panelContenido.add(lblAdmin);
+
+        JLabel lblEmail = new JLabel("1234@email.com", SwingConstants.RIGHT);
+        lblEmail.setFont(new Font("Inter", Font.PLAIN, 10));
+        lblEmail.setForeground(Color.GRAY);
+        lblEmail.setBounds(580, 45, 130, 20);
+        panelContenido.add(lblEmail);
+
+        PanelRedondeado btnCerrarSesion = new PanelRedondeado(10, Color.decode("#8AACED"));
+        btnCerrarSesion.setLayout(null);
+        btnCerrarSesion.setBounds(730, 25, 160, 40);
+        btnCerrarSesion.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        JLabel lblCerrarSesion = new JLabel("→]  Cerrar sesión", SwingConstants.CENTER);
+        lblCerrarSesion.setFont(new Font("Inter", Font.PLAIN, 14));
+        lblCerrarSesion.setBounds(0, 0, 160, 40);
+        btnCerrarSesion.add(lblCerrarSesion);
+        panelContenido.add(btnCerrarSesion);
+
+        // 7. Título y Subtítulo
+        JLabel lblTitulo = new JLabel("Artículos");
+        lblTitulo.setFont(new Font("Inter", Font.BOLD, 22));
+        lblTitulo.setBounds(40, 90, 200, 30);
+        panelContenido.add(lblTitulo);
+
+        JLabel lblSubtitulo = new JLabel("Gestiona todos los artículos en empeño");
+        lblSubtitulo.setFont(new Font("Inter", Font.PLAIN, 12));
+        lblSubtitulo.setForeground(Color.GRAY);
+        lblSubtitulo.setBounds(40, 120, 300, 20);
+        panelContenido.add(lblSubtitulo);
+
+        PanelRedondeado btnNuevoCliente = new PanelRedondeado(10, Color.decode("#829ECF"));
+        btnNuevoCliente.setLayout(null);
+        btnNuevoCliente.setBounds(730, 90, 160, 40);
+        btnNuevoCliente.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR)); 
+        JLabel lblNuevoCliente = new JLabel("+  Nuevo artículo", SwingConstants.CENTER);
+        lblNuevoCliente.setFont(new Font("Inter", Font.PLAIN, 16));
+        lblNuevoCliente.setBounds(0, 0, 160, 40);
+        btnNuevoCliente.add(lblNuevoCliente);
+        panelContenido.add(btnNuevoCliente);
+        btnNuevoCliente.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                // Instanciamos y mostramos la nueva ventana modal
+            	ModalNuevoArticulo modal = new ModalNuevoArticulo(HomeView.this, ventana);
+                modal.setVisible(true);
+            }
+        });
+
+
+        // 8. Barra de Filtros
+        PanelRedondeado panelFiltros = new PanelRedondeado(15, Color.WHITE);
+        panelFiltros.setLayout(null);
+        panelFiltros.setBounds(40, 165, 850, 70);
+        panelContenido.add(panelFiltros);
+
+        // Input de búsqueda
+        PanelRedondeado inputBusqueda = new PanelRedondeado(10, Color.decode("#EAECEF"));
+        inputBusqueda.setLayout(null);
+        inputBusqueda.setBounds(20, 15, 250, 40);
+        JTextField txtBusqueda = new JTextField("Buscar artículo...");
+        txtBusqueda.setBorder(null);
+        txtBusqueda.setOpaque(false);
+        txtBusqueda.setBounds(35, 0, 200, 40);
+        txtBusqueda.setForeground(Color.GRAY);
+        txtBusqueda.setFont(new Font("Inter", Font.PLAIN, 12));
+        JLabel iconLupa = new JLabel("🔍");
+        iconLupa.setBounds(10, 0, 20, 40);
+        iconLupa.setForeground(Color.GRAY);
+        inputBusqueda.add(iconLupa);
+        inputBusqueda.add(txtBusqueda);
+        panelFiltros.add(inputBusqueda);
+        
+        
+
+        // Combobox Estado
+        JComboBox<String> comboEstado = new JComboBox<>(new String[]{"Todos los estados", "Empeñados", "Recuperados", "Rematados"});
+        comboEstado.setBounds(290, 15, 260, 40);
+        comboEstado.setBackground(Color.decode("#EAECEF"));
+        comboEstado.setFont(new Font("Inter", Font.PLAIN, 12));
+        comboEstado.setBorder(null);
+        panelFiltros.add(comboEstado);
+
+        // Combobox Categoría
+        JComboBox<String> comboCat = new JComboBox<>(new String[]{"Todas las categorías", "Joyería", "Electrónica", "Otros"});
+        comboCat.setBounds(570, 15, 260, 40);
+        comboCat.setBackground(Color.decode("#EAECEF"));
+        comboCat.setFont(new Font("Inter", Font.PLAIN, 12));
+        comboCat.setBorder(null);
+        panelFiltros.add(comboCat);
+
+        // 9. Tarjetas de Resumen (KPIs)
+        PanelRedondeado cardEmpenados = new PanelRedondeado(15, Color.WHITE);
+        cardEmpenados.setLayout(null);
+        cardEmpenados.setBounds(40, 255, 260, 90);
+        JLabel lblTEmpenados = new JLabel("Empeñados", SwingConstants.CENTER);
+        lblTEmpenados.setFont(new Font("Inter", Font.PLAIN, 12));
+        lblTEmpenados.setForeground(Color.GRAY);
+        lblTEmpenados.setBounds(0, 15, 260, 20);
+        JLabel lblVEmpenados = new JLabel("2", SwingConstants.CENTER);
+        lblVEmpenados.setFont(new Font("Inter", Font.BOLD, 24));
+        lblVEmpenados.setForeground(Color.decode("#3278FF"));
+        lblVEmpenados.setBounds(0, 45, 260, 30);
+        cardEmpenados.add(lblTEmpenados);
+        cardEmpenados.add(lblVEmpenados);
+        panelContenido.add(cardEmpenados);
+
+        PanelRedondeado cardRecuperados = new PanelRedondeado(15, Color.WHITE);
+        cardRecuperados.setLayout(null);
+        cardRecuperados.setBounds(335, 255, 260, 90);
+        JLabel lblTRecuperados = new JLabel("Recuperados", SwingConstants.CENTER);
+        lblTRecuperados.setFont(new Font("Inter", Font.PLAIN, 12));
+        lblTRecuperados.setForeground(Color.GRAY);
+        lblTRecuperados.setBounds(0, 15, 260, 20);
+        JLabel lblVRecuperados = new JLabel("1", SwingConstants.CENTER);
+        lblVRecuperados.setFont(new Font("Inter", Font.BOLD, 24));
+        lblVRecuperados.setForeground(Color.decode("#28B450"));
+        lblVRecuperados.setBounds(0, 45, 260, 30);
+        cardRecuperados.add(lblTRecuperados);
+        cardRecuperados.add(lblVRecuperados);
+        panelContenido.add(cardRecuperados);
+
+        PanelRedondeado cardRematados = new PanelRedondeado(15, Color.WHITE);
+        cardRematados.setLayout(null);
+        cardRematados.setBounds(630, 255, 260, 90);
+        JLabel lblTRematados = new JLabel("Rematados", SwingConstants.CENTER);
+        lblTRematados.setFont(new Font("Inter", Font.PLAIN, 12));
+        lblTRematados.setForeground(Color.GRAY);
+        lblTRematados.setBounds(0, 15, 260, 20);
+        JLabel lblVRematados = new JLabel("1", SwingConstants.CENTER);
+        lblVRematados.setFont(new Font("Inter", Font.BOLD, 24));
+        lblVRematados.setForeground(Color.decode("#F03C3C"));
+        lblVRematados.setBounds(0, 45, 260, 30);
+        cardRematados.add(lblTRematados);
+        cardRematados.add(lblVRematados);
+        panelContenido.add(cardRematados);
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        inputBusqueda.add(txtBusqueda);
+        panelFiltros.add(inputBusqueda);
+        panelContenido.add(panelFiltros);
+
+        // 10. Contenedor de la Tabla de Clientes
+        panelTablaArticulos = new PanelRedondeado(15, Color.WHITE);
+        panelTablaArticulos.setLayout(null);
+        panelTablaArticulos.setBounds(40, 255, 850, 280);
+        panelContenido.add(panelTablaArticulos);
+
+        // AQUÍ CONECTAMOS LA BARRA DE BÚSQUEDA CON LA TABLA
+        configurarBusquedaInteractivaArticulos(txtBusqueda, ventana, panelTablaArticulos);
+
+        // Renderizamos la tabla inicial (vacío para mostrar a todos)
+        renderizarTablaArticulos(panelTablaArticulos, "");
+
+        // Mostrar la ventana
+        ventana.setVisible(true);
+        ventana.repaint();
+        ventana.revalidate();
+    }
     
-    // ================= MÉTODOS AUXILIARES =================
-    
+    // ================= MÉTODOS AUXILIARES ================= //
     public void registrarNuevoCliente(String nombre, String telefono, String correo, String fecha) {
         // Añadimos el nuevo registro (por defecto le ponemos "0" artículos y color "#AEE7B8")
         String[] nuevoCliente = {nombre, telefono, correo, fecha, "0", "#AEE7B8"};
@@ -598,6 +878,75 @@ public class HomeView extends JPanel{
         });
     }
     
+    private void configurarBusquedaInteractivaArticulos(JTextField txtBusqueda, JFrame ventana, JPanel panelTabla) {
+        JPopupMenu popupSugerencias = new JPopupMenu();
+        DefaultListModel<String> modeloLista = new DefaultListModel<>();
+        JList<String> listaSugerencias = new JList<>(modeloLista);
+        
+        listaSugerencias.setFont(new Font("Inter", Font.PLAIN, 14));
+        listaSugerencias.setSelectionBackground(Color.decode("#8AACED"));
+        listaSugerencias.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        JScrollPane scrollPane = new JScrollPane(listaSugerencias);
+        scrollPane.setBorder(null);
+        scrollPane.setPreferredSize(new Dimension(txtBusqueda.getWidth(), 150));
+        
+        popupSugerencias.add(scrollPane);
+        popupSugerencias.setFocusable(false); 
+
+        txtBusqueda.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) { filtrar(); }
+            @Override
+            public void removeUpdate(DocumentEvent e) { filtrar(); }
+            @Override
+            public void changedUpdate(DocumentEvent e) { filtrar(); }
+
+            private void filtrar() {
+                String texto = txtBusqueda.getText().trim().toLowerCase();
+                modeloLista.clear();
+
+                // ACTUALIZA LA TABLA EN TIEMPO REAL
+                renderizarTablaArticulos(panelTabla, texto);
+
+                if (texto.isEmpty() || texto.equals("busca por nombre, teléfono o correo...")) {
+                    popupSugerencias.setVisible(false);
+                    return;
+                }
+
+                // Generar sugerencias para la barra desplegable basadas en el arreglo global
+                List<String> filtrados = new ArrayList<>();
+                for (String[] cliente : baseDatosArticulos) {
+                    if (cliente[0].toLowerCase().contains(texto)) {
+                        filtrados.add(cliente[0]);
+                    }
+                }
+
+                if (!filtrados.isEmpty()) {
+                    filtrados.forEach(modeloLista::addElement);
+                    scrollPane.setPreferredSize(new Dimension(txtBusqueda.getWidth(), Math.min(150, filtrados.size() * 25 + 10)));
+                    popupSugerencias.show(txtBusqueda, 0, txtBusqueda.getHeight());
+                    txtBusqueda.requestFocus(); 
+                } else {
+                    popupSugerencias.setVisible(false);
+                }
+            }
+        });
+
+        listaSugerencias.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 1) {
+                    String seleccionado = listaSugerencias.getSelectedValue();
+                    if (seleccionado != null) {
+                        txtBusqueda.setText(seleccionado);
+                        popupSugerencias.setVisible(false);
+                    }
+                }
+            }
+        });
+    }
+    
     private void renderizarTabla(JPanel panelTabla, String filtro) {
         panelTabla.removeAll(); // Limpiamos la tabla actual
         
@@ -657,7 +1006,7 @@ public class HomeView extends JPanel{
                 lblFecha.setFont(new Font("Inter", Font.PLAIN, 11));
                 lblFecha.setBounds(posX[3] + 20, rowY, 100, 20);
                 panelTabla.add(lblFecha);
-
+                
                 PanelCirculo circuloActivos = new PanelCirculo(Color.decode(cliente[5]));
                 circuloActivos.setLayout(new BorderLayout());
                 circuloActivos.setBounds(posX[4] + 30, rowY - 2, 24, 24);
@@ -669,7 +1018,6 @@ public class HomeView extends JPanel{
                 panelTabla.add(circuloActivos);
 
                 //|-ACCIONES-|
-              //|-ACCIONES-|
                 // Crear una copia final del cliente para poder usarla dentro del ActionListener
                 final String[] clienteSeleccionado = cliente; 
                 JButton lblVer = new JButton("👁");
@@ -682,7 +1030,7 @@ public class HomeView extends JPanel{
                 lblVer.setBounds(posX[5], rowY-10, lblVer.getPreferredSize().width, lblVer.getPreferredSize().height);
                 lblVer.setCursor(new Cursor(Cursor.HAND_CURSOR));
                 
-                // --- NUEVO EVENTO PARA ABRIR LOS DETALLES ---
+                // --- NUEVO EVENTO PARA ABRIR LOS DETALLES --- //
                 lblVer.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -696,7 +1044,7 @@ public class HomeView extends JPanel{
                     }
                 });
                 panelTabla.add(lblVer);
-
+                
                 final int indexCliente = baseDatosClientes.indexOf(cliente);
                 JButton lblEditar = new JButton("📝");
                 lblEditar.setForeground(Color.DARK_GRAY);
@@ -718,7 +1066,7 @@ public class HomeView extends JPanel{
                 });
                 panelTabla.add(lblEditar);
 
-             // Código existente...
+                // Código existente...
                 JButton lblEliminar = new JButton("🗑");
                 lblEliminar.setForeground(Color.RED);
                 lblEliminar.setFont(new Font("SansSerif", Font.PLAIN, 25));
@@ -733,7 +1081,7 @@ public class HomeView extends JPanel{
                 lblEliminar.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        confirmarEliminacion(clienteSeleccionado, panelTabla);
+                        confirmarEliminacion(clienteSeleccionado, panelTabla,1);
                     }
                 });
                 // -------------------------------------------
@@ -763,6 +1111,204 @@ public class HomeView extends JPanel{
         
         
         // 3. REFRESCAR LA INTERFAZ
+        panelTabla.revalidate();
+        panelTabla.repaint();
+    }
+    
+    private void limpiarPanelTabla(JPanel panel) {
+        if (panel != null) {
+            panel.removeAll(); // Elimina todos los componentes (etiquetas, botones, etc.)
+            panel.revalidate(); // Recalcula la estructura interna del panel
+            panel.repaint();    // Borra visualmente lo que quedó en pantalla
+        }
+    }
+    
+    private void renderizarTablaArticulos(JPanel panelTabla, String filtro) {
+
+    	limpiarPanelTabla(panelTabla);
+    	panelTabla.setBounds(40, 350, 850, 250);
+    	//panelTabla.setLocation(40, 350);
+        // 1. Volvemos a dibujar el Encabezado
+        JPanel headerTabla = new JPanel();
+        headerTabla.setLayout(null);
+        headerTabla.setBackground(Color.decode("#F4F6F9"));
+        headerTabla.setBounds(0, 0, 850, 40);
+        
+        String[] columnas = {"ARTÍCULO", "CLIENTE", "CATEGORÍA", "MONTO PRESTADO", "FECHA LÍMITE", "ESTADO", "ACCIONES"};
+        int[] posX = {20, 150, 300, 400, 520, 620, 720};
+
+        for (int i = 0; i < columnas.length; i++) {
+            JLabel lblColumna = new JLabel(columnas[i]);
+            lblColumna.setFont(new Font("Inter", Font.BOLD, 10));
+            lblColumna.setBounds(posX[i], 10, 140, 20);
+            headerTabla.add(lblColumna);
+        }
+        panelTabla.add(headerTabla);
+
+        // 2. Filtramos y dibujamos los datos
+        boolean hayResultados = false;
+        int rowY = 50;
+
+        String busqueda = filtro.trim().toLowerCase();
+        // CUIDADO AQUÍ: Asegúrate de que coincida con el placeholder de tu JTextField en dashboardArticulos
+        if (busqueda.equals("buscar artículo...") || busqueda.equals("busca por nombre, teléfono o correo...")) {
+            busqueda = ""; 
+        }
+        for (String[] articulo : baseDatosArticulos) {
+            // Variable para guardar el cliente que coincide con este artículo
+            final String[] clienteParaArticulo;  // ← final para poder usarla en el listener
+            
+            // Buscar el cliente correspondiente
+            String[] clienteEncontrado = null;
+            for (String[] cliente : baseDatosClientes) {
+                if(articulo[1].equals(cliente[0])) {
+                    clienteEncontrado = cliente;
+                    break;
+                }
+            }
+            clienteParaArticulo = clienteEncontrado;
+        	/*
+
+            private List<String[]> baseDatosClientes = new ArrayList<>(Arrays.asList(
+                    new String[]{"Juan Pérez García", "6121234567", "juan.perez@email.com", "14/1/2025", "1", "#AEE7B8"},
+                    new String[]{"María López Hernández", "6121418223", "maria.lopez@email.com", "19/2/2025", "1", "#AEE7B8"},
+                    new String[]{"Carlos Rodríguez Martínez", "6122898724", "carlos.rdgz@email.com", "9/3/2025", "0", "#AEE7B8"},
+                    new String[]{"Emmanuel García", "6125551234", "emmanuel@email.com", "10/4/2025", "2", "#AEE7B8"}
+                ));
+            
+            private List<String[]> baseDatosArticulos = new ArrayList<>(Arrays.asList(
+            		new String[]{"Anillo de Oro 14K", "Juan Pérez García", "Joyería", "$5,000", "14/6/2025", "Empeñado", "#FFF9C4", "#FBC02D","$10,000","20/13/2027","Sin descripcion por el momento"},
+            		new String[]{"Laptop Dell XPS 15", "Juan Pérez García", "Electrónica", "$8,000", "30/4/2025", "Recuperado", "#C8E6C9", "#388E3C","$10,000","20/13/2027","Sin descripcion por el momento"},
+            		new String[]{"Collar de Perlas", "María López Hernández", "Joyería", "$3,500", "19/6/2025", "Empeñado", "#FFF9C4", "#FBC02D","$10,000","20/13/2027","Sin descripcion por el momento"},
+            		new String[] {"iPhone 14 Pro", "Carlos Rodríguez Martínez", "Electrónica", "$10,000", "9/4/2025", "Rematado", "#FFCDD2", "#D32F2F","$10,000","20/13/2027","Sin descripcion por el momento"}
+            		));
+            */
+
+            // Filtro interactivo: Busca en Nombre de Artículo [0], Nombre de Cliente [1] y Categoría [2]
+            if (busqueda.isEmpty() || 
+                articulo[0].toLowerCase().contains(busqueda) || 
+                articulo[1].toLowerCase().contains(busqueda) || 
+                articulo[2].toLowerCase().contains(busqueda)) {
+                
+                //panelTabla.setPreferredSize(new Dimension(panelTabla.getWidth(), rowY + 50));
+                hayResultados = true;
+
+                // Artículo [0]
+                JLabel lblArt = new JLabel(articulo[0]);
+                lblArt.setFont(new Font("Inter", Font.BOLD, 11));
+                lblArt.setBounds(posX[0], rowY, 120, 20);
+                panelTabla.add(lblArt);
+
+                // Cliente [1]
+                JLabel lblCli = new JLabel(articulo[1]);
+                lblCli.setFont(new Font("Inter", Font.PLAIN, 11));
+                lblCli.setBounds(posX[1], rowY, 140, 20);
+                panelTabla.add(lblCli);
+
+                // Categoría [2]
+                JLabel lblCat = new JLabel(articulo[2]);
+                lblCat.setFont(new Font("Inter", Font.PLAIN, 11));
+                lblCat.setBounds(posX[2], rowY, 110, 20);
+                panelTabla.add(lblCat);
+
+                // Monto Prestado [3]
+                JLabel lblMonto = new JLabel(articulo[3]);
+                lblMonto.setFont(new Font("Inter", Font.BOLD, 11));
+                lblMonto.setBounds(posX[3] + 10, rowY, 100, 20);
+                panelTabla.add(lblMonto);
+                
+                // Fecha Límite [4]
+                JLabel lblFecha = new JLabel(articulo[4]);
+                lblFecha.setFont(new Font("Inter", Font.PLAIN, 11));
+                lblFecha.setBounds(posX[4], rowY, 100, 20);
+                panelTabla.add(lblFecha);
+
+                // Estado [5], Color de Fondo [6], Color de Texto [7]
+                PanelRedondeado badge = new PanelRedondeado(10, Color.decode(articulo[6]));
+                badge.setLayout(new BorderLayout());
+                badge.setBounds(posX[5] - 10, rowY, 80, 20);
+                
+                JLabel lblEstado = new JLabel(articulo[5], SwingConstants.CENTER);
+                lblEstado.setFont(new Font("Inter", Font.BOLD, 10));
+                lblEstado.setForeground(Color.decode(articulo[7]));
+                badge.add(lblEstado, BorderLayout.CENTER);
+                panelTabla.add(badge);
+
+                // |-ACCIONES-| (Reutilizamos la lógica gráfica, solo ajustando posiciones)
+                JButton lblVer = new JButton("👁");
+                lblVer.setForeground(Color.BLACK);
+                lblVer.setFont(new Font("SansSerif", Font.PLAIN, 16));
+                lblVer.setContentAreaFilled(false);
+                lblVer.setBorderPainted(false);
+                lblVer.setFocusPainted(false);
+                lblVer.setBounds(posX[6] - 15, rowY-5, 50, 30);
+                lblVer.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                lblVer.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                    	
+                    	verDetallesArticulo(articulo,clienteParaArticulo); // 2. Abre la ventana del Dashboard
+                    }
+                });
+                panelTabla.add(lblVer);
+                
+                JButton lblEditar = new JButton("📝");
+                lblEditar.setForeground(Color.DARK_GRAY);
+                lblEditar.setFont(new Font("SansSerif", Font.PLAIN, 16));
+                lblEditar.setContentAreaFilled(false);
+                lblEditar.setBorderPainted(false);
+                lblEditar.setFocusPainted(false);
+                lblEditar.setBounds(posX[6] + 20, rowY-5, 50, 30);
+                lblEditar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                lblEditar.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                    	JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(panelTabla);
+                        ModalEditarArticulo x=new  ModalEditarArticulo(HomeView.this,topFrame,articulo);  // 2. Abre la ventana del Dashboard
+                        x.setVisible(true);
+                    }
+                });
+                panelTabla.add(lblEditar);
+
+                JButton lblEliminar = new JButton("🗑");
+                lblEliminar.setForeground(Color.RED);
+                lblEliminar.setFont(new Font("SansSerif", Font.PLAIN, 20));
+                lblEliminar.setContentAreaFilled(false);
+                lblEliminar.setBorderPainted(false);
+                lblEliminar.setFocusPainted(false);
+                lblEliminar.setBounds(posX[6] + 55, rowY-5, 50, 30);
+                lblEliminar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                lblEliminar.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        confirmarEliminacion(articulo, panelTabla,0);
+                    }
+                });
+                panelTabla.add(lblEliminar);
+
+                // Separador visual
+                JPanel separador = new JPanel();
+                separador.setBackground(Color.decode("#F0F0F0"));
+                separador.setBounds(10, rowY + 35, 830, 1);
+                panelTabla.add(separador);
+
+                rowY += 55;
+            }
+        }
+        
+        
+
+        // 3. Si no hubo coincidencias, mostramos el mensaje
+        if (!hayResultados) {
+            JLabel lblSinResultados = new JLabel("No hay resultados coincidentes");
+            lblSinResultados.setFont(new Font("Inter", Font.ITALIC, 14));
+            lblSinResultados.setForeground(Color.GRAY);
+            lblSinResultados.setHorizontalAlignment(SwingConstants.CENTER);
+            lblSinResultados.setBounds(0, 120, 850, 30);
+            panelTabla.add(lblSinResultados);
+        }
+        
+        // 4. REFRESCAR LA INTERFAZ
         panelTabla.revalidate();
         panelTabla.repaint();
     }
@@ -865,8 +1411,8 @@ public class HomeView extends JPanel{
         btnRegresar.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                ventana.dispose();
                 dashboardClientes();
+                ventana.dispose();
             }
         });
 
@@ -1019,7 +1565,370 @@ public class HomeView extends JPanel{
         ventana.setVisible(true);
     }
     
-    private void confirmarEliminacion(String[] clienteAEliminar, JPanel panelTabla) {
+    public void verDetallesArticulo(String[] articulo, String[] cliente) {
+        // 1. Configuración de la Ventana
+        JFrame ventana = new JFrame();
+        // Usamos articulo[0] asumiendo que el array trae los datos del artículo
+        ventana.setTitle("Detalles del Artículo - " + articulo[0]); 
+        ventana.setSize(1150, 660); // Aumentamos la altura para acomodar las tarjetas inferiores
+        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ventana.setLocationRelativeTo(null);
+        ventana.setLayout(null);
+        ventana.getContentPane().setBackground(Color.decode("#F4F6F9")); 
+        // ================= TOP HEADER Y LOGO =================
+     // 2. Panel Izquierdo (Menú lateral)
+        JPanel panelMenu = new JPanel();
+        panelMenu.setLayout(null);
+        panelMenu.setBounds(0, 140, 220, 540); 
+        panelMenu.setBackground(Color.decode("#375A9B"));
+        ventana.add(panelMenu);
+        
+        // 3. Logo y Título del Sistema
+        ImageIcon icon = new ImageIcon("src/img/logo (1).png");
+        Image img = icon.getImage().getScaledInstance(67, 100, Image.SCALE_SMOOTH);
+        JLabel logo = new JLabel(new ImageIcon(img));
+        logo.setBounds(80, 20, 67, 100);
+        ventana.add(logo);
+        
+        JLabel titleimg = new JLabel("Sistema administrativo");
+        titleimg.setFont(new Font("Inter", Font.PLAIN, 12));
+        titleimg.setBounds(55, 105, 200, 14);
+        titleimg.setForeground(Color.GRAY);
+        ventana.add(titleimg);
+        //////////////////////////////////////////////
+        // 4. Botones del Menú
+        JButton lblMenuDash = new JButton("  \u25A6  Dashboard");
+        lblMenuDash.setForeground(Color.decode("#C8C8C8"));
+        lblMenuDash.setFont(new Font("Inter", Font.PLAIN, 18));
+        lblMenuDash.setBounds(20, 42, 200, 40);
+        lblMenuDash.setBackground(Color.decode("#375A9B"));
+        lblMenuDash.setBorderPainted(false);
+        lblMenuDash.setFocusPainted(false);
+        lblMenuDash.setBorder(null);
+        lblMenuDash.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        panelMenu.add(lblMenuDash);
+        lblMenuDash.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ventana.dispose();       // 1. Cierra la ventana actual (Clientes)
+            }
+        });
+
+        // Botón: Clientes (Activo)
+        PanelRedondeado btnDashboard = new PanelRedondeado(10, new Color(138, 172, 235, 100)); // Color con transparencia
+        btnDashboard.setLayout(null);
+        btnDashboard.setBounds(20, 150, 200, 40);
+        JButton lblMenuClientes = new JButton("  \u25A6  Clientes");
+        lblMenuClientes.setForeground(Color.WHITE);
+        lblMenuClientes.setFont(new Font("Inter", Font.BOLD, 18));
+        lblMenuClientes.setBounds(0, 0, 200, 40);
+        lblMenuClientes.setBackground(Color.decode("#375A9B"));
+        lblMenuClientes.setBorderPainted(false);
+        lblMenuClientes.setFocusPainted(false);
+        lblMenuClientes.setBorder(null);
+        lblMenuClientes.setContentAreaFilled(false);
+        btnDashboard.add(lblMenuClientes);
+        panelMenu.add(btnDashboard);
+
+        // Botón: Artículos
+        JButton lblMenuArticulos = new JButton("  \u25A6  Artículos");
+        lblMenuArticulos.setForeground(Color.decode("#C8C8C8"));
+        lblMenuArticulos.setFont(new Font("Inter", Font.PLAIN, 18));
+        lblMenuArticulos.setBounds(20, 270, 200, 40);
+        lblMenuArticulos.setBackground(Color.decode("#375A9B"));
+        lblMenuArticulos.setBorderPainted(false);
+        lblMenuArticulos.setFocusPainted(false);
+        lblMenuArticulos.setBorder(null);
+        lblMenuArticulos.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        lblMenuArticulos.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ventana.dispose();       // 1. Cierra la ventana actual (Dashboard)
+                dashboardArticulos();     // 2. Abre la ventana de Clientes
+            }
+        });
+        panelMenu.add(lblMenuArticulos);
+
+        // Botón: Pagos
+        JButton lblMenuPagos = new JButton("  \u25A6  Pagos");
+        lblMenuPagos.setForeground(Color.decode("#C8C8C8"));
+        lblMenuPagos.setFont(new Font("Inter", Font.PLAIN, 18));
+        lblMenuPagos.setBounds(20, 390, 200, 40);
+        lblMenuPagos.setBackground(Color.decode("#375A9B"));
+        lblMenuPagos.setBorderPainted(false);
+        lblMenuPagos.setFocusPainted(false);
+        lblMenuPagos.setBorder(null);
+        lblMenuPagos.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        panelMenu.add(lblMenuPagos);
+
+        // ================= CONTENEDOR PRINCIPAL =================
+        JPanel panelContenido = new JPanel();
+        panelContenido.setLayout(null);
+        panelContenido.setBounds(220, 0, 930, 800); 
+        panelContenido.setBackground(Color.decode("#F4F6F9"));
+        ventana.add(panelContenido);
+
+        // Header Superior Derecho (Admin y Cerrar Sesión)
+        JLabel lblAdmin = new JLabel("Administrador", SwingConstants.RIGHT);
+        lblAdmin.setFont(new Font("Inter", Font.BOLD, 12));
+        lblAdmin.setBounds(580, 30, 130, 20);
+        panelContenido.add(lblAdmin);
+
+        JLabel lblEmail = new JLabel("1234@email.com", SwingConstants.RIGHT);
+        lblEmail.setFont(new Font("Inter", Font.PLAIN, 10));
+        lblEmail.setForeground(Color.GRAY);
+        lblEmail.setBounds(580, 50, 130, 15);
+        panelContenido.add(lblEmail);
+
+        PanelRedondeado btnCerrarSesion = new PanelRedondeado(10, Color.decode("#8AACED"));
+        btnCerrarSesion.setLayout(null);
+        btnCerrarSesion.setBounds(730, 30, 160, 40);
+        JLabel lblCerrarSesion = new JLabel("→] Cerrar sesión", SwingConstants.CENTER);
+        lblCerrarSesion.setFont(new Font("Inter", Font.PLAIN, 14));
+        lblCerrarSesion.setBounds(0, 0, 160, 40);
+        btnCerrarSesion.add(lblCerrarSesion);
+        panelContenido.add(btnCerrarSesion);
+
+        // Botón Regresar
+        PanelRedondeado btnRegresar = new PanelRedondeado(10, Color.WHITE);
+        btnRegresar.setLayout(null);
+        btnRegresar.setBounds(40, 90, 100, 35);
+        btnRegresar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnRegresar.setBorder(new LineBorder(Color.decode("#EAECEF"), 1, true));
+        JLabel lblRegresar = new JLabel("← Regresar", SwingConstants.CENTER);
+        lblRegresar.setFont(new Font("Inter", Font.PLAIN, 12));
+        lblRegresar.setBounds(0, 0, 100, 35);
+        btnRegresar.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                // Instanciamos y mostramos la nueva ventana modal
+            	ventana.dispose();
+            	dashboardArticulos();
+            }
+        });
+        btnRegresar.add(lblRegresar);
+        /*
+        PanelRedondeado btnNuevoCliente = new PanelRedondeado(10, Color.decode("#829ECF"));
+        btnNuevoCliente.setLayout(null);
+        btnNuevoCliente.setBounds(730, 90, 160, 40);
+        btnNuevoCliente.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR)); 
+        JLabel lblNuevoCliente = new JLabel("+  Nuevo artículo", SwingConstants.CENTER);
+        lblNuevoCliente.setFont(new Font("Inter", Font.PLAIN, 16));
+        lblNuevoCliente.setBounds(0, 0, 160, 40);
+        btnNuevoCliente.add(lblNuevoCliente);
+        panelContenido.add(btnNuevoCliente);
+        btnNuevoCliente.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                // Instanciamos y mostramos la nueva ventana modal
+            	ModalNuevoArticulo modal = new ModalNuevoArticulo(HomeView.this, ventana);
+                modal.setVisible(true);
+            }
+        });
+        */
+        panelContenido.add(btnRegresar);
+
+        // Título Artículo
+        JLabel lblNombreArticulo = new JLabel(articulo[0]); // Remplazar por articulo[0]
+        lblNombreArticulo.setFont(new Font("Inter", Font.BOLD, 22));
+        lblNombreArticulo.setBounds(160, 85, 400, 30);
+        panelContenido.add(lblNombreArticulo);
+
+        JLabel lblSubtitulo = new JLabel("Detalles del artículo");
+        lblSubtitulo.setFont(new Font("Inter", Font.PLAIN, 12));
+        lblSubtitulo.setForeground(Color.GRAY);
+        lblSubtitulo.setBounds(160, 115, 300, 20);
+        panelContenido.add(lblSubtitulo);
+
+        // Botón Descargar PDF
+        PanelRedondeado btnPdf = new PanelRedondeado(10, Color.decode("#829ECF"));
+        btnPdf.setLayout(null);
+        btnPdf.setBounds(680, 85, 210, 40);
+        JLabel lblPdf = new JLabel("📥 Descargar ficha PDF", SwingConstants.CENTER);
+        lblPdf.setFont(new Font("Inter", Font.PLAIN, 14));
+        lblPdf.setForeground(Color.WHITE);
+        lblPdf.setBounds(0, 0, 210, 40);
+        btnPdf.add(lblPdf);
+        panelContenido.add(btnPdf);
+
+        // ================= TARJETA 1: INFORMACIÓN DEL ARTÍCULO (IZQ-ARRIBA) =================
+        PanelRedondeado cardInfo = new PanelRedondeado(15, Color.WHITE);
+        cardInfo.setLayout(null);
+        cardInfo.setBounds(40, 150, 520, 280);
+        cardInfo.setBorder(new LineBorder(Color.decode("#EAECEF"), 1, true));
+        panelContenido.add(cardInfo);
+
+        JLabel tInfo = new JLabel("Información del artículo");
+        tInfo.setFont(new Font("Inter", Font.BOLD, 13));
+        tInfo.setBounds(25, 20, 200, 20);
+        cardInfo.add(tInfo);
+
+        // Badge Empeñado
+        PanelRedondeado badgeEstado = new PanelRedondeado(15, Color.decode("#FFF5CC"));
+        badgeEstado.setLayout(null);
+        badgeEstado.setBounds(410, 20, 90, 25);
+        JLabel lblEstado = new JLabel(articulo[5], SwingConstants.CENTER);
+        lblEstado.setFont(new Font("Inter", Font.BOLD, 11));
+        lblEstado.setForeground(Color.decode("#B78500"));
+        lblEstado.setBounds(0, 0, 90, 25);
+        badgeEstado.add(lblEstado);
+        cardInfo.add(badgeEstado);
+		//new String[] {"iPhone 14 Pro", "Carlos Rodríguez Martínez", "Electrónica", "$10,000", "9/4/2025", "Rematado", "#FFCDD2", "#D32F2F","$10,000","20/13/2027","Sin descripcion por el momento"}
+        // Grid de datos (Se pueden reemplazar los emojis por JLabels con ImageIcons)
+        agregarDatoGrid(cardInfo, 25, 60, "📦 Nombre del artículo", articulo[0]);
+        agregarDatoGrid(cardInfo, 260, 60, "🏷️ Categoría", articulo[2]);
+        agregarDatoGrid(cardInfo, 25, 120, "💲 Monto prestado", articulo[3]);
+        agregarDatoGrid(cardInfo, 260, 120, "💰 Valor estimado", articulo[8]);
+        agregarDatoGrid(cardInfo, 25, 180, "📅 Fecha de empeño", articulo[4]);
+        agregarDatoGrid(cardInfo, 260, 180, "📆 Fecha límite de pago", articulo[9]);
+
+        // Línea divisora
+        JSeparator sep = new JSeparator();
+        sep.setForeground(Color.decode("#EAECEF"));
+        sep.setBounds(25, 235, 475, 1);
+        cardInfo.add(sep);
+
+        // Descripción
+        JLabel lblDescTit = new JLabel("Descripción");
+        lblDescTit.setFont(new Font("Inter", Font.PLAIN, 11));
+        lblDescTit.setForeground(Color.GRAY);
+        lblDescTit.setBounds(25, 245, 200, 15);
+        cardInfo.add(lblDescTit);
+        
+        JLabel lblDescVal = new JLabel(articulo[10]);
+        lblDescVal.setFont(new Font("Inter", Font.BOLD, 12));
+        lblDescVal.setBounds(25, 260, 400, 15);
+        cardInfo.add(lblDescVal);
+
+        // ================= TARJETA 2: RESUMEN FINANCIERO (DER-ARRIBA) =================
+        PanelRedondeado cardFinanzas = new PanelRedondeado(15, Color.WHITE);
+        cardFinanzas.setLayout(null);
+        cardFinanzas.setBounds(580, 150, 310, 280);
+        cardFinanzas.setBorder(new LineBorder(Color.decode("#EAECEF"), 1, true));
+        panelContenido.add(cardFinanzas);
+
+        JLabel tFinanzas = new JLabel("Resumen financiero");
+        tFinanzas.setFont(new Font("Inter", Font.BOLD, 13));
+        tFinanzas.setBounds(25, 20, 200, 20);
+        cardFinanzas.add(tFinanzas);
+
+        agregarDatoFinanciero(cardFinanzas, 70, "Total prestado", articulo[3], Color.BLACK, 16);
+        agregarDatoFinanciero(cardFinanzas, 120, "Total abonado", "$500", Color.decode("#2E7D32"), 14);
+
+        JSeparator sepFin = new JSeparator();
+        sepFin.setForeground(Color.decode("#EAECEF"));
+        sepFin.setBounds(25, 175, 260, 1);
+        cardFinanzas.add(sepFin);
+
+        agregarDatoFinanciero(cardFinanzas, 190, "Total abonado", "$500", Color.RED, 14); // Asumiendo que el de rojo es cargo/restante
+
+        // ================= TARJETA 3: HISTORIAL DE PAGOS (IZQ-ABAJO) =================
+        PanelRedondeado cardHistorial = new PanelRedondeado(15, Color.WHITE);
+        cardHistorial.setLayout(null);
+        cardHistorial.setBounds(40, 450, 520, 200);
+        cardHistorial.setBorder(new LineBorder(Color.decode("#EAECEF"), 1, true));
+        panelContenido.add(cardHistorial);
+
+        JLabel tHistorial = new JLabel("Historial de pagos (1)");
+        tHistorial.setFont(new Font("Inter", Font.BOLD, 13));
+        tHistorial.setBounds(25, 20, 200, 20);
+        cardHistorial.add(tHistorial);
+
+        // Ítem Historial
+        PanelRedondeado itemPago = new PanelRedondeado(10, Color.WHITE);
+        itemPago.setLayout(null);
+        itemPago.setBounds(25, 60, 470, 70);
+        itemPago.setBorder(new LineBorder(Color.GRAY, 1, true));
+        
+        JLabel lblMontoPago = new JLabel("$500");
+        lblMontoPago.setFont(new Font("Inter", Font.BOLD, 14));
+        lblMontoPago.setBounds(15, 10, 100, 20);
+        itemPago.add(lblMontoPago);
+
+        JLabel lblFechaPago = new JLabel("19/3/2024");
+        lblFechaPago.setFont(new Font("Inter", Font.PLAIN, 12));
+        lblFechaPago.setForeground(Color.GRAY);
+        lblFechaPago.setBounds(15, 30, 100, 15);
+        itemPago.add(lblFechaPago);
+
+        JLabel lblConcepto = new JLabel("Pago de interés mensual");
+        lblConcepto.setFont(new Font("Inter", Font.PLAIN, 13));
+        lblConcepto.setBounds(15, 50, 200, 15);
+        itemPago.add(lblConcepto);
+
+        cardHistorial.add(itemPago);
+
+        // ================= TARJETA 4: CLIENTE (DER-ABAJO) =================
+        PanelRedondeado cardCliente = new PanelRedondeado(15, Color.WHITE);
+        cardCliente.setLayout(null);
+        cardCliente.setBounds(580, 450, 310, 260);
+        cardCliente.setBorder(new LineBorder(Color.decode("#EAECEF"), 1, true));
+        panelContenido.add(cardCliente);
+
+        JLabel tCliente = new JLabel("Cliente");
+        tCliente.setFont(new Font("Inter", Font.BOLD, 13));
+        tCliente.setBounds(25, 20, 200, 20);
+        cardCliente.add(tCliente);
+
+        agregarDatoCliente(cardCliente, 60, "Nombre", cliente[0]); // Reemplazar por cliente[1]
+        agregarDatoCliente(cardCliente, 110, "Teléfono", cliente[2]);      // Reemplazar por cliente[2]
+        agregarDatoCliente(cardCliente, 160, "Correo electrónico", cliente[3]); // Reemplazar por cliente[3]
+
+        PanelRedondeado btnPerfil = new PanelRedondeado(10, Color.decode("#829ECF"));
+        btnPerfil.setLayout(null);
+        btnPerfil.setBounds(25, 215, 260, 30);
+        JLabel lblPerfil = new JLabel("Ver perfil completo", SwingConstants.CENTER);
+        lblPerfil.setFont(new Font("Inter", Font.PLAIN, 13));
+        lblPerfil.setForeground(Color.BLACK);
+        lblPerfil.setBounds(0, 0, 260, 30);
+        btnPerfil.add(lblPerfil);
+        cardCliente.add(btnPerfil);
+
+        ventana.setVisible(true);
+    }
+
+    // ================= MÉTODOS AUXILIARES PARA EVITAR REPETIR CÓDIGO =================
+    private void agregarDatoGrid(JPanel panel, int x, int y, String titulo, String valor) {
+        JLabel lblTit = new JLabel(titulo);
+        lblTit.setFont(new Font("Inter", Font.PLAIN, 11));
+        lblTit.setForeground(Color.GRAY);
+        lblTit.setBounds(x, y, 200, 15);
+        panel.add(lblTit);
+
+        JLabel lblVal = new JLabel(valor);
+        lblVal.setFont(new Font("Inter", Font.BOLD, 12));
+        lblVal.setBounds(x, y + 15, 200, 20);
+        panel.add(lblVal);
+    }
+
+    private void agregarDatoFinanciero(JPanel panel, int y, String titulo, String valor, Color colorValor, int fontSize) {
+        JLabel lblTit = new JLabel(titulo);
+        lblTit.setFont(new Font("Inter", Font.PLAIN, 12));
+        lblTit.setForeground(Color.GRAY);
+        lblTit.setBounds(25, y, 200, 15);
+        panel.add(lblTit);
+
+        JLabel lblVal = new JLabel(valor);
+        lblVal.setFont(new Font("Inter", Font.BOLD, fontSize));
+        lblVal.setForeground(colorValor);
+        lblVal.setBounds(25, y + 20, 200, 25);
+        panel.add(lblVal);
+    }
+
+    private void agregarDatoCliente(JPanel panel, int y, String titulo, String valor) {
+        JLabel lblTit = new JLabel(titulo);
+        lblTit.setFont(new Font("Inter", Font.PLAIN, 11));
+        lblTit.setForeground(Color.GRAY);
+        lblTit.setBounds(25, y, 200, 15);
+        panel.add(lblTit);
+
+        JLabel lblVal = new JLabel(valor);
+        lblVal.setFont(new Font("Inter", Font.BOLD, 12));
+        lblVal.setBounds(25, y + 15, 260, 15);
+        panel.add(lblVal);
+    }
+    
+    private void confirmarEliminacion(String[] clienteAEliminar, JPanel panelTabla, int metod) {
         // Obtener la ventana principal para que el modal se superponga correctamente
         JFrame ventanaPadre = (JFrame) SwingUtilities.getWindowAncestor(panelTabla);
         
@@ -1042,7 +1951,12 @@ public class HomeView extends JPanel{
         panel.add(lblTitulo);
 
         // Mensaje de advertencia
-        JLabel lblMsg = new JLabel("<html>Esta acción no se puede deshacer. Se eliminara el cliente y\r\n"+"todos sus registros asociados.</html>", SwingConstants.CENTER);
+        JLabel lblMsg = new JLabel();
+        if (metod==1){
+        	lblMsg.setText("<html>Esta acción no se puede deshacer. Se eliminara el cliente y\r\n"+"todos sus registros asociados.</html>");
+        }else {
+        	lblMsg.setText("<html>Esta acción no se puede deshacer. Se eliminara el articulo y\r\n"+"todos sus registros asociados.</html>");
+        }
         lblMsg.setFont(new Font("Inter", Font.PLAIN, 14));
         lblMsg.setForeground(Color.GRAY);
         lblMsg.setBounds(40, 50, 440, 50);
@@ -1071,13 +1985,22 @@ public class HomeView extends JPanel{
         btnEliminarConfirmar.addActionListener(e -> {
             
             // 1. Eliminamos el cliente de la base de datos
-            baseDatosClientes.remove(clienteAEliminar);
+        	if (metod==1){
+        		baseDatosClientes.remove(clienteAEliminar);
+            }else {
+            	baseDatosArticulos.remove(clienteAEliminar);
+            }
+            
             
             // 2. Cerramos el modal
             dialogo.dispose();
             
             // 3. Refrescamos la tabla global (vacía el filtro para mostrar todos los restantes)
-            renderizarTabla(panelTabla, "");
+            if (metod==1){
+            	renderizarTabla(panelTabla, "");
+            }else {
+            	renderizarTablaArticulos(panelTabla, "");
+            }
             
         });
         panel.add(btnEliminarConfirmar);
@@ -1085,7 +2008,7 @@ public class HomeView extends JPanel{
         dialogo.add(panel);
         dialogo.setVisible(true);
     }
-
+    
     // Método auxiliar para crear las filas del historial con los estados (Badge de colores)
     private void crearFilaHistorial(JPanel contenedor, int y, int[] posX, String art, String cat, String fecha, String monto, String estado, String bgEstado, String txtEstado) {
         JLabel lArt = new JLabel(art); lArt.setFont(new Font("Inter", Font.BOLD, 11)); lArt.setBounds(posX[0], y, 120, 20);

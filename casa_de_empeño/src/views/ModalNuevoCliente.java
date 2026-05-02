@@ -33,7 +33,9 @@ class ModalNuevoCliente extends JDialog {
     private final String phCorreo = "Ej: ejemplo@email.com";
     private final String phFecha = "DD/MM/AAAA     📅";
     private HomeView home;
-
+    
+    
+    
     public ModalNuevoCliente(HomeView home, JFrame parent) {
         super(parent, true);
         this.home = home; 
@@ -129,7 +131,7 @@ class ModalNuevoCliente extends JDialog {
 
         add(panelFondo);
     }
-
+    
     private boolean camposIncompletos() {
         return txtNombre.getText().equals(phNombre) || txtNombre.getText().trim().isEmpty() ||
                txtTelefono.getText().equals(phTelefono) || txtTelefono.getText().trim().isEmpty() ||
@@ -168,6 +170,7 @@ class ModalNuevoCliente extends JDialog {
         panel.add(txt);
         return txt;
     }
+    
 }
 
 // =========================================================
