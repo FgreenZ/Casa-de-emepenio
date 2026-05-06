@@ -22,7 +22,7 @@ public class AuthController {
 	
 	public void dash()
 	{
-		prueba.bienvenidoDashboard();
+		prueba.dashboardPagos();
 	}
 	
 	public void articulos()
