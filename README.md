@@ -30,21 +30,24 @@ pagos e intereses, hasta la venta de artículos no reclamados.
 
 - Java JDK 24
 
-### Como Ejecutar
+# Problema al importar el proyecto
 
-- Al importar el proyecto este se importara sin la libreria de java nesesaria y aparecera una signo de
-  admiracion en el proyecto y no encontrara las clases al momento de ejecutar el Main.
-- Para poder ejecutarlo correctamente es nesesario seguir los sig. pasos.
-|------------------------------------------------------------
-|-Doble click en el proyecto
-|-Build Path
-|-Configure build path
-|-Libraries
-|-Borrar el JRE que aparesca
-|-Click en Module path
-|-ADD librarie
-|-Execution enviroment
-|-Seleccion una libreria que no se sea Unbound
-|-Apply and Close
-|-------------------------------------------------------------
+Al importar el proyecto, este no incluirá la librería de Java necesaria. Aparecerá un signo de admiración "!" en el proyecto y no se encontrarán las clases al momento de ejecutar el `Main`.
+
+## Solución
+
+Para poder ejecutarlo correctamente es necesario seguir los siguientes pasos:
+
+| Paso | Instrucción |
+|------|-------------|
+| 1 | Doble clic en el proyecto |
+| 2 | Build Path |
+| 3 | Configure Build Path |
+| 4 | Pestaña Libraries |
+| 5 | Borrar el JRE que aparezca |
+| 6 | Clic en Modulepath |
+| 7 | Add Library |
+| 8 | Execution Environment |
+| 9 | Seleccionar una librería que **no sea Unbound** |
+| 10 | Apply and Close |
 
