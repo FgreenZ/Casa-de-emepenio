@@ -147,6 +147,7 @@ public class HomeView extends JPanel{
 		ventana.setLocationRelativeTo(null); // Centra la ventana en la pantalla
 		ventana.setLayout(null); // Diseño absoluto para usar setBounds
 		ventana.getContentPane().setBackground(Color.decode("#F4F6F9")); // Fondo base de la ventana
+		ventana.setResizable(false);
 
         // 2. Panel Izquierdo (Menú lateral)
 		 // 2. Panel Izquierdo (Menú lateral)
@@ -328,6 +329,8 @@ public class HomeView extends JPanel{
         ventana.setLocationRelativeTo(null);
         ventana.setLayout(null);
         ventana.getContentPane().setBackground(Color.decode("#F4F6F9")); 
+		ventana.setResizable(false);
+
         //setCursor(new Cursor(Cursor.HAND_CURSOR));
         ///////////////////////////////////////////////////
         // 2. Panel Izquierdo (Menú lateral)
@@ -548,6 +551,7 @@ public class HomeView extends JPanel{
         ventana.setLocationRelativeTo(null);
         ventana.setLayout(null);
         ventana.getContentPane().setBackground(Color.decode("#F4F6F9")); 
+		ventana.setResizable(false);
 
         // 2. Panel Izquierdo (Menú lateral)
         JPanel panelMenu = new JPanel();
@@ -818,6 +822,7 @@ public class HomeView extends JPanel{
         ventana.setLocationRelativeTo(null);
         ventana.setLayout(null);
         ventana.getContentPane().setBackground(Color.decode("#F4F6F9")); 
+		ventana.setResizable(false);
 
         // 2. Panel Izquierdo (Menú lateral)
         JPanel panelMenu = new JPanel();

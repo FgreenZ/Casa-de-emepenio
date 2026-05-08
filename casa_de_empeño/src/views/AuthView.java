@@ -59,6 +59,7 @@ public class AuthView extends JFrame {
         setLocationRelativeTo(null);
         setLayout(null);
         getContentPane().setBackground(Color.WHITE);
+        setResizable(false);
 
         // --- IMÁGENES DE FONDO (Lado izquierdo) ---
         // (Mantenemos tus iconos y adornos originales)
