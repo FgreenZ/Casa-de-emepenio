@@ -1646,7 +1646,7 @@ public class HomeView extends JPanel{
                 lblEliminar.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        confirmarEliminacion(articulo, panelTabla,0);
+                        confirmarEliminacion(articulo, panelTabla,2);
                     }
                 });
                 panelTabla.add(lblEliminar);
