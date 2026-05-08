@@ -105,7 +105,7 @@ public class AuthView extends JFrame {
         		lblTitulo.setBounds(80, 170, 300, 30);
         		ventanaEmergente.setVisible(true);
         	}else {
-                lblTitulo.setBounds(80, 200, 300, 30);
+            lblTitulo.setBounds(80, 200, 300, 30);
         		ventanaEmergente.dispose();
         		HomeView x=new HomeView();
         		this.dispose();

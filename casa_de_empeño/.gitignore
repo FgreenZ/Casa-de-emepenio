@@ -6,7 +6,6 @@ build/
 
 # Configuración de Eclipse
 .settings/
-.classpath
 .project
 .metadata/
 
