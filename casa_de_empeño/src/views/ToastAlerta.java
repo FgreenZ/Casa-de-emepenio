@@ -61,7 +61,7 @@ class ToastAlerta  {
     
     public ToastAlerta(JDialog panelPadre, String mensaje) {
     	
-    	this.panelPadre = panelPadre;
+    		this.panelPadre = panelPadre;
     	
         panel.setBackground(Color.decode("#FFEDED"));
         panel.setBorder(new RoundedBorder(10));

@@ -82,22 +82,24 @@ public class AuthView extends JFrame {
         JLabel fondo2 = new JLabel(new ImageIcon(img2));
         fondo2.setBounds(-70, -60, 550, 300);
         cuadroLogin.add(fondo2);
-
+        
         // Título
         JLabel lblTitulo = new JLabel("ACCESO AL SISTEMA");
         lblTitulo.setFont(new Font("Inter", Font.BOLD, 24));
         lblTitulo.setBounds(80, 200, 300, 30);
         cuadroLogin.add(lblTitulo);
-
+        
         // Campo Usuario
         txtUser=crearCampoTexto(cuadroLogin, "Usuario", 258, 286, false);
         // Campo Password
         txtPass= crearCampoTexto(cuadroLogin, "Contraseña", 350, 376, true);
-
+        
         // Botón Ingresar
+        //PanelRedondeado panel = new PanelRedondeado(20, Color.decode("#FEE2E2"));
         JButton btnIngresar = crearBotonPrincipal("INGRESAR", 460);
         ToastAlertaLogin ventanaEmergente =new ToastAlertaLogin(AuthView.this,"<html>Correo o contraseña incorrectos. Por<br>" +
         "favor, inténtalo de nuevo.</html>");
+        btnIngresar.setBorder(new RoundedBorder(10));
         btnIngresar.addActionListener(e -> {
         	if(txtUser.getText().isEmpty()&&txtPass.getText().isEmpty()) {
         		lblTitulo.setBounds(80, 170, 300, 30);
@@ -122,8 +124,8 @@ public class AuthView extends JFrame {
         btnIrRegistro.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnIrRegistro.addActionListener(e -> {
         	
-        	ventanaEmergente.setVisible(false);
-        	VentanaRegistro();
+        		ventanaEmergente.setVisible(false);
+        		VentanaRegistro();
         
         }); 
         
