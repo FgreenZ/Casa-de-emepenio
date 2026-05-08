@@ -12,28 +12,42 @@ public class ModalNuevoPago extends JDialog {
     private HomeView home;
 
     // Componentes para extraer la información posteriormente
-    private JComboBox<String> cbCliente;
-    private JComboBox<String> cbArticulo;
+    private JPanel cbCliente;
+    private JPanel cbArticulo;
+    private JPanel cbEstado;
+
 
     private JTextField txtNombre;
     private JComboBox<String> cbCategoria;
-    private JComboBox<String> cbEstado;
-    private JTextArea txtMonto;
+    private JPanel txtMonto;
     private JTextField txtValorEstimado;
     private JTextField txtFechaEmpeno;
     private JTextField txtFechaLimite;
-    private JTextArea txtNotas;
+    private JTextField fechaEmpeño;
+    private JPanel txtNotas;
+    JComboBox<String>[] opciones = new JComboBox[3];    
+    JPanel fecha=new JPanel(null);
+    JPanel datos_pago=new JPanel(null);
+
 
     PanelRedondeado panelFondo = new PanelRedondeado(20, Color.WHITE);
+    PanelRedondeado operacion = new PanelRedondeado(20, Color.decode("#C7D3EA"));
     PanelRedondeado btnCrear = new PanelRedondeado(10, Color.decode("#1D4ED8"));
-
-
+    ToastAlerta advertencia=new ToastAlerta(ModalNuevoPago.this,"Complete los campos vacios");
+    JTextArea[] info=new JTextArea[2];
+    
     public ModalNuevoPago(HomeView home, JFrame parent, List<String[]> baseDatosPagos) {
         super(parent, true);
         this.home = home;
-
         setUndecorated(true);
         setSize(parent.getWidth(), parent.getHeight()); // Ocupa toda la ventana de fondo
+        datos_pago.setSize(parent.getWidth(), parent.getHeight());
+        datos_pago.setOpaque(false);
+        datos_pago.setLocation(0,0);
+        panelFondo.add(datos_pago);
+        operacion.setBounds(40, 232, 520, 105);
+        operacion.setVisible(false);
+        operacion.setLayout(null);
         setLocationRelativeTo(parent);
         setLayout(null);
         setBackground(new Color(0, 0, 0, 100)); // Fondo oscuro semitransparente
@@ -58,6 +72,7 @@ public class ModalNuevoPago extends JDialog {
         lblTitulo.setForeground(Color.decode("#111827"));
         lblTitulo.setBounds(40, 30, 400, 30);
         panelFondo.add(lblTitulo);
+        
 
         // --- VARIABLES DE DISEÑO (GRILLA) ---
         int marginX = 40;
@@ -67,25 +82,53 @@ public class ModalNuevoPago extends JDialog {
         int col1 = marginX;                    // 40
         int col2 = marginX + halfWidth + gap;  // 310
 
-        cbCliente = crearComboConLabel(panelFondo, "Cliente:*", "Selecciona un cliente", baseDatosPagos, col1, 80, fullWidth,1);
-
-        cbArticulo = crearComboConLabel(panelFondo, "Articulo empeñado:*", "Selecciona un articulo", baseDatosPagos, col1, 160, fullWidth,2);
-
-        cbEstado = crearComboConLabel(panelFondo, "Estado:*", "Empeñado", baseDatosPagos, col2, 240, halfWidth,4);
+        cbCliente = crearComboConLabel(panelFondo, "Cliente:*", "Selecciona un cliente", baseDatosPagos, col1, 80, fullWidth,1,0);
+        panelFondo.add(cbCliente);
         
+        cbArticulo = crearComboConLabel(panelFondo, "Articulo empeñado:*", "Selecciona un articulo", baseDatosPagos, col1, 160, fullWidth,2,1);
+        panelFondo.add(cbArticulo);
+        
+        cbEstado = crearComboConLabel(panelFondo, "Estado:*", "Empeñado", baseDatosPagos, col2, 240, halfWidth,4,2);
+        datos_pago.add(cbEstado);
+
         txtFechaEmpeno = crearInputConLabel(panelFondo, "Fecha de pago:*", "dd/mm/aaaa", col1, 240, halfWidth);
         configurarCampoFecha(txtFechaEmpeno, parent);
+        datos_pago.add(fecha);
         
-        txtMonto = crearTextAreaConLabel(panelFondo, "Monto Abonado:*", "500", col1, 310, fullWidth, 40);
-
-        txtNotas = crearTextAreaConLabel(panelFondo, "Notas:*", "Notas adicionales sobre el pago...", col1, 380, fullWidth, 70);
-
-
+        txtMonto = crearTextAreaConLabel(panelFondo, "Monto Abonado:*", "500", col1, 310, fullWidth, 40, 0);
+        datos_pago.add(txtMonto);
+        
+        txtNotas = crearTextAreaConLabel(panelFondo, "Notas:*", "Notas adicionales sobre el pago...", col1, 380, fullWidth, 70, 1);
+        datos_pago.add(txtNotas);
+        panelFondo.add(operacion);
+        
+        /*OPERACIONES*/
+        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+        separator.setVisible(true);
+        separator.setBackground(Color.decode("#638ADB"));
+        separator.setBounds(10, 60, 500, 5);
+        JLabel MTP =new JLabel("Monto total prestado:");
+        MTP.setForeground(Color.decode("#666666"));
+        MTP.setFont(new Font("Inter", Font.PLAIN, 13));
+        MTP.setBounds(10,15,150,14);
+        operacion.add(MTP);
+        JLabel TB =new JLabel("Total abonado:");
+        TB.setForeground(Color.decode("#666666"));
+        TB.setFont(new Font("Inter", Font.PLAIN, 13));
+        TB.setBounds(10,15,150,60);
+        operacion.add(separator);
+        operacion.add(TB);
+        JLabel MT =new JLabel("Monto restante:");
+        MT.setForeground(Color.decode("#666666"));
+        MT.setFont(new Font("Inter", Font.PLAIN, 13));
+        MT.setBounds(10,15,150,115);
+        operacion.add(MT);
+        
         btnCrear.setLayout(new BorderLayout());
         btnCrear.setBounds(width - marginX - 160, 495, 160, 40); 
         btnCrear.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        ToastAlertaSR x1=new ToastAlertaSR(parent,"ya");
-        ToastAlerta x=new ToastAlerta(parent,"Complete los campos vacios");
+        
+        
         JLabel lblCrear = new JLabel("Registrar pago", SwingConstants.CENTER);
         lblCrear.setForeground(Color.WHITE);
         lblCrear.setFont(new Font("Inter", Font.BOLD, 14));
@@ -93,17 +136,13 @@ public class ModalNuevoPago extends JDialog {
         btnCrear.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(
-                txtMonto.getText().isEmpty() ||
-                txtValorEstimado.getText().isEmpty() ||
-                txtFechaEmpeno.getText().isEmpty() ||
-                txtFechaLimite.getText().isEmpty() ) 
+                if(info[0].getText().equals("500") || info[1].getText().equals("Notas adicionales sobre el pago...")||
+                	fechaEmpeño.getText().equals("")||fechaEmpeño.getText().equals("dd/mm/aaaa")|| 
+                	opciones[0].getSelectedItem().equals("Selecciona un cliente")||opciones[1].getSelectedItem().equals("Selecciona un articulo")) 
                 {
-                	x.setVisible(true);
+                	advertencia.active();
                 }else 
                 {
-                    System.out.println("Artículo registrado");
-                	x1.setVisible(true);
                     ModalNuevoPago.this.dispose();
                 }
                 
@@ -125,19 +164,22 @@ public class ModalNuevoPago extends JDialog {
     // =========================================================================================
     // MÉTODOS AUXILIARES PARA REPLICAR EXACTAMENTE EL DISEÑO VISUAL
     // =========================================================================================
-
+	
     private JTextField crearInputConLabel(JPanel contenedor, String titulo, String placeholder, int x, int y, int w) {
-        // 1. Etiqueta superior (Label)
+    	fecha.setBounds(x, y, w, 70);
+    	fecha.setOpaque(false);
+    	
+    	// 1. Etiqueta superior (Label)
         JLabel lbl = new JLabel(titulo);
         lbl.setFont(new Font("Inter", Font.BOLD, 12));
         lbl.setForeground(Color.decode("#374151")); // Gris oscuro
-        lbl.setBounds(x, y, w, 20);
-        contenedor.add(lbl);
+        lbl.setBounds(0, 0, w, 20);
+        fecha.add(lbl);
 
         // 2. Contenedor redondeado gris para el input
         PanelRedondeado panelInput = new PanelRedondeado(10, Color.decode("#F9FAFB"));
         panelInput.setLayout(null);
-        panelInput.setBounds(x, y + 25, w, 40);
+        panelInput.setBounds(0, 0 + 25, w, 40);
         panelInput.setBorder(BorderFactory.createLineBorder(Color.decode("#E5E7EB"), 1)); // Borde sutil
 
         // 3. Campo de texto nativo sin bordes
@@ -147,7 +189,7 @@ public class ModalNuevoPago extends JDialog {
         txt.setOpaque(false);
         txt.setFont(new Font("Inter", Font.PLAIN, 13));
         txt.setForeground(Color.decode("#9CA3AF")); // Color del placeholder
-
+        fechaEmpeño =txt;
         // 4. Lógica de Placeholder
         txt.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent evt) {
@@ -165,20 +207,24 @@ public class ModalNuevoPago extends JDialog {
         });
 
         panelInput.add(txt);
-        contenedor.add(panelInput);
+        fecha.add(panelInput);
         return txt;
     }
 
-    private JComboBox<String> crearComboConLabel(JPanel contenedor, String titulo, String subtitulo, List<String[]> baseDatosPagos , int x, int y, int w,int index) {
-        JLabel lbl = new JLabel(titulo);
+    private JPanel crearComboConLabel(JPanel contenedor, String titulo, String subtitulo, List<String[]> baseDatosPagos , int x, int y, int w,int index,int indexador) {
+    	JPanel hola=new JPanel(null);
+    	hola.setBounds(x, y, w, 70);
+    	hola.setOpaque(false);
+    	
+    	JLabel lbl = new JLabel(titulo);
         lbl.setFont(new Font("Inter", Font.BOLD, 12));
         lbl.setForeground(Color.decode("#374151"));
-        lbl.setBounds(x, y, w, 20);
-        contenedor.add(lbl);
+        lbl.setBounds(0, 0, w, 20);
+        hola.add(lbl);
         
         PanelRedondeado panelCombo = new PanelRedondeado(10, Color.decode("#F9FAFB"));
         panelCombo.setLayout(new BorderLayout());
-        panelCombo.setBounds(x, y + 25, w, 40);
+        panelCombo.setBounds(0,  + 25, w, 40);
         panelCombo.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.decode("#E5E7EB"), 1),
             BorderFactory.createEmptyBorder(0, 10, 0, 10)
@@ -192,14 +238,13 @@ public class ModalNuevoPago extends JDialog {
             	i++;
         }
         
-        PanelRedondeado operacion = new PanelRedondeado(20, Color.decode("#C7D3EA"));
-        operacion.setBounds(50, 200, 500, 80);
-        operacion.setVisible(false);
+
         
         JComboBox<String> combo = new JComboBox<>(opciones);
         combo.setFont(new Font("Inter", Font.PLAIN, 13));
         combo.setForeground(Color.decode("#111827"));
         combo.setBackground(Color.decode("#F9FAFB"));
+        combo.setPreferredSize(new Dimension(500, 40));
         combo.setBorder(null);
         combo.setFocusable(false);
         combo.setOpaque(false);
@@ -207,36 +252,39 @@ public class ModalNuevoPago extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
             	
-            	if(combo.getSelectedItem()!=subtitulo) {
-            		panelFondo.setBounds(((getWidth() -600)/2), ((getWidth()-550)/2)-280, 600, 620);
-            		operacion.setVisible(true);
-                    btnCrear.setBounds(400, 560, 160, 40); 
-                 
-                    panelFondo.add(btnCrear);
-            		contenedor.add(operacion);
+            	if(combo.getSelectedItem()!=subtitulo && index==2) {
             		
+            		panelFondo.setBounds(((getWidth() -600)/2), ((getWidth()-550)/2)-295, 600, 645);
+            		datos_pago.setLocation(0,100);
+            		btnCrear.setLocation(400, 595);
+                    operacion.setVisible(true);                    
+                    
             	}else {
-            		//panelFondo.setBounds(((getWidth()-600)/2),  ((getWidth()-550)/2),  600, 300);
+            		
             	}
             	
             }
         });
-        
+        this.opciones[indexador]=combo;
         panelCombo.add(combo, BorderLayout.CENTER);
-        contenedor.add(panelCombo);
-        return combo;
+        hola.add(panelCombo);
+        return hola;
     }
 
-    private JTextArea crearTextAreaConLabel(JPanel contenedor, String titulo, String placeholder, int x, int y, int w, int h) {
-        JLabel lbl = new JLabel(titulo);
+    private JPanel crearTextAreaConLabel(JPanel contenedor, String titulo, String placeholder, int x, int y, int w, int h,int textArea) {
+    	JPanel hola=new JPanel(null);
+    	hola.setBounds(x, y, w, 120);
+    	hola.setOpaque(false);
+    	
+    	JLabel lbl = new JLabel(titulo);
         lbl.setFont(new Font("Inter", Font.BOLD, 12));
         lbl.setForeground(Color.decode("#374151"));
-        lbl.setBounds(x, y, w, 20);
-        contenedor.add(lbl);
+        lbl.setBounds(0, 10, w, 20);
+        hola.add(lbl);
 
         PanelRedondeado panelArea = new PanelRedondeado(10, Color.decode("#F9FAFB"));
         panelArea.setLayout(new BorderLayout());
-        panelArea.setBounds(x, y + 25, w, h);
+        panelArea.setBounds(0, 10 + 25, w, h);
         panelArea.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.decode("#E5E7EB"), 1),
             BorderFactory.createEmptyBorder(10, 15, 10, 15)
@@ -249,7 +297,8 @@ public class ModalNuevoPago extends JDialog {
         txtArea.setWrapStyleWord(true);
         txtArea.setBorder(null);
         txtArea.setOpaque(false);
-
+        
+        
         txtArea.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent evt) {
                 if (txtArea.getText().equals(placeholder)) {
@@ -264,10 +313,11 @@ public class ModalNuevoPago extends JDialog {
                 }
             }
         });
+        info[textArea]=txtArea;
 
-        panelArea.add(txtArea, BorderLayout.CENTER);
-        contenedor.add(panelArea);
-        return txtArea;
+        panelArea.add(txtArea);
+        hola.add(panelArea);
+        return hola;
     }
 
     private void configurarCampoFecha(JTextField txtFecha, JFrame parent) {

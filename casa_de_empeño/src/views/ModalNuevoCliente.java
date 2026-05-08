@@ -100,8 +100,8 @@ class ModalNuevoCliente extends JDialog {
             @Override
             public void mouseClicked(MouseEvent e) {
             	if (camposIncompletos()) {
-                    ToastAlerta alerta = new ToastAlerta(parent, "Por favor completa todos los campos");
-                    alerta.setVisible(true);
+                    ToastAlerta alerta = new ToastAlerta(ModalNuevoCliente.this, "Por favor completa todos los campos");
+                   // alerta.setVisible(true);
                 } else {
                     // Como ya tenemos la variable 'home', la usamos directamente
                     if (home != null) {
@@ -172,14 +172,4 @@ class ModalNuevoCliente extends JDialog {
     }
     
 }
-
-// =========================================================
-// CLASE PARA LA NOTIFICACIÓN ROJA (TOAST)
-// =========================================================
-
-
-
-// =========================================================
-// CLASE PARA EL CALENDARIO DESPLEGABLE AZUL
-// =========================================================
 

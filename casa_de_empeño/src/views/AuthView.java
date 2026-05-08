@@ -10,17 +10,38 @@ import javax.swing.border.LineBorder;
 // Clase para los bordes redondeados que ya tenías
 class RoundedBorder extends AbstractBorder {
     private int radius;
+    Graphics2D g2;
     RoundedBorder(int radius) {
         this.radius = radius;
     }
+
     @Override
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-        Graphics2D g2 = (Graphics2D) g;
+        g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(Color.LIGHT_GRAY);
         g2.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
     }
+    
+    public void setBorderColor() {
+    		g2.setColor(Color.RED);
+	}
+    
+    @Override
+    public Insets getBorderInsets(Component c) {
+        return new Insets(5, 10, 5, 10); // margen interno: arriba, izquierda, abajo, derecha
+    }
+
+    @Override
+    public Insets getBorderInsets(Component c, Insets insets) {
+        insets.left = 10;
+        insets.right = 10;
+        insets.top = 5;
+        insets.bottom = 5;
+        return insets;
+    }
 }
+
 
 public class AuthView extends JFrame { 
 	private JTextField txtRegNombre, txtRegCorreo, txtRegPass, txtRegConfirmar, txtUser, txtPass;
@@ -99,9 +120,14 @@ public class AuthView extends JFrame {
         btnIrRegistro.setContentAreaFilled(false);
         btnIrRegistro.setBorderPainted(false);
         btnIrRegistro.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnIrRegistro.addActionListener(e -> VentanaRegistro()); // Cambia la vista
-        cuadroLogin.add(btnIrRegistro);
+        btnIrRegistro.addActionListener(e -> {
+        	
+        	ventanaEmergente.setVisible(false);
+        	VentanaRegistro();
         
+        }); 
+        
+        cuadroLogin.add(btnIrRegistro);
         cuadroLogin.repaint();
         cuadroLogin.revalidate();
         setVisible(true);
@@ -116,7 +142,7 @@ public class AuthView extends JFrame {
         cuadroLogin.add(lblTitulo);
 
         int inicioY = 120;
-        int espacio = 75;
+        int espacio = 76;
         
         // Logo superior (el que ya tenías)
         ImageIcon icon2 = new ImageIcon("src/img/logo y titulo.png");
@@ -242,10 +268,10 @@ public class AuthView extends JFrame {
         JLabel lbl = new JLabel(placeholder);
         lbl.setFont(new Font("Arial", Font.PLAIN, 12));
         lbl.setForeground(Color.GRAY);
-        lbl.setBounds(25, y+100, 300, 20);
+        lbl.setBounds(25, y+90, 300, 40);
         panel.add(lbl);
 
-        JTextField txt = new JTextField(); // O JPasswordField según necesites
+        JTextField txt = new JTextField(); 
         txt.setBounds(25, y + 122, 350, 35);
         txt.setBorder(new RoundedBorder(10));
         panel.add(txt);
@@ -255,19 +281,21 @@ public class AuthView extends JFrame {
         lblIcono.setForeground(Color.gray);
         lblIcono.setBounds(345, y+95, 30, 35);
         panel.add(lblIcono);
-        return txt;// <--- IMPORTANTE: Retornar el campo
+        return txt;
     }
 
     private JTextField crearCampoTexto(JPanel panel, String titulo, int lblY, int txtY, boolean isPass) {
-        JLabel lbl = new JLabel(titulo);
+        
+    	JLabel lbl = new JLabel(titulo);
         lbl.setFont(new Font("Arial", Font.PLAIN, 14));
         lbl.setBounds(0, lblY, 300, 14);
         panel.add(lbl);
-
+		
         JTextField txt = isPass ? new JPasswordField() : new JTextField();
         txt.setBounds(0, txtY, 400, 38);
         txt.setBorder(new RoundedBorder(10));
         panel.add(txt);
+        
         
         return txt;
     }
