@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -503,21 +505,6 @@ public class HomeView extends JPanel{
         txtBusqueda.setForeground(Color.GRAY);
         txtBusqueda.setFont(new Font("Inter", Font.PLAIN, 12));
         
-        // Lógica para que el texto de ejemplo desaparezca al dar clic
-        txtBusqueda.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                if (txtBusqueda.getText().equals("Busca por nombre, teléfono o correo...")) {
-                    txtBusqueda.setText("");
-                    txtBusqueda.setForeground(Color.BLACK);
-                }
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                if (txtBusqueda.getText().trim().isEmpty()) {
-                    txtBusqueda.setText("Busca por nombre, teléfono o correo...");
-                    txtBusqueda.setForeground(Color.GRAY);
-                }
-            }
-        });
 
         // ... (código previo del input de busqueda)
         inputBusqueda.add(txtBusqueda);
@@ -989,21 +976,6 @@ public class HomeView extends JPanel{
         txtBusqueda.setForeground(Color.GRAY);
         txtBusqueda.setFont(new Font("Inter", Font.PLAIN, 12));
         
-        // Lógica para que el texto de ejemplo desaparezca al dar clic
-        txtBusqueda.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                if (txtBusqueda.getText().equals("Busca por nombre, teléfono o correo...")) {
-                    txtBusqueda.setText("");
-                    txtBusqueda.setForeground(Color.BLACK);
-                }
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                if (txtBusqueda.getText().trim().isEmpty()) {
-                    txtBusqueda.setText("Busca por nombre, teléfono o correo...");
-                    txtBusqueda.setForeground(Color.GRAY);
-                }
-            }
-        });
         
         // ... (código previo del input de busqueda)
         inputBusqueda.add(txtBusqueda);
@@ -1333,7 +1305,7 @@ public class HomeView extends JPanel{
         for (int i = 0; i < columnas.length; i++) {
             JLabel lblColumna = new JLabel(columnas[i]);
             lblColumna.setFont(new Font("Inter", Font.BOLD, 10));
-            lblColumna.setBounds(posX[i], 10, 140, 20);
+            lblColumna.setBounds(posX[i]+40, 10, 140, 20);
             headerTabla.add(lblColumna);
         }
         panelTabla.add(headerTabla);
@@ -1390,8 +1362,9 @@ public class HomeView extends JPanel{
 
                 //|-ACCIONES-|
                 // Crear una copia final del cliente para poder usarla dentro del ActionListener
+                ImageIcon iconD = new ImageIcon("src/img/verDetalles.png");
                 final String[] clienteSeleccionado = cliente; 
-                JButton lblVer = new JButton("👁");
+                JButton lblVer = new JButton(iconD);
                 lblVer.setForeground(Color.BLACK);
                 lblVer.setFont(new Font("SansSerif", Font.PLAIN, 25));
                 lblVer.setContentAreaFilled(false);
@@ -1415,9 +1388,9 @@ public class HomeView extends JPanel{
                     }
                 });
                 panelTabla.add(lblVer);
-                
+                ImageIcon iconDe = new ImageIcon("src/img/verOpciones.png");
                 final int indexCliente = baseDatosClientes.indexOf(cliente);
-                JButton lblEditar = new JButton("📝");
+                JButton lblEditar = new JButton(iconDe);
                 lblEditar.setForeground(Color.DARK_GRAY);
                 lblEditar.setFont(new Font("SansSerif", Font.PLAIN, 25));
                 lblEditar.setContentAreaFilled(false);
@@ -1436,9 +1409,10 @@ public class HomeView extends JPanel{
                     }
                 });
                 panelTabla.add(lblEditar);
-
+                
+                ImageIcon icon = new ImageIcon("src/img/verBasura.png");
                 // Código existente...
-                JButton lblEliminar = new JButton("🗑");
+                JButton lblEliminar = new JButton(icon);
                 lblEliminar.setForeground(Color.RED);
                 lblEliminar.setFont(new Font("SansSerif", Font.PLAIN, 25));
                 lblEliminar.setContentAreaFilled(false);
@@ -1452,7 +1426,7 @@ public class HomeView extends JPanel{
                 lblEliminar.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        confirmarEliminacion(clienteSeleccionado, panelTabla,2);
+                        confirmarEliminacion(clienteSeleccionado, panelTabla,1);
                     }
                 });
                 // -------------------------------------------
@@ -1605,7 +1579,8 @@ public class HomeView extends JPanel{
                 panelTabla.add(badge);
 
                 // |-ACCIONES-| (Reutilizamos la lógica gráfica, solo ajustando posiciones)
-                JButton lblVer = new JButton("👁");
+                ImageIcon iconD = new ImageIcon("src/img/verDetalles.png");
+                JButton lblVer = new JButton(iconD);
                 lblVer.setForeground(Color.BLACK);
                 lblVer.setFont(new Font("SansSerif", Font.PLAIN, 16));
                 lblVer.setContentAreaFilled(false);
@@ -1621,8 +1596,8 @@ public class HomeView extends JPanel{
                     }
                 });
                 panelTabla.add(lblVer);
-                
-                JButton lblEditar = new JButton("📝");
+                ImageIcon iconDe = new ImageIcon("src/img/verOpciones.png");
+                JButton lblEditar = new JButton(iconDe);
                 lblEditar.setForeground(Color.DARK_GRAY);
                 lblEditar.setFont(new Font("SansSerif", Font.PLAIN, 16));
                 lblEditar.setContentAreaFilled(false);
@@ -1639,8 +1614,8 @@ public class HomeView extends JPanel{
                     }
                 });
                 panelTabla.add(lblEditar);
-
-                JButton lblEliminar = new JButton("🗑");
+                ImageIcon icon = new ImageIcon("src/img/verBasura.png");
+                JButton lblEliminar = new JButton(icon);
                 lblEliminar.setForeground(Color.RED);
                 lblEliminar.setFont(new Font("SansSerif", Font.PLAIN, 20));
                 lblEliminar.setContentAreaFilled(false);
@@ -1774,7 +1749,8 @@ public class HomeView extends JPanel{
                 panelTabla.add(badge);
 
                 // |-ACCIONES-| (Reutilizamos la lógica gráfica, solo ajustando posiciones)
-                JButton lblVer = new JButton("⬇️");
+                ImageIcon iconDes = new ImageIcon("src/img/descargar.png");
+                JButton lblVer = new JButton(iconDes);
                 lblVer.setForeground(Color.BLACK);
                 lblVer.setFont(new Font("SansSerif", Font.PLAIN, 16));
                 lblVer.setContentAreaFilled(false);
@@ -1790,7 +1766,9 @@ public class HomeView extends JPanel{
                 });
                 panelTabla.add(lblVer);
                 
-                JButton lblEditar = new JButton("📝");
+                
+                ImageIcon iconDe = new ImageIcon("src/img/verOpciones.png");
+                JButton lblEditar = new JButton(iconDe);
                 lblEditar.setForeground(Color.DARK_GRAY);
                 lblEditar.setFont(new Font("SansSerif", Font.PLAIN, 16));
                 lblEditar.setContentAreaFilled(false);
@@ -1806,8 +1784,8 @@ public class HomeView extends JPanel{
                     }
                 });
                 panelTabla.add(lblEditar);
-
-                JButton lblEliminar = new JButton("🗑");
+                ImageIcon icon = new ImageIcon("src/img/verBasura.png");
+                JButton lblEliminar = new JButton(icon);
                 lblEliminar.setForeground(Color.RED);
                 lblEliminar.setFont(new Font("SansSerif", Font.PLAIN, 20));
                 lblEliminar.setContentAreaFilled(false);
