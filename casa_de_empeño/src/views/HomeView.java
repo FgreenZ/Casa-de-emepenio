@@ -498,7 +498,7 @@ public class HomeView extends JPanel{
         inputBusqueda.setLayout(null);
         inputBusqueda.setBounds(20, 15, 810, 40);
         
-        JTextField txtBusqueda = new JTextField("Busca por nombre, teléfono o correo...");
+        JTextField txtBusqueda = new JTextField("");
         txtBusqueda.setBorder(null);
         txtBusqueda.setOpaque(false);
         txtBusqueda.setBounds(15, 0, 780, 40);
@@ -700,7 +700,7 @@ public class HomeView extends JPanel{
         PanelRedondeado inputBusqueda = new PanelRedondeado(10, Color.decode("#EAECEF"));
         inputBusqueda.setLayout(null);
         inputBusqueda.setBounds(20, 15, 250, 40);
-        JTextField txtBusqueda = new JTextField("Buscar artículo...");
+        JTextField txtBusqueda = new JTextField("");
         txtBusqueda.setBorder(null);
         txtBusqueda.setOpaque(false);
         txtBusqueda.setBounds(35, 0, 200, 40);
@@ -969,7 +969,7 @@ public class HomeView extends JPanel{
         inputBusqueda.setLayout(null);
         inputBusqueda.setBounds(20, 15, 810, 40);
         
-        JTextField txtBusqueda = new JTextField("Busca por nombre, teléfono o correo...");
+        JTextField txtBusqueda = new JTextField("");
         txtBusqueda.setBorder(null);
         txtBusqueda.setOpaque(false);
         txtBusqueda.setBounds(15, 0, 780, 40);
