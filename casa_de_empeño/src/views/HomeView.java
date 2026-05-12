@@ -946,9 +946,9 @@ public class HomeView extends JPanel{
         btnNuevoCliente.setLayout(null);
         btnNuevoCliente.setBounds(730, 90, 160, 40);
         btnNuevoCliente.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR)); 
-        JLabel lblNuevoCliente = new JLabel("+  Nuevo artículo", SwingConstants.CENTER);
+        JLabel lblNuevoCliente = new JLabel("+  Nuevo pago", SwingConstants.CENTER);
         lblNuevoCliente.setFont(new Font("Inter", Font.PLAIN, 16));
-        lblNuevoCliente.setBounds(0, 0, 160, 40);
+        lblNuevoCliente.setBounds(0, 0, 158, 40);
         btnNuevoCliente.add(lblNuevoCliente);
         panelContenido.add(btnNuevoCliente);
         btnNuevoCliente.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -1305,7 +1305,7 @@ public class HomeView extends JPanel{
         for (int i = 0; i < columnas.length; i++) {
             JLabel lblColumna = new JLabel(columnas[i]);
             lblColumna.setFont(new Font("Inter", Font.BOLD, 10));
-            lblColumna.setBounds(posX[i]+40, 10, 140, 20);
+            lblColumna.setBounds(posX[i], 10, 140, 20);
             headerTabla.add(lblColumna);
         }
         panelTabla.add(headerTabla);
