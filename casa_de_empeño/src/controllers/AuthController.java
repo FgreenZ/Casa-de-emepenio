@@ -9,17 +9,19 @@ public class AuthController {
 	private HomeView prueba;
 
 	
-	public AuthController() {
-		
-		vista = new AuthView();
-		prueba = new HomeView();
-	}
-	
-	public void login()
-	{
-		vista.VentanaLogin();
-	}
-	
+    public AuthController() {
+
+        vista = new AuthView();
+
+    }
+
+    public void login()
+    {
+
+        vista.VentanaLogin();
+
+    }
+
 	public void dash()
 	{
 		prueba.dashboardPagos();

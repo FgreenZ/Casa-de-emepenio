@@ -1,6 +1,7 @@
 package views;
 
 import java.awt.*;
+import models.AuthModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
@@ -47,7 +48,11 @@ public class AuthView extends JFrame {
 	private JTextField txtRegNombre, txtRegCorreo, txtRegPass, txtRegConfirmar, txtUser, txtPass;
     private JPanel cuadroLogin;
 
-    public AuthView() { 
+    private AuthModel model;
+    public AuthView() {
+
+        model = new AuthModel();
+
         VentanaLogin();
     }
     
@@ -102,16 +107,51 @@ public class AuthView extends JFrame {
         "favor, inténtalo de nuevo.</html>");
         btnIngresar.setBorder(new RoundedBorder(10));
         btnIngresar.addActionListener(e -> {
-        	if(txtUser.getText().isEmpty()&&txtPass.getText().isEmpty()) {
-        		lblTitulo.setBounds(80, 170, 300, 30);
-        		ventanaEmergente.setVisible(true);
-        	}else {
-            lblTitulo.setBounds(80, 200, 300, 30);
-        		ventanaEmergente.dispose();
-        		HomeView x=new HomeView();
-        		this.dispose();
-        		x.bienvenidoDashboard();
-        	}
+
+            String usuario =
+                    txtUser.getText();
+
+            String contrasena =
+                    txtPass.getText();
+
+            if(usuario.isEmpty() || contrasena.isEmpty())
+            {
+
+                lblTitulo.setBounds(80,170,300,30);
+
+                ventanaEmergente.setVisible(true);
+
+                return;
+            }
+
+            boolean acceso =
+                    model.autenticar(
+                        usuario,
+                        contrasena
+                    );
+
+            if(acceso)
+            {
+
+                ventanaEmergente.dispose();
+
+                HomeView x =
+                        new HomeView();
+
+                this.dispose();
+
+                x.bienvenidoDashboard();
+
+            }
+            else
+            {
+
+                lblTitulo.setBounds(80,170,300,30);
+
+                ventanaEmergente.setVisible(true);
+
+            }
+
         });
         cuadroLogin.add(btnIngresar);
         
