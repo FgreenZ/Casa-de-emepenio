@@ -33,7 +33,7 @@ public class AuthModel {
             conn = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/la_central_empeno",
                 "root",
-                ""
+                "793ghjlqASD"
             );
 
             PreparedStatement ps =
