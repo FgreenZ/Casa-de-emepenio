@@ -4,6 +4,10 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -82,37 +86,542 @@ class PanelCirculo extends JPanel {
         super.paintComponent(g);
     }
 }
+
 //|----VISTAS----|
-public class HomeView extends JPanel{
+public class HomeView extends JPanel
+{
+	
+	//TABLA CLIENTES
+	private void cargarClientes() {
 
-    private List<String[]> baseDatosClientes = new ArrayList<>(Arrays.asList(
-            new String[]{"Pérez García", "6121234567", "juan.perez@email.com", "14/1/2025", "1", "#AEE7B8"},
-            new String[]{"María López Hernández", "6121418223", "maria.lopez@email.com", "19/2/2025", "1", "#AEE7B8"},
-            new String[]{"Carlos Rodríguez Martínez", "6122898724", "carlos.rdgz@email.com", "9/3/2025", "0", "#AEE7B8"},
-            new String[]{"Emmanuel García", "6125551234", "emmanuel@email.com", "10/4/2025", "2", "#AEE7B8"}
-        ));
-    
-    private List<String[]> baseDatosArticulos = new ArrayList<>(Arrays.asList(
-    		new String[]{"Anillo de Oro 14K", "Juan Pérez García", "Joyería", "$5,000", "14/6/2025", "Empeñado", "#FFF9C4", "#FBC02D","$10,000","20/13/2027","Sin descripcion por el momento"},
-    		new String[]{"Laptop Dell XPS 15", "Juan Pérez García", "Electrónica", "$8,000", "30/4/2025", "Recuperado", "#C8E6C9", "#388E3C","$10,000","20/13/2027","Sin descripcion por el momento"},
-    		new String[]{"Collar de Perlas", "María López Hernández", "Joyería", "$3,500", "19/6/2025", "Empeñado", "#FFF9C4", "#FBC02D","$10,000","20/13/2027","Sin descripcion por el momento"},
-    		new String[] {"iPhone 14 Pro", "Carlos Rodríguez Martínez", "Electrónica", "$10,000", "9/4/2025", "Rematado", "#FFCDD2", "#D32F2F","$10,000","20/13/2027","Sin descripcion por el momento"}
-    		));
-    //        String[] columnas = {"FECHA", "CLIENTE", "ARTICULO", "MONTO ABONADO", "TIPO DE PAGO", "ACCIONES"};
+	    try {
 
-    private List<String[]> baseDatosPagos = new ArrayList<>(Arrays.asList(
-    		new String[] {"14/6/2025", "Carlos Rodríguez Martínez", "Anillo de Oro 14K", "$10,000", "Interes","#FFCDD2", "#AEE7B8","#AEE7B8"},
-    		new String[] {"30/4/2025", "Juan Pérez García", "Laptop Dell XPS 15", "$10,000", "Total","#FFCDD2", "#AEE7B8","#AEE7B8"},
-    		new String[] {"19/6/2025", "María López Hernández", "Collar de Perlas", "$10,000", "Abono","#FFCDD2", "#AEE7B8","#AEE7B8"},
-    		new String[] {"9/4/2025", "Emmanuel García", "iPhone 14 Pro", "$10,000", "Interes","#FFCDD2", "#AEE7B8","#AEE7B8"}
-    		));
-    
+	        Connection conn =
+	            DriverManager.getConnection(
+	                "jdbc:mysql://localhost:3306/la_central_empeno",
+	                "root",
+	                ""
+	            );
+
+	        String query =
+	            "SELECT * FROM clientes";
+
+	        PreparedStatement ps =
+	            conn.prepareStatement(query);
+
+	        ResultSet rs =
+	            ps.executeQuery();
+
+	        baseDatosClientes.clear();
+
+	        while(rs.next()) {
+
+	            String nombreCompleto =
+	                rs.getString("nombres")
+	                + " "
+	                + rs.getString("apellidos");
+
+	            String telefono =
+	                rs.getString("telefono");
+
+	            String correo =
+	                rs.getString("correo");
+
+	            String fecha =
+	                rs.getString("fecha_registro");
+
+	            String cantidadArticulos =
+	                "0";
+
+	            String color =
+	                "#AEE7B8";
+
+	            baseDatosClientes.add(
+	                new String[] {
+
+	                    nombreCompleto,
+	                    telefono,
+	                    correo,
+	                    fecha,
+	                    cantidadArticulos,
+	                    color
+	                }
+	            );
+	        }
+
+	        conn.close();
+
+	    } catch(Exception e) {
+
+	        System.out.println(
+	            e.getMessage()
+	        );
+	    }
+	}
+	private JPanel crearTablaClientes() {
+
+	    JPanel tabla =
+	        new JPanel();
+
+	    tabla.setLayout(
+	        new GridLayout(
+	            baseDatosClientes.size() + 1,
+	            6
+	        )
+	    );
+
+	    // ENCABEZADOS
+
+	    tabla.add(crearHeader("CLIENTE"));
+	    tabla.add(crearHeader("TELÉFONO"));
+	    tabla.add(crearHeader("CORREO"));
+	    tabla.add(crearHeader("FECHA"));
+	    tabla.add(crearHeader("ARTÍCULOS"));
+	    tabla.add(crearHeader("ESTADO"));
+
+	    // FILAS
+
+	    for(String[] cliente : baseDatosClientes) {
+
+	        JLabel nombre =
+	            crearCelda(cliente[0]);
+
+	        JLabel telefono =
+	            crearCelda(cliente[1]);
+
+	        JLabel correo =
+	            crearCelda(cliente[2]);
+
+	        JLabel fecha =
+	            crearCelda(cliente[3]);
+
+	        JLabel articulos =
+	            crearCelda(cliente[4]);
+
+	        JLabel estado =
+	            crearCelda("ACTIVO");
+
+	        estado.setOpaque(true);
+
+	        estado.setBackground(
+	            Color.decode(cliente[5])
+	        );
+
+	        tabla.add(nombre);
+	        tabla.add(telefono);
+	        tabla.add(correo);
+	        tabla.add(fecha);
+	        tabla.add(articulos);
+	        tabla.add(estado);
+	    }
+
+	    return tabla;
+	}
+	private JLabel crearHeader(String texto) {
+
+	    JLabel label =
+	        new JLabel(
+	            texto,
+	            SwingConstants.CENTER
+	        );
+
+	    label.setFont(
+	        new Font(
+	            "Arial",
+	            Font.BOLD,
+	            14
+	        )
+	    );
+
+	    label.setBorder(
+	        BorderFactory.createLineBorder(
+	            Color.GRAY
+	        )
+	    );
+
+	    label.setOpaque(true);
+
+	    label.setBackground(
+	        new Color(230,230,230)
+	    );
+
+	    return label;
+	}
+	private JLabel crearCelda(String texto) {
+
+	    JLabel label =
+	        new JLabel(
+	            texto,
+	            SwingConstants.CENTER
+	        );
+
+	    label.setBorder(
+	        BorderFactory.createLineBorder(
+	            Color.LIGHT_GRAY
+	        )
+	    );
+
+	    return label;
+	}
+	private List<String[]> baseDatosClientes =
+		    new ArrayList<>();
+	
+	//TABLA ARTICULOS
+	private void cargarArticulos() {
+	
+	    try {
+	
+	        Connection conn =
+	            DriverManager.getConnection(
+	                "jdbc:mysql://localhost:3306/la_central_empeno",
+	                "root",
+	                ""
+	            );
+	
+	        String query =
+	            "SELECT "
+	            + "a.*, "
+	            + "c.nombres, "
+	            + "c.apellidos "
+	            + "FROM articulos a "
+	            + "INNER JOIN clientes c "
+	            + "ON a.id_cliente = c.id_cliente";
+	
+	        PreparedStatement ps =
+	            conn.prepareStatement(query);
+	
+	        ResultSet rs =
+	            ps.executeQuery();
+	
+	        baseDatosArticulos.clear();
+	
+	        while(rs.next()) {
+	
+	            String nombreArticulo =
+	                rs.getString("nombre_articulo");
+	
+	            String cliente =
+	                rs.getString("nombres")
+	                + " "
+	                + rs.getString("apellidos");
+	
+	            String categoria =
+	                rs.getString("categoria");
+	
+	            String monto =
+	                "$" + rs.getString("monto_prestado");
+	
+	            String fecha =
+	                rs.getString("fecha_empeno");
+	
+	            String estado =
+	                rs.getString("estado");
+	
+	            String colorFondo =
+	                "#FFF9C4";
+	
+	            String colorTexto =
+	                "#FBC02D";
+	
+	            if(estado.equals("RECUPERADO")) {
+	
+	                colorFondo = "#C8E6C9";
+	                colorTexto = "#388E3C";
+	            }
+	
+	            if(estado.equals("REMATADO")) {
+	
+	                colorFondo = "#FFCDD2";
+	                colorTexto = "#D32F2F";
+	            }
+	
+	            String valorEstimado =
+	                "$" + rs.getString("valor_estimado");
+	
+	            String fechaLimite =
+	                rs.getString("fecha_limite_pago");
+	
+	            String descripcion =
+	                rs.getString("descripcion");
+	
+	            baseDatosArticulos.add(
+	
+	                new String[] {
+	
+	                    nombreArticulo,
+	                    cliente,
+	                    categoria,
+	                    monto,
+	                    fecha,
+	                    estado,
+	                    colorFondo,
+	                    colorTexto,
+	                    valorEstimado,
+	                    fechaLimite,
+	                    descripcion
+	                }
+	            );
+	        }
+	
+	        conn.close();
+	
+	    } catch(Exception e) {
+	
+	        System.out.println(
+	            e.getMessage()
+	        );
+	    }
+	}
+	private JPanel crearTablaArticulos() {
+
+	    JPanel tabla =
+	        new JPanel();
+
+	    tabla.setLayout(
+	        new GridLayout(
+	            baseDatosArticulos.size() + 1,
+	            6
+	        )
+	    );
+
+	    // HEADERS
+
+	    tabla.add(crearHeader("ARTICULO"));
+	    tabla.add(crearHeader("CLIENTE"));
+	    tabla.add(crearHeader("CATEGORIA"));
+	    tabla.add(crearHeader("MONTO"));
+	    tabla.add(crearHeader("FECHA"));
+	    tabla.add(crearHeader("ESTADO"));
+
+	    // FILAS
+
+	    for(String[] articulo : baseDatosArticulos) {
+
+	        JLabel nombre =
+	            crearCelda(articulo[0]);
+
+	        JLabel cliente =
+	            crearCelda(articulo[1]);
+
+	        JLabel categoria =
+	            crearCelda(articulo[2]);
+
+	        JLabel monto =
+	            crearCelda(articulo[3]);
+
+	        JLabel fecha =
+	            crearCelda(articulo[4]);
+
+	        JLabel estado =
+	            crearCelda(articulo[5]);
+
+	        estado.setOpaque(true);
+
+	        estado.setBackground(
+	            Color.decode(articulo[6])
+	        );
+
+	        estado.setForeground(
+	            Color.decode(articulo[7])
+	        );
+
+	        tabla.add(nombre);
+	        tabla.add(cliente);
+	        tabla.add(categoria);
+	        tabla.add(monto);
+	        tabla.add(fecha);
+	        tabla.add(estado);
+	    }
+
+	    return tabla;
+	}
+	private List<String[]> baseDatosArticulos =
+		    new ArrayList<>();
+	//TABLA PAGOS
+	private void cargarPagos() {
+
+	    try {
+
+	        Connection conn =
+	            DriverManager.getConnection(
+	                "jdbc:mysql://localhost:3306/la_central_empeno",
+	                "root",
+	                ""
+	            );
+
+	        String query =
+	            "SELECT "
+	            + "p.*, "
+	            + "c.nombres, "
+	            + "c.apellidos, "
+	            + "a.nombre_articulo "
+	            + "FROM pagos p "
+	            + "INNER JOIN clientes c "
+	            + "ON p.id_cliente = c.id_cliente "
+	            + "INNER JOIN articulos a "
+	            + "ON p.id_articulo = a.id_articulo";
+
+	        PreparedStatement ps =
+	            conn.prepareStatement(query);
+
+	        ResultSet rs =
+	            ps.executeQuery();
+
+	        baseDatosPagos.clear();
+
+	        while(rs.next()) {
+
+	            String fecha =
+	                rs.getString("fecha_pago");
+
+	            String cliente =
+	                rs.getString("nombres")
+	                + " "
+	                + rs.getString("apellidos");
+
+	            String articulo =
+	                rs.getString("nombre_articulo");
+
+	            String monto =
+	                "$" + rs.getString("monto_abonado");
+
+	            String tipoPago =
+	                rs.getString("tipo_pago");
+
+	            String colorEliminar =
+	                "#FFCDD2";
+
+	            String colorEditar =
+	                "#AEE7B8";
+
+	            String colorDetalles =
+	                "#AEE7B8";
+
+	            baseDatosPagos.add(
+
+	                new String[] {
+
+	                    fecha,
+	                    cliente,
+	                    articulo,
+	                    monto,
+	                    tipoPago,
+	                    colorEliminar,
+	                    colorEditar,
+	                    colorDetalles
+	                }
+	            );
+	        }
+
+	        conn.close();
+
+	    } catch(Exception e) {
+
+	        System.out.println(
+	            e.getMessage()
+	        );
+	    }
+	}
+	private JPanel crearTablaPagos() {
+
+	    JPanel tabla =
+	        new JPanel();
+
+	    tabla.setLayout(
+	        new GridLayout(
+	            baseDatosPagos.size() + 1,
+	            5
+	        )
+	    );
+
+	    // HEADERS
+
+	    tabla.add(crearHeader("FECHA"));
+	    tabla.add(crearHeader("CLIENTE"));
+	    tabla.add(crearHeader("ARTICULO"));
+	    tabla.add(crearHeader("MONTO"));
+	    tabla.add(crearHeader("TIPO"));
+
+	    // FILAS
+
+	    for(String[] pago : baseDatosPagos) {
+
+	        JLabel fecha =
+	            crearCelda(pago[0]);
+
+	        JLabel cliente =
+	            crearCelda(pago[1]);
+
+	        JLabel articulo =
+	            crearCelda(pago[2]);
+
+	        JLabel monto =
+	            crearCelda(pago[3]);
+
+	        JLabel tipo =
+	            crearCelda(pago[4]);
+
+	        tabla.add(fecha);
+	        tabla.add(cliente);
+	        tabla.add(articulo);
+	        tabla.add(monto);
+	        tabla.add(tipo);
+	    }
+
+	    return tabla;
+	}
+	private List<String[]> baseDatosPagos =
+		    new ArrayList<>();
+	
     private JPanel panelTablaGlobal,panelTablaArticulos,panelTablaPagos;
     String[] clienteParaArticulo;
     
-	public HomeView() {
-		// TODO Auto-generated constructor stub
-	}
+    public HomeView() {
+
+        cargarClientes();
+
+        cargarArticulos();
+
+        cargarPagos();
+
+        setLayout(new BorderLayout());
+
+        panelTablaGlobal =
+            new JPanel(
+                new BorderLayout()
+            );
+
+        panelTablaArticulos =
+            new JPanel(
+                new BorderLayout()
+            );
+
+        panelTablaPagos =
+            new JPanel(
+                new BorderLayout()
+            );
+
+        panelTablaGlobal.add(
+            crearTablaClientes(),
+            BorderLayout.CENTER
+        );
+
+        panelTablaArticulos.add(
+            crearTablaArticulos(),
+            BorderLayout.CENTER
+        );
+
+        panelTablaPagos.add(
+            crearTablaPagos(),
+            BorderLayout.CENTER
+        );
+
+        add(panelTablaGlobal);
+
+        add(panelTablaArticulos);
+
+        add(panelTablaPagos);
+    }
 	
 	public void home()
 	{
