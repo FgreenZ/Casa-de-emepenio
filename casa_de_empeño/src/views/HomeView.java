@@ -100,6 +100,7 @@ public class HomeView extends JPanel
     private JPanel panelTablaGlobal,panelTablaArticulos,panelTablaPagos;
     String[] clienteParaArticulo;
     
+    JComboBox<String> comboCat, comboEstado;
 
     public HomeView() {
 
@@ -780,22 +781,57 @@ public class HomeView extends JPanel
         
         
 
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         // Combobox Estado
-        JComboBox<String> comboEstado = new JComboBox<>(new String[]{"Todos los estados", "Empeñados", "Recuperados", "Rematados"});
+        comboEstado = new JComboBox<>(new String[]{"Todos los estados", "EMPEÑADO", "Recuperados", "Rematados"});
         comboEstado.setBounds(290, 15, 260, 40);
         comboEstado.setBackground(Color.decode("#EAECEF"));
         comboEstado.setFont(new Font("Inter", Font.PLAIN, 12));
         comboEstado.setBorder(null);
-        panelFiltros.add(comboEstado);
-
+        comboEstado.setFocusable(false);
+        
         // Combobox Categoría
-        JComboBox<String> comboCat = new JComboBox<>(new String[]{"Todas las categorías", "Joyería", "Electrónica", "Otros"});
+        comboCat = new JComboBox<>(new String[]{"Todas las categorías", "Joyeria", "Electronica", "Otros"});
         comboCat.setBounds(570, 15, 260, 40);
         comboCat.setBackground(Color.decode("#EAECEF"));
         comboCat.setFont(new Font("Inter", Font.PLAIN, 12));
         comboCat.setBorder(null);
+        comboCat.setFocusable(false);
+
+        comboEstado.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                HomeView.this.renderizarTablaArticulos(panelTablaArticulos,"");
+            }
+        });
+        comboCat.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                HomeView.this.renderizarTablaArticulos(panelTablaArticulos,"");
+            }
+        });
+        panelFiltros.add(comboEstado);
         panelFiltros.add(comboCat);
 
+        
+        
+        
+        
+        
+        
+        
+        
+        
         // 9. Tarjetas de Resumen (KPIs)
         PanelRedondeado cardEmpenados = new PanelRedondeado(15, Color.WHITE);
         cardEmpenados.setLayout(null);
@@ -984,7 +1020,7 @@ public class HomeView extends JPanel
         lblEmail.setForeground(Color.GRAY);
         lblEmail.setBounds(580, 45, 130, 20);
         panelContenido.add(lblEmail);
-
+        
         PanelRedondeado btnCerrarSesion = new PanelRedondeado(10, Color.decode("#8AACED"));
         btnCerrarSesion.setLayout(null);
         btnCerrarSesion.setBounds(730, 25, 160, 40);
@@ -1552,7 +1588,7 @@ public class HomeView extends JPanel
         headerTabla.setLayout(null);
         headerTabla.setBackground(Color.decode("#F4F6F9"));
         headerTabla.setBounds(0, 0, 850, 40);
-        System.out.println("/////");
+        
         String[] columnas = {"ARTÍCULO", "CLIENTE", "CATEGORÍA", "MONTO PRESTADO", "FECHA LÍMITE", "ESTADO", "ACCIONES"};
         int[] posX = {20, 150, 300, 400, 520, 620, 720};
 
@@ -1564,12 +1600,11 @@ public class HomeView extends JPanel
         }
         panelTabla.add(headerTabla);
 
-        // 2. Filtramos y dibujamos los datos
         boolean hayResultados = false;
         int rowY = 50;
-
+        
         String busqueda = filtro.trim().toLowerCase();
-        // CUIDADO AQUÍ: Asegúrate de que coincida con el placeholder de tu JTextField en dashboardArticulos
+
         if (busqueda.equals("buscar artículo...") || busqueda.equals("busca por nombre, teléfono o correo...")) {
             busqueda = ""; 
         }
@@ -1602,13 +1637,17 @@ public class HomeView extends JPanel
             		));
             */
 
+            String filtroCat=comboCat.getSelectedItem().toString();
+            String filtroEstado=comboEstado.getSelectedItem().toString();
+            
+
+            
             // Filtro interactivo: Busca en Nombre de Artículo [0], Nombre de Cliente [1] y Categoría [2]
-            if (busqueda.isEmpty() || 
-                articulo[0].toLowerCase().contains(busqueda) || 
-                articulo[1].toLowerCase().contains(busqueda) || 
-                articulo[2].toLowerCase().contains(busqueda)) {
+            if (  filtroCat.equals("Todas las categorías")&&filtroEstado.equals("Todos los estados")||
+               (  filtroCat.equals("Todas las categorías")&&filtroEstado.equals(articulo[5].toString()))||
+               (  filtroCat.equals(articulo[2].toString())&&filtroEstado.equals("Todos los estados"))||
+               (  filtroCat.equals(articulo[2].toString()))&&(filtroEstado.equals(articulo[5].toString()))) {
                 
-                //panelTabla.setPreferredSize(new Dimension(panelTabla.getWidth(), rowY + 50));
                 hayResultados = true;
 
                 // Artículo [0]
