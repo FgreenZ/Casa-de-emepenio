@@ -9,24 +9,46 @@ import java.util.ArrayList;
 
 public class ClienteModel {
 
-    Connection conn;
+
+    // Login para la base de datos
+
+    private final String HOST = "sql.freedb.tech";
+    private final String PUERTO = "3306";
+    private final String BASE_DATOS = "freedb_RxbStPPZ";
+
+    // Usuario y contraseña de la base de datos
+    private final String USUARIO = "u_8ckZno";
+    private final String PASSWORD = "qwrKPTXQeICj";
+
+    private final String URL ="jdbc:mysql://" +HOST +":" +PUERTO +"/" +BASE_DATOS;
+
+
+    private Connection conn;
 
     public ClienteModel() {
 
         try {
 
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/la_central_empeno",
-                "root",
-                ""
+            Class.forName(
+                "com.mysql.cj.jdbc.Driver"
             );
 
-            System.out.println("Conexion exitosa");
+            conn =
+                DriverManager.getConnection(
+                    URL,
+                    USUARIO,
+                    PASSWORD
+                );
+
+            System.out.println(
+                "Conexion exitosa"
+            );
 
         } catch (Exception e) {
 
             System.out.println(
-                "Error: " + e.getMessage()
+                "Error: "
+                + e.getMessage()
             );
         }
     }
@@ -52,17 +74,29 @@ public class ClienteModel {
                 Cliente c =
                     new Cliente(
 
-                        rs.getInt("id_cliente"),
+                        rs.getInt(
+                            "id_cliente"
+                        ),
 
-                        rs.getString("nombres"),
+                        rs.getString(
+                            "nombres"
+                        ),
 
-                        rs.getString("apellidos"),
+                        rs.getString(
+                            "apellidos"
+                        ),
 
-                        rs.getString("telefono"),
+                        rs.getString(
+                            "telefono"
+                        ),
 
-                        rs.getString("correo"),
+                        rs.getString(
+                            "correo"
+                        ),
 
-                        rs.getString("direccion")
+                        rs.getString(
+                            "direccion"
+                        )
                     );
 
                 lista.add(c);
@@ -71,7 +105,8 @@ public class ClienteModel {
         } catch(Exception e) {
 
             System.out.println(
-                e.getMessage()
+                "Error al obtener clientes: "
+                + e.getMessage()
             );
         }
 
