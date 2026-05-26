@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
+import controllers.AuthController;
 import controllers.HomeController;
 import models.DataBaseModels;
 
@@ -484,12 +484,21 @@ public class HomeView extends JPanel
         PanelRedondeado btnCerrarSesion = new PanelRedondeado(10, Color.decode("#8AACED"));
         btnCerrarSesion.setLayout(null);
         btnCerrarSesion.setBounds(730, 25, 160, 40);
-        
+        btnCerrarSesion.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR)); 
         JLabel lblCerrarSesion = new JLabel("→]  Cerrar sesión", SwingConstants.CENTER);
         lblCerrarSesion.setFont(new Font("Inter", Font.PLAIN, 14));
         lblCerrarSesion.setBounds(0, 0, 160, 40);
         btnCerrarSesion.add(lblCerrarSesion);
         panelContenido.add(btnCerrarSesion);
+        btnCerrarSesion.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+            	 	
+            	ventana.dispose();
+            	AuthController x =new AuthController();
+            	
+            }
+        });
 
         // 7. Título y Subtítulo de Clientes
         JLabel lblTitulo = new JLabel("Clientes");
@@ -683,6 +692,7 @@ public class HomeView extends JPanel
         lblEmail.setBounds(580, 45, 130, 20);
         panelContenido.add(lblEmail);
 
+        /*
         PanelRedondeado btnCerrarSesion = new PanelRedondeado(10, Color.decode("#8AACED"));
         btnCerrarSesion.setLayout(null);
         btnCerrarSesion.setBounds(730, 25, 160, 40);
@@ -692,6 +702,27 @@ public class HomeView extends JPanel
         lblCerrarSesion.setBounds(0, 0, 160, 40);
         btnCerrarSesion.add(lblCerrarSesion);
         panelContenido.add(btnCerrarSesion);
+        */
+        ///
+        
+        PanelRedondeado btnCerrarSesion = new PanelRedondeado(10, Color.decode("#8AACED"));
+        btnCerrarSesion.setLayout(null);
+        btnCerrarSesion.setBounds(730, 25, 160, 40);
+        btnCerrarSesion.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR)); 
+        JLabel lblCerrarSesion = new JLabel("→]  Cerrar sesión", SwingConstants.CENTER);
+        lblCerrarSesion.setFont(new Font("Inter", Font.PLAIN, 14));
+        lblCerrarSesion.setBounds(0, 0, 160, 40);
+        btnCerrarSesion.add(lblCerrarSesion);
+        panelContenido.add(btnCerrarSesion);
+        btnCerrarSesion.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+            	 	
+            	ventana.dispose();
+            	AuthController x =new AuthController();
+            	
+            }
+        });
 
         // 7. Título y Subtítulo
         JLabel lblTitulo = new JLabel("Artículos");
@@ -957,12 +988,21 @@ public class HomeView extends JPanel
         PanelRedondeado btnCerrarSesion = new PanelRedondeado(10, Color.decode("#8AACED"));
         btnCerrarSesion.setLayout(null);
         btnCerrarSesion.setBounds(730, 25, 160, 40);
-        btnCerrarSesion.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnCerrarSesion.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR)); 
         JLabel lblCerrarSesion = new JLabel("→]  Cerrar sesión", SwingConstants.CENTER);
         lblCerrarSesion.setFont(new Font("Inter", Font.PLAIN, 14));
         lblCerrarSesion.setBounds(0, 0, 160, 40);
         btnCerrarSesion.add(lblCerrarSesion);
         panelContenido.add(btnCerrarSesion);
+        btnCerrarSesion.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+            	 	
+            	ventana.dispose();
+            	AuthController x =new AuthController();
+            	
+            }
+        });
 
         // 7. Título y Subtítulo
         JLabel lblTitulo = new JLabel("Pagos");
@@ -2668,14 +2708,5 @@ public class HomeView extends JPanel
 
         contenedor.add(tarjeta);
     }
-	
-	
-	
-	
-	
-	
-	
-	
-
 	
 }

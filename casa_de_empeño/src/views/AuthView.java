@@ -4,6 +4,9 @@ import java.awt.*;
 import models.AuthModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.LineBorder;
@@ -101,13 +104,27 @@ public class AuthView extends JFrame {
         txtPass= crearCampoTexto(cuadroLogin, "Contraseña", 350, 376, true);
         
         // Botón Ingresar
-        //PanelRedondeado panel = new PanelRedondeado(20, Color.decode("#FEE2E2"));
-        JButton btnIngresar = crearBotonPrincipal("INGRESAR", 460);
+        PanelRedondeado btnIngresar = new PanelRedondeado(15, Color.decode("#1E4992"));
+        JLabel ingresar=new JLabel("INGRESAR"){
+            @Override
+            public boolean contains(int x, int y) {
+                return false;
+            }
+        };
+        ingresar.setBounds(150, 450, 150, 50);
+        ingresar.setBackground(null);
+        ingresar.setOpaque(false); 
+        ingresar.setFocusable(false);
+        ingresar.setForeground(Color.WHITE);
+        ingresar.setFont(new Font("Inter", Font.PLAIN, 20));
+        btnIngresar.setBounds(50, 450, 300, 50);
+        //JButton btnIngresar = crearBotonPrincipal("INGRESAR", 460);
         ToastAlertaLogin ventanaEmergente =new ToastAlertaLogin(AuthView.this,"<html>Correo o contraseña incorrectos. Por<br>" +
         "favor, inténtalo de nuevo.</html>");
-        btnIngresar.setBorder(new RoundedBorder(10));
-        btnIngresar.addActionListener(e -> {
-
+        //btnIngresar.setBorder(new RoundedBorder(10));
+        btnIngresar.addMouseListener(new MouseAdapter() {
+        	@Override
+            public void mouseClicked(MouseEvent e) {
             String usuario =
                     txtUser.getText();
 
@@ -135,10 +152,9 @@ public class AuthView extends JFrame {
 
                 ventanaEmergente.dispose();
 
-                HomeView x =
-                        new HomeView();
+                HomeView x = new HomeView();
 
-                this.dispose();
+                dispose();
 
                 x.bienvenidoDashboard();
 
@@ -151,8 +167,24 @@ public class AuthView extends JFrame {
                 ventanaEmergente.setVisible(true);
 
             }
-
+        	}
         });
+        btnIngresar.setCursor(Cursor.getDefaultCursor()); // Cursor normal
+
+        btnIngresar.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                // Cambiar a mano (cursor de enlace)
+            	btnIngresar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                // Volver al cursor normal
+            	btnIngresar.setCursor(Cursor.getDefaultCursor());
+            }
+        });
+        cuadroLogin.add(ingresar);
         cuadroLogin.add(btnIngresar);
         
         // --- NUEVO: Botón para ir a Registro ---
