@@ -959,4 +959,87 @@ public class DataBaseModels {
 		        return false;
 		    }
 		}
+
+    // ===== CLASE DE ESTADÍSTICAS =====
+    public static class Estadisticas {
+        public int totalClientes;
+        public int articulosEmpenados;
+        public int articulosRecuperados;
+        public int articulosRematados;
+        public double totalPrestado;
+        public double totalRecuperado;
+    }
+
+    // ===== MÉTODO QUE CONSULTA LA BD Y DEVUELVE LAS ESTADÍSTICAS =====
+    public Estadisticas obtenerEstadisticas() {
+
+        Estadisticas stats = new Estadisticas();
+
+        try {
+
+            Connection conn = conectar();
+
+            // Total clientes
+            PreparedStatement psClientes =
+                conn.prepareStatement(
+                    "SELECT COUNT(*) AS total FROM clientes"
+                );
+            ResultSet rsClientes = psClientes.executeQuery();
+            if (rsClientes.next()) {
+                stats.totalClientes = rsClientes.getInt("total");
+            }
+
+            // Conteos por estado de artículos
+            PreparedStatement psArts =
+                conn.prepareStatement(
+                    "SELECT estado, COUNT(*) AS cnt "
+                    + "FROM articulos "
+                    + "GROUP BY estado"
+                );
+            ResultSet rsArts = psArts.executeQuery();
+            while (rsArts.next()) {
+                String estado = rsArts.getString("estado");
+                int cnt = rsArts.getInt("cnt");
+                if ("EMPEÑADO".equalsIgnoreCase(estado)) {
+                    stats.articulosEmpenados = cnt;
+                } else if ("RECUPERADO".equalsIgnoreCase(estado)) {
+                    stats.articulosRecuperados = cnt;
+                } else if ("REMATADO".equalsIgnoreCase(estado)) {
+                    stats.articulosRematados = cnt;
+                }
+            }
+
+            // Total prestado (suma de monto_prestado de todos los artículos)
+            PreparedStatement psPrestado =
+                conn.prepareStatement(
+                    "SELECT COALESCE(SUM(monto_prestado), 0) AS total "
+                    + "FROM articulos"
+                );
+            ResultSet rsPrestado = psPrestado.executeQuery();
+            if (rsPrestado.next()) {
+                stats.totalPrestado = rsPrestado.getDouble("total");
+            }
+
+            // Total recuperado (suma de montos abonados en pagos)
+            PreparedStatement psRecuperado =
+                conn.prepareStatement(
+                    "SELECT COALESCE(SUM(monto_abonado), 0) AS total "
+                    + "FROM pagos"
+                );
+            ResultSet rsRecuperado = psRecuperado.executeQuery();
+            if (rsRecuperado.next()) {
+                stats.totalRecuperado = rsRecuperado.getDouble("total");
+            }
+
+            conn.close();
+
+        } catch (Exception e) {
+            System.out.println(
+                "Error obteniendo estadísticas: "
+                + e.getMessage()
+            );
+        }
+
+        return stats;
+    }
 }

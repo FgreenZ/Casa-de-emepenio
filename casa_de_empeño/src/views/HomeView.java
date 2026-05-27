@@ -329,16 +329,19 @@ public class HomeView extends JPanel
         lblSubtitulo.setBounds(40, 90, 300, 20);
         panelContenido.add(lblSubtitulo);
 
-        // 8. Fila 1: Tarjetas de Indicadores (KPIs)
-        crearTarjetaKPI(panelContenido, "Total clientes", "3", "👥", Color.decode("#D2E6FF"), Color.decode("#3278FF"), 40, 140, 195, 100);
-        crearTarjetaKPI(panelContenido, "Artículos empeñados", "2", "📦", Color.decode("#F0D7FF"), Color.decode("#9632FF"), 255, 140, 195, 100);
-        crearTarjetaKPI(panelContenido, "Total prestado", "$8,500", "$", Color.decode("#FFB4B4"), Color.decode("#FF5050"), 470, 140, 195, 100);
-        crearTarjetaKPI(panelContenido, "Total recuperado", "$8,500", "$", Color.decode("#B4F0BE"), Color.decode("#32B450"), 685, 140, 195, 100);
+        // 8. Fila 1: Tarjetas de Indicadores (KPIs) - datos desde la BD
+        DataBaseModels.Estadisticas stats = tableDataBase.obtenerEstadisticas();
+        String fmtPrestado   = "$" + String.format("%,.0f", stats.totalPrestado);
+        String fmtRecuperado = "$" + String.format("%,.0f", stats.totalRecuperado);
+        crearTarjetaKPI(panelContenido, "Total clientes",      String.valueOf(stats.totalClientes),      "👥", Color.decode("#D2E6FF"), Color.decode("#3278FF"), 40,  140, 195, 100);
+        crearTarjetaKPI(panelContenido, "Artículos empeñados", String.valueOf(stats.articulosEmpenados), "📦", Color.decode("#F0D7FF"), Color.decode("#9632FF"), 255, 140, 195, 100);
+        crearTarjetaKPI(panelContenido, "Total prestado",      fmtPrestado,                             "$",  Color.decode("#FFB4B4"), Color.decode("#FF5050"), 470, 140, 195, 100);
+        crearTarjetaKPI(panelContenido, "Total recuperado",    fmtRecuperado,                           "$",  Color.decode("#B4F0BE"), Color.decode("#32B450"), 685, 140, 195, 100);
 
         // 9. Fila 2: Tarjetas de Estado de Artículos
-        crearTarjetaEstado(panelContenido, "Artículos empeñados", "2", "Artículos activos", Color.decode("#3C82F0"), 40, 270, 270, 120);
-        crearTarjetaEstado(panelContenido, "Artículos recuperados", "1", "Artículos devueltos", Color.decode("#28B450"), 330, 270, 270, 120);
-        crearTarjetaEstado(panelContenido, "Artículos rematados", "1", "Artículos vendidos", Color.decode("#F03C3C"), 620, 270, 270, 120);
+        crearTarjetaEstado(panelContenido, "Artículos empeñados",   String.valueOf(stats.articulosEmpenados),   "Artículos activos",   Color.decode("#3C82F0"), 40,  270, 270, 120);
+        crearTarjetaEstado(panelContenido, "Artículos recuperados", String.valueOf(stats.articulosRecuperados), "Artículos devueltos", Color.decode("#28B450"), 330, 270, 270, 120);
+        crearTarjetaEstado(panelContenido, "Artículos rematados",   String.valueOf(stats.articulosRematados),   "Artículos vendidos",  Color.decode("#F03C3C"), 620, 270, 270, 120);
 
         // 10. Fila 3: Alerta de Vencimiento
         PanelRedondeado panelAlerta = new PanelRedondeado(20, Color.WHITE);
@@ -845,7 +848,9 @@ public class HomeView extends JPanel
         
         
         
-        // 9. Tarjetas de Resumen (KPIs)
+        // 9. Tarjetas de Resumen (KPIs) - datos desde la BD
+        DataBaseModels.Estadisticas statsArts = tableDataBase.obtenerEstadisticas();
+
         PanelRedondeado cardEmpenados = new PanelRedondeado(15, Color.WHITE);
         cardEmpenados.setLayout(null);
         cardEmpenados.setBounds(40, 255, 260, 90);
@@ -853,7 +858,7 @@ public class HomeView extends JPanel
         lblTEmpenados.setFont(new Font("Inter", Font.PLAIN, 12));
         lblTEmpenados.setForeground(Color.GRAY);
         lblTEmpenados.setBounds(0, 15, 260, 20);
-        JLabel lblVEmpenados = new JLabel("2", SwingConstants.CENTER);
+        JLabel lblVEmpenados = new JLabel(String.valueOf(statsArts.articulosEmpenados), SwingConstants.CENTER);
         lblVEmpenados.setFont(new Font("Inter", Font.BOLD, 24));
         lblVEmpenados.setForeground(Color.decode("#3278FF"));
         lblVEmpenados.setBounds(0, 45, 260, 30);
@@ -868,7 +873,7 @@ public class HomeView extends JPanel
         lblTRecuperados.setFont(new Font("Inter", Font.PLAIN, 12));
         lblTRecuperados.setForeground(Color.GRAY);
         lblTRecuperados.setBounds(0, 15, 260, 20);
-        JLabel lblVRecuperados = new JLabel("1", SwingConstants.CENTER);
+        JLabel lblVRecuperados = new JLabel(String.valueOf(statsArts.articulosRecuperados), SwingConstants.CENTER);
         lblVRecuperados.setFont(new Font("Inter", Font.BOLD, 24));
         lblVRecuperados.setForeground(Color.decode("#28B450"));
         lblVRecuperados.setBounds(0, 45, 260, 30);
@@ -883,7 +888,7 @@ public class HomeView extends JPanel
         lblTRematados.setFont(new Font("Inter", Font.PLAIN, 12));
         lblTRematados.setForeground(Color.GRAY);
         lblTRematados.setBounds(0, 15, 260, 20);
-        JLabel lblVRematados = new JLabel("1", SwingConstants.CENTER);
+        JLabel lblVRematados = new JLabel(String.valueOf(statsArts.articulosRematados), SwingConstants.CENTER);
         lblVRematados.setFont(new Font("Inter", Font.BOLD, 24));
         lblVRematados.setForeground(Color.decode("#F03C3C"));
         lblVRematados.setBounds(0, 45, 260, 30);
@@ -1112,7 +1117,10 @@ public class HomeView extends JPanel
 
         
 
-        // 9. Tarjetas de Resumen (KPIs)
+        // 9. Tarjetas de Resumen (KPIs) - datos desde la BD
+        DataBaseModels.Estadisticas statsPagos = tableDataBase.obtenerEstadisticas();
+        String fmtRecuperadoPagos = "$" + String.format("%,.0f", statsPagos.totalRecuperado);
+
         PanelRedondeado cardEmpenados = new PanelRedondeado(15, Color.WHITE);
         cardEmpenados.setLayout(null);
         cardEmpenados.setBounds(40, 255, 260, 120);
@@ -1120,7 +1128,7 @@ public class HomeView extends JPanel
         lblTEmpenados.setFont(new Font("Inter", Font.PLAIN, 12));
         lblTEmpenados.setForeground(Color.GRAY);
         lblTEmpenados.setBounds(0, 15, 260, 20);
-        JLabel lblVEmpenados = new JLabel("2", SwingConstants.CENTER);
+        JLabel lblVEmpenados = new JLabel(String.valueOf(statsPagos.articulosEmpenados), SwingConstants.CENTER);
         lblVEmpenados.setFont(new Font("Inter", Font.BOLD, 24));
         lblVEmpenados.setForeground(Color.decode("#3278FF"));
         lblVEmpenados.setBounds(0, 45, 260, 30);
@@ -1135,7 +1143,7 @@ public class HomeView extends JPanel
         lblTRecuperados.setFont(new Font("Inter", Font.PLAIN, 12));
         lblTRecuperados.setForeground(Color.GRAY);
         lblTRecuperados.setBounds(0, 15, 260, 20);
-        JLabel lblVRecuperados = new JLabel("$8850", SwingConstants.CENTER);
+        JLabel lblVRecuperados = new JLabel(fmtRecuperadoPagos, SwingConstants.CENTER);
         lblVRecuperados.setFont(new Font("Inter", Font.BOLD, 28));
         lblVRecuperados.setForeground(Color.decode("#28B450"));
         lblVRecuperados.setBounds(0, 45, 260, 30);
@@ -1150,7 +1158,7 @@ public class HomeView extends JPanel
         lblTRematados.setFont(new Font("Inter", Font.PLAIN, 12));
         lblTRematados.setForeground(Color.GRAY);
         lblTRematados.setBounds(0, 15, 260, 20);
-        JLabel lblVRematados = new JLabel("1", SwingConstants.CENTER);
+        JLabel lblVRematados = new JLabel(String.valueOf(statsPagos.articulosRematados), SwingConstants.CENTER);
         lblVRematados.setFont(new Font("Inter", Font.BOLD, 24));
         lblVRematados.setForeground(Color.decode("#F03C3C"));
         lblVRematados.setBounds(0, 45, 260, 30);
