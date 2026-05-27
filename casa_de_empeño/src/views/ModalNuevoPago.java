@@ -18,7 +18,7 @@ public class ModalNuevoPago extends JDialog {
     private HomeView home;
 
     private JComboBox<ComboItem> cbCliente;
-    private JComboBox<String> cbArticulo;
+    private JComboBox<ComboItem> cbArticulo;
     private JComboBox cbTipoPago;
 
     private JTextField txtNombre;
@@ -88,22 +88,16 @@ public class ModalNuevoPago extends JDialog {
         }
     }
 
-    private void cargarArticulosPorCliente(
-        int idCliente
-    ) {
+    private void cargarArticulosPorCliente(int idCliente) {
 
         cbArticulo.removeAllItems();
 
         List<ComboItem> articulos =
-            db.obtenerArticulosPorCliente(
-                idCliente
-            );
+            db.obtenerArticulosPorCliente(idCliente);
 
         for (ComboItem articulo : articulos) {
 
-            cbArticulo.addItem(
-                articulo.getTexto()
-            );
+            cbArticulo.addItem(articulo);
         }
     }
 
@@ -504,7 +498,149 @@ public class ModalNuevoPago extends JDialog {
         );
 
         panelFondo.add(btnCrear);
+        btnCrear.add(
+        	    lblCrear,
+        	    BorderLayout.CENTER
+        	);
 
+        	panelFondo.add(btnCrear);
+
+
+        	
+        	btnCrear.addMouseListener(new MouseAdapter() {
+
+        	    @Override
+        	    public void mouseClicked(MouseEvent e) {
+
+        	        try {
+
+        	            ComboItem clienteSeleccionado =
+        	                (ComboItem) cbCliente.getSelectedItem();
+
+        	            ComboItem articuloSeleccionado =
+        	                (ComboItem) cbArticulo.getSelectedItem();
+
+        	            if(clienteSeleccionado == null
+        	                || articuloSeleccionado == null) {
+
+        	                JOptionPane.showMessageDialog(
+        	                    null,
+        	                    "Completa todos los campos"
+        	                );
+
+        	                return;
+        	            }
+
+        	            int idCliente =
+        	                clienteSeleccionado.getId();
+
+        	            int idArticulo =
+        	                articuloSeleccionado.getId();
+
+        	            // TEMPORAL
+        	            int idUsuario = 1;
+
+        	            String tipoPago =
+        	                cbTipoPago
+        	                .getSelectedItem()
+        	                .toString();
+
+        	            String fechaTexto =
+        	                txtFechaEmpeno
+        	                .getText()
+        	                .trim();
+
+        	            String fechaPago =
+        	                db.convertirFecha(
+        	                    fechaTexto
+        	                );
+
+        	            String montoTexto =
+        	                info[0]
+        	                .getText()
+        	                .trim();
+
+        	            if(fechaTexto.isEmpty()
+        	                || montoTexto.isEmpty()) {
+
+        	                JOptionPane.showMessageDialog(
+        	                    null,
+        	                    "Completa todos los campos"
+        	                );
+
+        	                return;
+        	            }
+
+        	            double monto =
+        	                Double.parseDouble(
+        	                    montoTexto
+        	                );
+
+        	            boolean ok =
+        	                db.registrarPago(
+
+        	                    idArticulo,
+        	                    idCliente,
+        	                    idUsuario,
+        	                    fechaPago,
+        	                    monto,
+        	                    0,
+        	                    tipoPago,
+        	                    0
+        	                );
+
+        	            if(ok) {
+
+        	                JOptionPane.showMessageDialog(
+        	                    null,
+        	                    "Pago registrado correctamente"
+        	                );
+
+        	                home.dashboardPagos();
+
+        	                dispose();
+        	            }
+        	            else {
+
+        	                JOptionPane.showMessageDialog(
+        	                    null,
+        	                    "No se pudo registrar el pago"
+        	                );
+        	            }
+
+        	        }
+        	        catch(NumberFormatException ex) {
+
+        	            JOptionPane.showMessageDialog(
+        	                null,
+        	                "El monto debe ser numérico"
+        	            );
+        	        }
+        	        catch(Exception ex) {
+
+        	            ex.printStackTrace();
+
+        	            JOptionPane.showMessageDialog(
+        	                null,
+        	                "Error: " + ex.getMessage()
+        	            );
+        	        }
+        	    }
+        	});
+        	addMouseListener(
+        	    new MouseAdapter() {
+
+        	        @Override
+        	        public void mouseClicked(
+        	            MouseEvent e
+        	        ) {
+
+        	            dispose();
+        	        }
+        	    }
+        	);
+
+        	add(panelFondo);
         addMouseListener(
             new MouseAdapter() {
 
@@ -517,13 +653,13 @@ public class ModalNuevoPago extends JDialog {
                 }
             }
         );
-
+        
         add(panelFondo);
+        
     }
+    
 
-    // ==========================
     // MÉTODOS AUXILIARES
-    // ==========================
 
     private JTextField crearInputConLabel(
         JPanel contenedor,

@@ -568,7 +568,7 @@ public class DataBaseModels {
 
         return label;
     }
-    private String convertirFecha(
+    public String convertirFecha(
     	    String fecha
     	){
 
@@ -747,216 +747,7 @@ public class DataBaseModels {
 
     	    return false;
     	}
-	public boolean agregarPago(
-	
-	    String cliente,
-	    String articulo,
-	    String fechaPago,
-	    String montoAbonado,
-	    String tipoPago,
-	    String interes
-	
-	){
-	
-	    Connection conn = null;
-	
-	    try{
-	
-	        conn = conectar();
-	
-	        // OBTENER ID CLIENTE
-	
-	        String queryCliente =
-	            "SELECT id_cliente "
-	            + "FROM clientes "
-	            + "WHERE CONCAT(nombres,' ',apellidos)=?";
-	
-	        PreparedStatement psCliente =
-	            conn.prepareStatement(queryCliente);
-	
-	        psCliente.setString(1, cliente);
-	
-	        ResultSet rsCliente =
-	            psCliente.executeQuery();
-	
-	        if(!rsCliente.next()){
-	
-	            conn.close();
-	            return false;
-	        }
-	
-	        int idCliente =
-	            rsCliente.getInt("id_cliente");
-	
-	        // OBTENER ARTICULO
-	
-	        String queryArticulo =
-	            "SELECT id_articulo, monto_prestado "
-	            + "FROM articulos "
-	            + "WHERE nombre_articulo=?";
-	
-	        PreparedStatement psArticulo =
-	            conn.prepareStatement(queryArticulo);
-	
-	        psArticulo.setString(1, articulo);
-	
-	        ResultSet rsArticulo =
-	            psArticulo.executeQuery();
-	
-	        if(!rsArticulo.next()){
-	
-	            conn.close();
-	            return false;
-	        }
-	
-	        int idArticulo =
-	            rsArticulo.getInt("id_articulo");
-	
-	        double montoPrestado =
-	            rsArticulo.getDouble("monto_prestado");
-	
-	        // CALCULAR TOTAL ABONADO
-	
-	        String totalQuery =
-	            "SELECT IFNULL(SUM(monto_abonado),0) AS total "
-	            + "FROM pagos "
-	            + "WHERE id_articulo=?";
-	
-	        PreparedStatement psTotal =
-	            conn.prepareStatement(totalQuery);
-	
-	        psTotal.setInt(1, idArticulo);
-	
-	        ResultSet rsTotal =
-	            psTotal.executeQuery();
-	
-	        double totalAbonado = 0;
-	
-	        if(rsTotal.next()){
-	
-	            totalAbonado =
-	                rsTotal.getDouble("total");
-	        }
-	
-	        // CALCULAR SALDO
-	
-	        double monto =
-	            Double.parseDouble(
-	                montoAbonado
-	                .replace("$","")
-	                .replace(",","")
-	                .trim()
-	            );
-	
-	        double saldoActual =
-	            montoPrestado - totalAbonado;
-	
-	        double nuevoSaldo =
-	            saldoActual - monto;
-	
-	        if(nuevoSaldo < 0){
-	            nuevoSaldo = 0;
-	        }
-	
-	        // INTERES
-	
-	        double interesGenerado = 0;
-	
-	        try{
-	
-	            interesGenerado =
-	                Double.parseDouble(
-	                    interes
-	                    .replace("$","")
-	                    .replace(",","")
-	                    .trim()
-	                );
-	
-	        }catch(Exception e){
-	
-	            interesGenerado = 0;
-	        }
-	
-	        // INSERTAR PAGO
-	
-	        String insertPago =
-	            "INSERT INTO pagos("
-	            + "id_articulo,"
-	            + "id_cliente,"
-	            + "id_usuario,"
-	            + "fecha_pago,"
-	            + "monto_abonado,"
-	            + "monto_restante,"
-	            + "tipo_pago,"
-	            + "interes_generado"
-	            + ") VALUES(?,?,?,?,?,?,?,?)";
-	
-	        PreparedStatement psPago =
-	            conn.prepareStatement(insertPago);
-	
-	        psPago.setInt(1, idArticulo);
-	
-	        psPago.setInt(2, idCliente);
-	
-	        // USUARIO TEMPORAL
-	        psPago.setInt(3, 1);
-	
-	        psPago.setDate(
-	            4,
-	            java.sql.Date.valueOf(
-	                convertirFecha(fechaPago)
-	            )
-	        );
-	
-	        psPago.setDouble(5, monto);
-	
-	        psPago.setDouble(6, nuevoSaldo);
-	
-	        psPago.setString(
-	            7,
-	            tipoPago.toUpperCase()
-	        );
-	
-	        psPago.setDouble(
-	            8,
-	            interesGenerado
-	        );
-	
-	        boolean pagoInsertado =
-	            psPago.executeUpdate() > 0;
-	
-	        // ACTUALIZAR ESTADO
-	
-	        if(nuevoSaldo <= 0){
-	
-	            String updateEstado =
-	                "UPDATE articulos "
-	                + "SET estado='RECUPERADO' "
-	                + "WHERE id_articulo=?";
-	
-	            PreparedStatement psEstado =
-	                conn.prepareStatement(updateEstado);
-	
-	            psEstado.setInt(1, idArticulo);
-	
-	            psEstado.executeUpdate();
-	        }
-	
-	        conn.close();
-	
-	        return pagoInsertado;
-	
-	    }
-	    catch(Exception e){
-	
-	        System.out.println(
-	            "Error pago: "
-	            + e.getMessage()
-	        );
-	    }
-	
-	    return false;
-	}
+
 	public List<ComboItem> obtenerArticulosPorCliente(
 		    int idCliente
 		) {
@@ -1008,5 +799,164 @@ public class DataBaseModels {
 		    }
 
 		    return articulos;
+	}
+	public boolean registrarPago(
+
+		    int idArticulo,
+		    int idCliente,
+		    int idUsuario,
+		    String fechaPago,
+		    double montoAbonado,
+		    double montoRestante,
+		    String tipoPago,
+		    double interesGenerado
+
+		) {
+
+		    try {
+
+		        Connection conn = conectar();
+
+		        // OBTENER MONTO PRESTADO
+
+		        String queryPrestamo =
+
+		            "SELECT monto_prestado "
+		            + "FROM articulos "
+		            + "WHERE id_articulo=?";
+
+		        PreparedStatement psPrestamo =
+		            conn.prepareStatement(queryPrestamo);
+
+		        psPrestamo.setInt(1, idArticulo);
+
+		        ResultSet rsPrestamo =
+		            psPrestamo.executeQuery();
+
+		        double montoPrestado = 0;
+
+		        if(rsPrestamo.next()) {
+
+		            montoPrestado =
+		                rsPrestamo.getDouble(
+		                    "monto_prestado"
+		                );
+		        }
+
+		        // SUMAR PAGOS ANTERIORES
+
+		        String queryPagos =
+
+		            "SELECT SUM(monto_abonado) AS total "
+		            + "FROM pagos "
+		            + "WHERE id_articulo=?";
+
+		        PreparedStatement psPagos =
+		            conn.prepareStatement(queryPagos);
+
+		        psPagos.setInt(1, idArticulo);
+
+		        ResultSet rsPagos =
+		            psPagos.executeQuery();
+
+		        double totalPagado = 0;
+
+		        if(rsPagos.next()) {
+
+		            totalPagado =
+		                rsPagos.getDouble(
+		                    "total"
+		                );
+		        }
+
+		        // CALCULAR SALDO RESTANTE
+
+		        montoRestante =
+
+		            montoPrestado
+		            - totalPagado
+		            - montoAbonado;
+
+		        // evitar negativos
+		        if(montoRestante < 0) {
+
+		            montoRestante = 0;
+		        }
+
+		        // CALCULAR INTERES
+
+		        interesGenerado =
+
+		            montoRestante * 0.10;
+
+		        // INSERTAR PAGO
+
+		        String query =
+
+		            "INSERT INTO pagos "
+		            + "("
+		            + "id_articulo,"
+		            + "id_cliente,"
+		            + "id_usuario,"
+		            + "fecha_pago,"
+		            + "monto_abonado,"
+		            + "monto_restante,"
+		            + "tipo_pago,"
+		            + "interes_generado"
+		            + ") "
+		            + "VALUES(?,?,?,?,?,?,?,?)";
+
+		        PreparedStatement ps =
+		            conn.prepareStatement(query);
+
+		        ps.setInt(1, idArticulo);
+
+		        ps.setInt(2, idCliente);
+
+		        ps.setInt(3, idUsuario);
+
+		        ps.setString(4, fechaPago);
+
+		        ps.setDouble(5, montoAbonado);
+
+		        ps.setDouble(6, montoRestante);
+
+		        ps.setString(7, tipoPago);
+
+		        ps.setDouble(8, interesGenerado);
+
+		        ps.executeUpdate();
+
+		        // CAMBIAR ESTADO A RECUPERADO
+
+		        if(montoRestante <= 0) {
+
+		            String update =
+
+		                "UPDATE articulos "
+		                + "SET estado='RECUPERADO' "
+		                + "WHERE id_articulo=?";
+
+		            PreparedStatement psUpdate =
+		                conn.prepareStatement(update);
+
+		            psUpdate.setInt(1, idArticulo);
+
+		            psUpdate.executeUpdate();
+		        }
+
+		        conn.close();
+
+		        return true;
+
+		    } catch(Exception e) {
+
+		        System.out.println(
+		            "Error registrando pago: "
+		            + e.getMessage()
+		        );
+
+		        return false;
+		    }
 		}
 }
