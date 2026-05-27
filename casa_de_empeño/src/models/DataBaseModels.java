@@ -47,7 +47,7 @@ public class DataBaseModels {
     }
 
 
-    private Connection conectar() throws Exception {
+    public Connection conectar() throws Exception {
 
         Class.forName("com.mysql.cj.jdbc.Driver");
 
@@ -100,16 +100,16 @@ public class DataBaseModels {
                     "#AEE7B8";
 
                 baseDatosClientes.add(
-                    new String[] {
-
-                        nombreCompleto,
-                        telefono,
-                        correo,
-                        fecha,
-                        cantidadArticulos,
-                        color
-                    }
-                );
+                	    new String[] {
+                	        nombreCompleto,
+                	        telefono,
+                	        correo,
+                	        fecha,
+                	        cantidadArticulos,
+                	        color,
+                	        rs.getString("id_cliente")
+                	    }
+                	);
             }
 
             conn.close();
@@ -160,7 +160,7 @@ public class DataBaseModels {
                 crearCelda(cliente[4]);
 
             JLabel estado =
-                crearCelda("ACTIVO");
+                crearCelda("IVO");
 
             estado.setOpaque(true);
 

@@ -113,6 +113,25 @@
 	
 	        return lista;
 	    }
+	    public String convertirFecha(
+	    	    String fecha
+	    	){
+
+	    	    if(fecha.contains("-")){
+
+	    	        return fecha;
+
+	    	    }
+
+	    	    String[] partes =
+	    	        fecha.split("/");
+
+	    	    return partes[2]
+	    	        + "-"
+	    	        + partes[1]
+	    	        + "-"
+	    	        + partes[0];
+	    	}
 	    public boolean agregarCliente(
 	    	    String nombreCompleto,
 	    	    String telefono,
@@ -145,19 +164,7 @@
 	    	        ps.setString(2, apellidos);
 	    	        ps.setString(3, telefono);
 	    	        ps.setString(4, correo);
-	    	        LocalDate fechaFormateada =
-	    	        	    LocalDate.parse(
-	    	        	        fecha,
-	    	        	        DateTimeFormatter.ofPattern(
-	    	        	            "dd/MM/yyyy"
-	    	        	        )
-	    	        	    );
-	
-	    	        	ps.setDate(
-	    	        	    5,
-	    	        	    java.sql.Date.valueOf(
-	    	        	        fechaFormateada
-	    	        	    )
+	    	        ps.setString(5,convertirFecha(fecha)
 	    	        	);
 	    	        return ps.executeUpdate() > 0;
 	
@@ -171,4 +178,62 @@
 	    	        return false;
 	    	    }
 	    	}
+	    public boolean actualizarCliente(
+	    	    int idCliente,
+	    	    String nombreCompleto,
+	    	    String telefono,
+	    	    String correo,
+	    	    String fecha
+	    	) {
+
+	    	    try {
+
+	    	        String[] partes =
+	    	            nombreCompleto.trim().split("\\s+", 2);
+
+	    	        String nombres =
+	    	            partes[0];
+
+	    	        String apellidos =
+	    	            partes.length > 1
+	    	            ? partes[1]
+	    	            : "";
+
+	    	        String query =
+	    	            "UPDATE clientes "
+	    	            + "SET nombres = ?, "
+	    	            + "apellidos = ?, "
+	    	            + "telefono = ?, "
+	    	            + "correo = ?, "
+	    	            + "fecha_registro = ? "
+	    	            + "WHERE id_cliente = ?";
+
+	    	        PreparedStatement ps =
+	    	            conn.prepareStatement(query);
+
+	    	        ps.setString(1, nombres);
+	    	        ps.setString(2, apellidos);
+	    	        ps.setString(3, telefono);
+	    	        ps.setString(4, correo);
+
+	    	       
+	    	        ps.setString(
+	    	        		5,convertirFecha(fecha)
+	    	        );
+
+	    	        ps.setInt(6, idCliente);
+
+	    	        return ps.executeUpdate() > 0;
+
+	    	    } catch(Exception e) {
+
+	    	        System.out.println(
+	    	            "Error actualizando cliente: "
+	    	            + e.getMessage()
+	    	        );
+
+	    	        return false;
+	    	    }
+	    	}
 	}
+	

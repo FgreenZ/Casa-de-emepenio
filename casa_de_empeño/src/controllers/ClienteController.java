@@ -33,4 +33,20 @@ public class ClienteController {
     	        fecha
     	    );
     	}
+    public boolean actualizarCliente(
+    	    int idCliente,
+    	    String nombre,
+    	    String telefono,
+    	    String correo,
+    	    String fecha
+    	) {
+
+    	    return model.actualizarCliente(
+    	        idCliente,
+    	        nombre,
+    	        telefono,
+    	        correo,
+    	        fecha
+    	    );
+    	}
 }

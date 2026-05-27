@@ -1224,22 +1224,58 @@ public class HomeView extends JPanel
     	        );
     	    }
     	}
-    public void actualizarCliente(int index, String nombre, String telefono, String correo, String fecha) {
-        // Verificamos que el índice sea válido
-        if (index >= 0 && index < baseDatosClientes.size()) {
-            String[] cliente = baseDatosClientes.get(index);
-            // Actualizamos los datos
-            cliente[0] = nombre;
-            cliente[1] = telefono;
-            cliente[2] = correo;
-            cliente[3] = fecha;
-            
-            // Refrescamos la tabla
-            if (panelTablaGlobal != null) {
-                renderizarTabla(panelTablaGlobal, "");
-            }
-        }
-    }
+    public void actualizarCliente(
+    	    int index,
+    	    String nombre,
+    	    String telefono,
+    	    String correo,
+    	    String fecha
+    	) {
+
+    	    if(index >= 0 && index < baseDatosClientes.size()) {
+
+    	        String[] cliente =
+    	            baseDatosClientes.get(index);
+
+    	 
+    	        int idCliente =
+    	            Integer.parseInt(cliente[6]);
+
+    	        ClienteController controller =
+    	            new ClienteController();
+
+    	        boolean actualizado =
+    	            controller.actualizarCliente(
+    	                idCliente,
+    	                nombre,
+    	                telefono,
+    	                correo,
+    	                fecha
+    	            );
+
+    	        if(actualizado) {
+
+    	            cliente[0] = nombre;
+    	            cliente[1] = telefono;
+    	            cliente[2] = correo;
+    	            cliente[3] = fecha;
+
+    	            if(panelTablaGlobal != null) {
+    	                renderizarTabla(panelTablaGlobal, "");
+    	            }
+
+    	            System.out.println(
+    	                "Cliente actualizado correctamente"
+    	            );
+
+    	        } else {
+
+    	            System.out.println(
+    	                "No se pudo actualizar el cliente"
+    	            );
+    	        }
+    	    }
+    	}
     
     private void configurarBusquedaInteractiva(JTextField txtBusqueda, JFrame ventana, JPanel panelTabla) {
         JPopupMenu popupSugerencias = new JPopupMenu();
