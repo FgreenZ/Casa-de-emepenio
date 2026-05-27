@@ -77,4 +77,93 @@ public class AuthModel {
 
         return false;
     }
+    public boolean crearCuenta(
+
+    	    String usuario,
+    	    String correo,
+    	    String contrasena,
+    	    String rol
+
+    	){
+
+    	    String verificar =
+    	        "SELECT * FROM usuarios "
+    	        + "WHERE nombre_usuario = ? "
+    	        + "OR correo = ?";
+
+    	    String insertar =
+    	        "INSERT INTO usuarios "
+    	        + "(nombre_usuario, correo, contrasena, rol) "
+    	        + "VALUES (?, ?, ?, ?)";
+
+    	    Connection conn = null;
+
+    	    try{
+
+    	        Class.forName(
+    	            "com.mysql.cj.jdbc.Driver"
+    	        );
+
+    	        conn =
+    	            DriverManager.getConnection(
+    	                URL,
+    	                USUARIO,
+    	                PASSWORD
+    	            );
+
+    	        PreparedStatement check =
+    	            conn.prepareStatement(
+    	                verificar
+    	            );
+
+    	        check.setString(1, usuario);
+    	        check.setString(2, correo);
+
+    	        ResultSet rs =
+    	            check.executeQuery();
+
+    	        if(rs.next()){
+
+    	            rs.close();
+    	            check.close();
+    	            conn.close();
+
+    	            System.out.println(
+    	                "Usuario ya existe."
+    	            );
+
+    	            return false;
+    	        }
+
+    	        PreparedStatement ps =
+    	            conn.prepareStatement(
+    	                insertar
+    	            );
+
+    	        ps.setString(1, usuario);
+    	        ps.setString(2, correo);
+    	        ps.setString(3, contrasena);
+    	        ps.setString(4, rol);
+
+    	        boolean exito =
+    	            ps.executeUpdate() > 0;
+
+    	        ps.close();
+    	        conn.close();
+
+    	        return exito;
+
+    	    }
+    	    catch(Exception e){
+
+    	        System.out.println(
+    	            "Error creando cuenta: "
+    	            + e.getMessage()
+    	        );
+
+    	    }
+
+    	    return false;
+    	}
+    
 }

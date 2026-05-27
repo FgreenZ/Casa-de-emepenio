@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -178,7 +179,55 @@ public class DataBaseModels {
     }
 
     // TABLA ARTICULOS
+    public List<String> obtenerClientes(){
 
+        List<String> clientes =
+            new ArrayList<>();
+
+        try{
+
+            Connection conn =
+                conectar();
+
+            String query =
+                "SELECT nombres, apellidos "
+                + "FROM clientes";
+
+            PreparedStatement ps =
+                conn.prepareStatement(
+                    query
+                );
+
+            ResultSet rs =
+                ps.executeQuery();
+
+            while(rs.next()){
+
+                clientes.add(
+
+                    rs.getString("nombres")
+
+                    + " "
+
+                    +
+
+                    rs.getString("apellidos")
+
+                );
+
+            }
+
+            conn.close();
+
+        }
+        catch(Exception e){
+
+            e.printStackTrace();
+
+        }
+
+        return clientes;
+    }
     public void cargarArticulos() {
 
         try {
@@ -518,4 +567,438 @@ public class DataBaseModels {
 
         return label;
     }
+    private String convertirFecha(
+    	    String fecha
+    	){
+
+    	    String[] partes =
+    	        fecha.split("/");
+
+    	    return partes[2]
+    	        + "-"
+    	        + partes[1]
+    	        + "-"
+    	        + partes[0];
+    	}
+    public boolean agregarArticulo(
+
+    	    String cliente,
+    	    String nombreArticulo,
+    	    String categoria,
+    	    String montoPrestado,
+    	    String fechaLimite,
+    	    String estado,
+    	    String valorEstimado,
+    	    String fechaEmpeno,
+    	    String descripcion
+
+    	){
+
+    	    Connection conn = null;
+
+    	    try{
+
+    	        conn =
+    	            DriverManager.getConnection(
+    	                URL,
+    	                USUARIO,
+    	                PASSWORD
+    	            );
+
+    	        String buscarCliente =
+    	            "SELECT id_cliente "
+    	            + "FROM clientes "
+    	            + "WHERE CONCAT(nombres,' ',apellidos)=?";
+
+    	        PreparedStatement psBuscar =
+    	            conn.prepareStatement(
+    	                buscarCliente
+    	            );
+
+    	        psBuscar.setString(
+    	            1,
+    	            cliente
+    	        );
+
+    	        ResultSet rs =
+    	            psBuscar.executeQuery();
+
+    	        if(!rs.next()){
+
+    	            conn.close();
+
+    	            return false;
+    	        }
+
+    	        int idCliente =
+    	            rs.getInt(
+    	                "id_cliente"
+    	            );
+
+    	        int idUsuario = 1;
+
+    	        double valor =
+    	            Double.parseDouble(
+    	                valorEstimado
+    	                .replace("$","")
+    	                .replace(",","")
+    	                .trim()
+    	            );
+
+    	        double monto =
+    	            Double.parseDouble(
+    	                montoPrestado
+    	                .replace("$","")
+    	                .replace(",","")
+    	                .trim()
+    	            );
+
+    	        String query =
+    	            "INSERT INTO articulos("
+    	            + "id_cliente,"
+    	            + "id_usuario,"
+    	            + "nombre_articulo,"
+    	            + "categoria,"
+    	            + "descripcion,"
+    	            + "valor_estimado,"
+    	            + "monto_prestado,"
+    	            + "fecha_empeno,"
+    	            + "fecha_limite_pago,"
+    	            + "estado"
+    	            + ") VALUES(?,?,?,?,?,?,?,?,?,?)";
+
+    	        PreparedStatement ps =
+    	            conn.prepareStatement(
+    	                query
+    	            );
+
+    	        ps.setInt(1,idCliente);
+
+    	        ps.setInt(
+    	            2,
+    	            idUsuario
+    	        );
+
+    	        ps.setString(
+    	            3,
+    	            nombreArticulo
+    	        );
+
+    	        ps.setString(
+    	            4,
+    	            categoria
+    	        );
+
+    	        ps.setString(
+    	            5,
+    	            descripcion
+    	        );
+
+    	        ps.setDouble(
+    	            6,
+    	            valor
+    	        );
+
+    	        ps.setDouble(
+    	            7,
+    	            monto
+    	        );
+
+    	        ps.setDate(
+    	            8,
+    	            java.sql.Date.valueOf(
+    	                convertirFecha(
+    	                    fechaEmpeno
+    	                )
+    	            )
+    	        );
+
+    	        ps.setDate(
+    	            9,
+    	            java.sql.Date.valueOf(
+    	                convertirFecha(
+    	                    fechaLimite
+    	                )
+    	            )
+    	        );
+
+    	        ps.setString(
+    	            10,
+    	            estado.toUpperCase()
+    	        );
+
+    	        boolean ok =
+    	            ps.executeUpdate() > 0;
+
+    	        conn.close();
+
+    	        return ok;
+
+    	    }
+    	    catch(Exception e){
+
+    	        System.out.println(
+    	            "Error artículo: "
+    	            + e.getMessage()
+    	        );
+
+    	    }
+
+    	    return false;
+    	}
+	public boolean agregarPago(
+	
+	    String cliente,
+	    String articulo,
+	    String fechaPago,
+	    String montoAbonado,
+	    String tipoPago,
+	    String interes
+	
+	){
+	
+	    Connection conn = null;
+	
+	    try{
+	
+	        conn = conectar();
+	
+	        // OBTENER ID CLIENTE
+	
+	        String queryCliente =
+	            "SELECT id_cliente "
+	            + "FROM clientes "
+	            + "WHERE CONCAT(nombres,' ',apellidos)=?";
+	
+	        PreparedStatement psCliente =
+	            conn.prepareStatement(queryCliente);
+	
+	        psCliente.setString(1, cliente);
+	
+	        ResultSet rsCliente =
+	            psCliente.executeQuery();
+	
+	        if(!rsCliente.next()){
+	
+	            conn.close();
+	            return false;
+	        }
+	
+	        int idCliente =
+	            rsCliente.getInt("id_cliente");
+	
+	        // OBTENER ARTICULO
+	
+	        String queryArticulo =
+	            "SELECT id_articulo, monto_prestado "
+	            + "FROM articulos "
+	            + "WHERE nombre_articulo=?";
+	
+	        PreparedStatement psArticulo =
+	            conn.prepareStatement(queryArticulo);
+	
+	        psArticulo.setString(1, articulo);
+	
+	        ResultSet rsArticulo =
+	            psArticulo.executeQuery();
+	
+	        if(!rsArticulo.next()){
+	
+	            conn.close();
+	            return false;
+	        }
+	
+	        int idArticulo =
+	            rsArticulo.getInt("id_articulo");
+	
+	        double montoPrestado =
+	            rsArticulo.getDouble("monto_prestado");
+	
+	        // CALCULAR TOTAL ABONADO
+	
+	        String totalQuery =
+	            "SELECT IFNULL(SUM(monto_abonado),0) AS total "
+	            + "FROM pagos "
+	            + "WHERE id_articulo=?";
+	
+	        PreparedStatement psTotal =
+	            conn.prepareStatement(totalQuery);
+	
+	        psTotal.setInt(1, idArticulo);
+	
+	        ResultSet rsTotal =
+	            psTotal.executeQuery();
+	
+	        double totalAbonado = 0;
+	
+	        if(rsTotal.next()){
+	
+	            totalAbonado =
+	                rsTotal.getDouble("total");
+	        }
+	
+	        // CALCULAR SALDO
+	
+	        double monto =
+	            Double.parseDouble(
+	                montoAbonado
+	                .replace("$","")
+	                .replace(",","")
+	                .trim()
+	            );
+	
+	        double saldoActual =
+	            montoPrestado - totalAbonado;
+	
+	        double nuevoSaldo =
+	            saldoActual - monto;
+	
+	        if(nuevoSaldo < 0){
+	            nuevoSaldo = 0;
+	        }
+	
+	        // INTERES
+	
+	        double interesGenerado = 0;
+	
+	        try{
+	
+	            interesGenerado =
+	                Double.parseDouble(
+	                    interes
+	                    .replace("$","")
+	                    .replace(",","")
+	                    .trim()
+	                );
+	
+	        }catch(Exception e){
+	
+	            interesGenerado = 0;
+	        }
+	
+	        // INSERTAR PAGO
+	
+	        String insertPago =
+	            "INSERT INTO pagos("
+	            + "id_articulo,"
+	            + "id_cliente,"
+	            + "id_usuario,"
+	            + "fecha_pago,"
+	            + "monto_abonado,"
+	            + "monto_restante,"
+	            + "tipo_pago,"
+	            + "interes_generado"
+	            + ") VALUES(?,?,?,?,?,?,?,?)";
+	
+	        PreparedStatement psPago =
+	            conn.prepareStatement(insertPago);
+	
+	        psPago.setInt(1, idArticulo);
+	
+	        psPago.setInt(2, idCliente);
+	
+	        // USUARIO TEMPORAL
+	        psPago.setInt(3, 1);
+	
+	        psPago.setDate(
+	            4,
+	            java.sql.Date.valueOf(
+	                convertirFecha(fechaPago)
+	            )
+	        );
+	
+	        psPago.setDouble(5, monto);
+	
+	        psPago.setDouble(6, nuevoSaldo);
+	
+	        psPago.setString(
+	            7,
+	            tipoPago.toUpperCase()
+	        );
+	
+	        psPago.setDouble(
+	            8,
+	            interesGenerado
+	        );
+	
+	        boolean pagoInsertado =
+	            psPago.executeUpdate() > 0;
+	
+	        // ACTUALIZAR ESTADO
+	
+	        if(nuevoSaldo <= 0){
+	
+	            String updateEstado =
+	                "UPDATE articulos "
+	                + "SET estado='RECUPERADO' "
+	                + "WHERE id_articulo=?";
+	
+	            PreparedStatement psEstado =
+	                conn.prepareStatement(updateEstado);
+	
+	            psEstado.setInt(1, idArticulo);
+	
+	            psEstado.executeUpdate();
+	        }
+	
+	        conn.close();
+	
+	        return pagoInsertado;
+	
+	    }
+	    catch(Exception e){
+	
+	        System.out.println(
+	            "Error pago: "
+	            + e.getMessage()
+	        );
+	    }
+	
+	    return false;
+	}
+	public List<String> obtenerArticulosPorCliente(String cliente){
+
+	    List<String> articulos =
+	        new ArrayList<>();
+
+	    try{
+
+	        Connection conn =
+	            conectar();
+
+	        String query =
+	            "SELECT a.nombre_articulo "
+	            + "FROM articulos a "
+	            + "INNER JOIN clientes c "
+	            + "ON a.id_cliente = c.id_cliente "
+	            + "WHERE CONCAT(c.nombres,' ',c.apellidos)=?";
+
+	        PreparedStatement ps =
+	            conn.prepareStatement(query);
+
+	        ps.setString(1, cliente);
+
+	        ResultSet rs =
+	            ps.executeQuery();
+
+	        while(rs.next()){
+
+	            articulos.add(
+	                rs.getString("nombre_articulo")
+	            );
+	        }
+
+	        conn.close();
+
+	    }
+	    catch(Exception e){
+
+	        System.out.println(
+	            "Error obteniendo articulos: "
+	            + e.getMessage()
+	        );
+	    }
+
+	    return articulos;
+	}
 }

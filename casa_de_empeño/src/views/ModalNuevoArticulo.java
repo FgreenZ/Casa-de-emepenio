@@ -58,8 +58,36 @@ public class ModalNuevoArticulo extends JDialog {
         int col2 = marginX + halfWidth + gap;  // 310
 
         // --- FILA 1: CLIENTE (Ancho completo) ---
-        cbCliente = crearComboConLabel(panelFondo, "Cliente:*", new String[]{"Selecciona un cliente", "Juan Pérez García", "María López"}, col1, 80, fullWidth);
+        cbCliente = crearComboConLabel(
 
+        	    panelFondo,
+
+        	    "Cliente:*",
+
+        	    new String[]{
+
+        	        "Selecciona un cliente"
+
+        	    },
+
+        	    col1,
+        	    80,
+        	    fullWidth
+        	);
+        for(
+
+        	    String cliente :
+
+        	    home.tableDataBase
+        	    .obtenerClientes()
+
+        	){
+
+        	    cbCliente.addItem(
+        	        cliente
+        	    );
+
+        	}
         // --- FILA 2: NOMBRE DEL ARTÍCULO (Ancho completo) ---
         txtNombre = crearInputConLabel(panelFondo, "Nombre del artículo:*", "Ej. Anillo de Oro 14K", col1, 160, fullWidth);
 
@@ -105,14 +133,67 @@ public class ModalNuevoArticulo extends JDialog {
                 txtFechaLimite.getText().isEmpty() ) 
                 {
                 	//x.setVisible(true);
-                }else 
+                }else
                 {
-                    System.out.println("Artículo registrado");
-                	x1.setVisible(true);
-                    ModalNuevoArticulo.this.dispose();
+
+                    boolean creado =
+                        home.tableDataBase
+                        .agregarArticulo(
+
+                            cbCliente
+                            .getSelectedItem()
+                            .toString(),
+
+                            txtNombre
+                            .getText(),
+
+                            cbCategoria
+                            .getSelectedItem()
+                            .toString(),
+
+                            txtMonto
+                            .getText(),
+
+                            txtFechaLimite
+                            .getText(),
+
+                            cbEstado
+                            .getSelectedItem()
+                            .toString(),
+
+                            txtValorEstimado
+                            .getText(),
+
+                            txtFechaEmpeno
+                            .getText(),
+
+                            txtDescripcion
+                            .getText()
+
+                        );
+
+                    if(creado)
+                    {
+
+                    	home.refrescarTablaArticulos();
+
+                        x1.setVisible(true);
+
+                        ModalNuevoArticulo.this.dispose();
+
+                    }
+                    else
+                    {
+
+                        System.out.println(
+                        		"creado = false"
+                        );
+
+                        // x.setVisible(true);
+
+                    }
+
                 }
-                
-                
             }
         });
         panelFondo.add(btnCrear);

@@ -234,16 +234,57 @@ public class AuthView extends JFrame {
         
         JButton btnCrear = crearBotonPrincipal("CREAR CUENTA", 520);
         btnCrear.addActionListener(e -> {
-            // Validación: Si todos los campos tienen texto, avanzamos
-            if (!txtRegNombre.getText().trim().isEmpty() && 
-                !txtRegCorreo.getText().trim().isEmpty() && 
-                !txtRegPass.getText().trim().isEmpty() && 
-                !txtRegConfirmar.getText().trim().isEmpty()) {
-                
-            	this.VentanaExitoRegistro();
-            }else {
-            	this.VentanaInexitosoRegistro();
+
+            String usuario =
+                txtRegNombre.getText().trim();
+
+            String correo =
+                txtRegCorreo.getText().trim();
+
+            String pass =
+                txtRegPass.getText().trim();
+
+            String confirmar =
+                txtRegConfirmar.getText().trim();
+
+            if(
+                usuario.isEmpty()
+                || correo.isEmpty()
+                || pass.isEmpty()
+                || confirmar.isEmpty()
+            ){
+
+                VentanaInexitosoRegistro();
+                return;
             }
+
+            if(!pass.equals(confirmar)){
+
+                VentanaInexitosoRegistro();
+                return;
+            }
+
+            boolean creado =
+                model.crearCuenta(
+
+                    usuario,
+                    correo,
+                    pass,
+                    "EMPLEADO"
+
+                );
+
+            if(creado){
+
+                VentanaExitoRegistro();
+
+            }
+            else{
+
+                VentanaInexitosoRegistro();
+
+            }
+
         });
         
         JButton btnIrRegistro = new JButton("¿Ya tienes una cuenta? Inicia sesion aquí");

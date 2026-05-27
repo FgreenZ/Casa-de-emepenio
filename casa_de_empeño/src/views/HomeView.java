@@ -149,7 +149,19 @@ public class HomeView extends JPanel
 
         add(panelTablaPagos);
     }
-	
+    public void refrescarTablaArticulos() {
+
+        tableDataBase.cargarArticulos();
+
+        renderizarTablaArticulos(
+
+            panelTablaArticulos,
+
+            ""
+
+        );
+
+    }
 	public void home()
 	{
 		
@@ -1066,7 +1078,12 @@ public class HomeView extends JPanel
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 // Instanciamos y mostramos la nueva ventana modal
-            	ModalNuevoPago modal = new ModalNuevoPago(HomeView.this, ventana, baseDatosPagos);
+            	ModalNuevoPago modal = new ModalNuevoPago(
+            		    HomeView.this,
+            		    ventana,
+            		    baseDatosClientes,
+            		    baseDatosArticulos
+            		);
                 modal.setVisible(true);
             }
         });
@@ -1801,7 +1818,24 @@ public class HomeView extends JPanel
         panelTabla.revalidate();
         panelTabla.repaint();
     }
-    
+    public void renderizarTablaArticulos(){
+
+        panelTablaArticulos.removeAll();
+
+        panelTablaArticulos.add(
+
+            tableDataBase
+            .crearTablaArticulos(),
+
+            BorderLayout.CENTER
+
+        );
+
+        panelTablaArticulos.revalidate();
+
+        panelTablaArticulos.repaint();
+
+    }
     private void renderizarTablaPagos(JPanel panelTabla, String filtro, JFrame ventana) {
     	
     	

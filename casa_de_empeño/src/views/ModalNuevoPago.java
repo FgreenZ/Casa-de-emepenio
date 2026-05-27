@@ -1,20 +1,26 @@
 package views;
 
 import java.awt.*;
+import models.ComboItem;
+import models.Cliente;
+import models.ClienteModel;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
 
-public class ModalNuevoPago extends JDialog {
 
+
+public class ModalNuevoPago extends JDialog {
+	private ClienteModel clienteModel;
+	
     private HomeView home;
 
     // Componentes para extraer la información posteriormente
-    private JPanel cbCliente;
-    private JPanel cbArticulo;
-    private JPanel cbEstado;
+    private JComboBox<ComboItem> cbCliente;;
+    private JComboBox<String> cbArticulo;;
+    private JComboBox cbTipoPago;
 
 
     private JTextField txtNombre;
@@ -35,9 +41,37 @@ public class ModalNuevoPago extends JDialog {
     PanelRedondeado btnCrear = new PanelRedondeado(10, Color.decode("#1D4ED8"));
     ToastAlerta advertencia=new ToastAlerta(ModalNuevoPago.this,"Complete los campos vacios");
     JTextArea[] info=new JTextArea[2];
-    
-    public ModalNuevoPago(HomeView home, JFrame parent, List<String[]> baseDatosPagos) {
+    private void cargarClientes(){
+
+        cbCliente.removeAllItems();
+
+        ArrayList<Cliente> clientes =
+            clienteModel.getClientes();
+
+        for(Cliente c : clientes){
+
+            cbCliente.addItem(
+
+                new ComboItem(
+
+                    c.getIdCliente(),
+
+                    c.getNombres()
+                    + " "
+                    + c.getApellidos()
+                )
+            );
+        }
+    }
+    public ModalNuevoPago(
+    		
+    	    HomeView home,
+    	    JFrame parent,
+    	    List<String[]> baseDatosClientes,
+    	    List<String[]> baseDatosArticulos
+    	) {
         super(parent, true);
+        clienteModel = new ClienteModel();
         this.home = home;
         setUndecorated(true);
         setSize(parent.getWidth(), parent.getHeight()); // Ocupa toda la ventana de fondo
@@ -82,14 +116,39 @@ public class ModalNuevoPago extends JDialog {
         int col1 = marginX;                    // 40
         int col2 = marginX + halfWidth + gap;  // 310
 
-        cbCliente = crearComboConLabel(panelFondo, "Cliente:*", "Selecciona un cliente", baseDatosPagos, col1, 80, fullWidth,1,0);
-        panelFondo.add(cbCliente);
-        
-        cbArticulo = crearComboConLabel(panelFondo, "Articulo empeñado:*", "Selecciona un articulo", baseDatosPagos, col1, 160, fullWidth,2,1);
-        panelFondo.add(cbArticulo);
-        
-        cbEstado = crearComboConLabel(panelFondo, "Estado:*", "Empeñado", baseDatosPagos, col2, 240, halfWidth,4,2);
-        datos_pago.add(cbEstado);
+	     // CLIENTE
+	
+	     JLabel lblCliente = new JLabel("Cliente:*");
+	     lblCliente.setBounds(col1, 55, 200, 20);
+	     panelFondo.add(lblCliente);
+	
+	     cbCliente = new JComboBox<>();
+	     cbCliente.setBounds(col1, 80, fullWidth, 35);
+	     panelFondo.add(cbCliente);
+	     cargarClientes(); 
+	     // ARTICULO
+	
+	     JLabel lblArticulo = new JLabel("Artículo empeñado:*");
+	     lblArticulo.setBounds(col1, 135, 250, 20);
+	     panelFondo.add(lblArticulo);
+	
+	     cbArticulo = new JComboBox<>();
+	     cbArticulo.setBounds(col1, 160, fullWidth, 35);
+	     panelFondo.add(cbArticulo);
+	     // TIPO PAGO
+	
+	     JLabel lblTipoPago = new JLabel("Tipo de pago:*");
+	     lblTipoPago.setBounds(col2, 215, 200, 20);
+	     panelFondo.add(lblTipoPago);
+	
+	     cbTipoPago = new JComboBox<>();
+	
+	     cbTipoPago.addItem("INTERES");
+	     cbTipoPago.addItem("ABONO");
+	     cbTipoPago.addItem("TOTAL");
+	
+	     cbTipoPago.setBounds(col2, 240, halfWidth, 35);
+	     panelFondo.add(cbTipoPago);
 
         txtFechaEmpeno = crearInputConLabel(panelFondo, "Fecha de pago:*", "dd/mm/aaaa", col1, 240, halfWidth);
         configurarCampoFecha(txtFechaEmpeno, parent);
