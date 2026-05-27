@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import models.ComboItem;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -956,49 +957,56 @@ public class DataBaseModels {
 	
 	    return false;
 	}
-	public List<String> obtenerArticulosPorCliente(String cliente){
+	public List<ComboItem> obtenerArticulosPorCliente(
+		    int idCliente
+		) {
 
-	    List<String> articulos =
-	        new ArrayList<>();
+		    List<ComboItem> articulos =
+		        new ArrayList<>();
 
-	    try{
+		    try {
 
-	        Connection conn =
-	            conectar();
+		        Connection conn =
+		            conectar();
 
-	        String query =
-	            "SELECT a.nombre_articulo "
-	            + "FROM articulos a "
-	            + "INNER JOIN clientes c "
-	            + "ON a.id_cliente = c.id_cliente "
-	            + "WHERE CONCAT(c.nombres,' ',c.apellidos)=?";
+		        String query =
+		            "SELECT id_articulo, nombre_articulo "
+		            + "FROM articulos "
+		            + "WHERE id_cliente = ?";
 
-	        PreparedStatement ps =
-	            conn.prepareStatement(query);
+		        PreparedStatement ps =
+		            conn.prepareStatement(query);
 
-	        ps.setString(1, cliente);
+		        ps.setInt(1, idCliente);
 
-	        ResultSet rs =
-	            ps.executeQuery();
+		        ResultSet rs =
+		            ps.executeQuery();
 
-	        while(rs.next()){
+		        while(rs.next()) {
 
-	            articulos.add(
-	                rs.getString("nombre_articulo")
-	            );
-	        }
+		            articulos.add(
 
-	        conn.close();
+		                new ComboItem(
 
-	    }
-	    catch(Exception e){
+		                    rs.getInt("id_articulo"),
 
-	        System.out.println(
-	            "Error obteniendo articulos: "
-	            + e.getMessage()
-	        );
-	    }
+		                    rs.getString(
+		                        "nombre_articulo"
+		                    )
+		                )
+		            );
+		        }
 
-	    return articulos;
-	}
+		        conn.close();
+
+		    } catch(Exception e) {
+
+		        System.out.println(
+		            "Error articulos: "
+		            + e.getMessage()
+		        );
+		    }
+
+		    return articulos;
+		}
 }
