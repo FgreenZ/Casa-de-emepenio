@@ -41,6 +41,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import controllers.AuthController;
+import controllers.ClienteController;
 import controllers.HomeController;
 import models.DataBaseModels;
 
@@ -1165,17 +1166,47 @@ public class HomeView extends JPanel
     }
     
     // ================= MÉTODOS AUXILIARES ================= //
-    public void registrarNuevoCliente(String nombre, String telefono, String correo, String fecha) {
-        // Añadimos el nuevo registro (por defecto le ponemos "0" artículos y color "#AEE7B8")
-        String[] nuevoCliente = {nombre, telefono, correo, fecha, "0", "#AEE7B8"};
-        baseDatosClientes.add(nuevoCliente);
+    void registrarNuevoCliente(
+    	    String nombre,
+    	    String telefono,
+    	    String correo,
+    	    String fecha
+    	) {
 
-        // Refrescamos la tabla para que aparezca inmediatamente
-        if (panelTablaGlobal != null) {
-            renderizarTabla(panelTablaGlobal, "");
-        }
-    }
-    
+    	    ClienteController controller =
+    	        new ClienteController();
+
+    	    boolean guardado =
+    	        controller.agregarCliente(
+    	            nombre,
+    	            telefono,
+    	            correo,
+    	            fecha
+    	        );
+
+    	    if(guardado) {
+
+    	        tableDataBase.cargarClientes();
+
+    	        if(panelTablaGlobal != null) {
+
+    	            renderizarTabla(
+    	                panelTablaGlobal,
+    	                ""
+    	            );
+    	        }
+
+    	        System.out.println(
+    	            "Cliente guardado en BD."
+    	        );
+
+    	    } else {
+
+    	        System.out.println(
+    	            "No se pudo guardar."
+    	        );
+    	    }
+    	}
     public void actualizarCliente(int index, String nombre, String telefono, String correo, String fecha) {
         // Verificamos que el índice sea válido
         if (index >= 0 && index < baseDatosClientes.size()) {

@@ -19,4 +19,18 @@ public class ClienteController {
 
         return model.getClientes();
     }
+    public boolean agregarCliente(
+    	    String nombre,
+    	    String telefono,
+    	    String correo,
+    	    String fecha
+    	) {
+
+    	    return model.agregarCliente(
+    	        nombre,
+    	        telefono,
+    	        correo,
+    	        fecha
+    	    );
+    	}
 }
