@@ -33,6 +33,11 @@ public class ClienteController {
     	        fecha
     	    );
     	}
+    public boolean eliminarCliente(int idCliente) {
+
+        return model.eliminarCliente(idCliente);
+    }
+
     public boolean actualizarCliente(
     	    int idCliente,
     	    String nombre,

@@ -2737,6 +2737,9 @@ public class HomeView extends JPanel
             
             // 1. Eliminamos el cliente de la base de datos
         	if (metod==1){
+        		ClienteController controller = new ClienteController();
+        		int idCliente = Integer.parseInt(clienteAEliminar[6]);
+        		controller.eliminarCliente(idCliente);
         		baseDatosClientes.remove(clienteAEliminar);
             }else if(metod==2){
             	baseDatosArticulos.remove(clienteAEliminar);

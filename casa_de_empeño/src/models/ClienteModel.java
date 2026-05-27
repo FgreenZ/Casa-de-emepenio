@@ -178,6 +178,31 @@
 	    	        return false;
 	    	    }
 	    	}
+	    public boolean eliminarCliente(int idCliente) {
+
+	        try {
+
+	            String query =
+	                "DELETE FROM clientes "
+	                + "WHERE id_cliente = ?";
+
+	            PreparedStatement ps =
+	                conn.prepareStatement(query);
+
+	            ps.setInt(1, idCliente);
+
+	            return ps.executeUpdate() > 0;
+
+	        } catch(Exception e) {
+
+	            System.out.println(
+	                "Error eliminando cliente: "
+	                + e.getMessage()
+	            );
+
+	            return false;
+	        }
+	    }
 	    public boolean actualizarCliente(
 	    	    int idCliente,
 	    	    String nombreCompleto,
