@@ -71,6 +71,9 @@ class ModalEditarCliente extends JDialog {
         btnActualizar.setBounds(290, 420, 170, 40);
         btnActualizar.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
+        ToastAlertaSR clienteCreado=new ToastAlertaSR(parent,"Cliente creado exitosamente");
+
+        
         JLabel lblActualizar = new JLabel("Actualizar cliente", SwingConstants.CENTER);
         lblActualizar.setForeground(Color.WHITE);
         lblActualizar.setFont(new Font("Inter", Font.PLAIN, 14));
@@ -94,6 +97,7 @@ class ModalEditarCliente extends JDialog {
                         // Llamamos al método de actualizar
                         home.actualizarCliente(indexCliente, nombre, telefono, correo, fecha);
                     }
+                    clienteCreado.active();
                     dispose(); // Cierra el modal
                 }
             }

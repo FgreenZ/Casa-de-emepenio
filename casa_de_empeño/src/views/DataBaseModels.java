@@ -19,7 +19,6 @@ import javax.swing.SwingConstants;
 public class DataBaseModels {
 
     // Login para la base de datos
-
     private final String HOST = "localhost";
     private final String PUERTO = "3306";
     private final String BASE_DATOS = "la_central_empeno";
@@ -29,7 +28,6 @@ public class DataBaseModels {
     private final String PASSWORD = "";
 
     private final String URL ="jdbc:mysql://" +HOST +":" +PUERTO +"/" +BASE_DATOS;
-
 
     private List<String[]> baseDatosClientes;
     private List<String[]> baseDatosArticulos;
