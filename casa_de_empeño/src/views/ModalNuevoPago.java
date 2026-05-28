@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.swing.*;
 
+import models.DataBaseModels;
+
 public class ModalNuevoPago extends JDialog {
 
     private HomeView home;
@@ -18,18 +20,21 @@ public class ModalNuevoPago extends JDialog {
 
 
     private JTextField txtNombre;
-    private JComboBox<String> cbCategoria;
+    //private JComboBox<String> cbCategoria;
     private JPanel txtMonto;
+    private JTextArea montotal,nots;
     private JTextField txtValorEstimado;
     private JTextField txtFechaEmpeno;
     private JTextField txtFechaLimite;
     private JTextField fechaEmpeño;
     private JPanel txtNotas;
-    JComboBox<String>[] opciones = new JComboBox[3];    
+    JComboBox<String>[] opciones = new JComboBox[3];
+    JComboBox<String> tipodepago,cliente,articulo;    
     JPanel fecha=new JPanel(null);
     JPanel datos_pago=new JPanel(null);
 
-
+    DataBaseModels nuevoPago;
+    
     PanelRedondeado panelFondo = new PanelRedondeado(20, Color.WHITE);
     PanelRedondeado operacion = new PanelRedondeado(20, Color.decode("#C7D3EA"));
     PanelRedondeado btnCrear = new PanelRedondeado(10, Color.decode("#1D4ED8"));
@@ -52,6 +57,7 @@ public class ModalNuevoPago extends JDialog {
         setLocationRelativeTo(parent);
         setLayout(null);
         setBackground(new Color(0, 0, 0, 100)); // Fondo oscuro semitransparente
+        nuevoPago=home.tableDataBase;
         
         // --- PANEL BLANCO CENTRAL ---
         // Se aumentan las dimensiones para acomodar todas las filas espaciadas correctamente
@@ -89,9 +95,9 @@ public class ModalNuevoPago extends JDialog {
         cbArticulo = crearComboConLabel(panelFondo, "Articulo empeñado:*", "Selecciona un articulo", baseDatosPagos, col1, 160, fullWidth,2,1);
         panelFondo.add(cbArticulo);
         
-        cbEstado = crearComboConLabel(panelFondo, "Estado:*", "Empeñado", baseDatosPagos, col2, 240, halfWidth,4,2);
+        cbEstado = crearComboConLabel(panelFondo, "Tipo de pago:*", "Selecciona una opcion", baseDatosPagos, col2, 240, halfWidth,4,2);
         datos_pago.add(cbEstado);
-
+        
         txtFechaEmpeno = crearInputConLabel(panelFondo, "Fecha de pago:*", "dd/mm/aaaa", col1, 240, halfWidth);
         configurarCampoFecha(txtFechaEmpeno, parent);
         datos_pago.add(fecha);
@@ -160,6 +166,13 @@ public class ModalNuevoPago extends JDialog {
                 }else 
                 {
                 	pagoCreado.active();
+                	nuevoPago.agregarPago(
+                			cliente.getSelectedItem().toString(), 
+                			articulo.getSelectedItem().toString(), 
+                			txtFechaEmpeno.getText(), 
+                			tipodepago.getSelectedItem().toString(), 
+                			montotal.getText(), 
+                			nots.getText());
                     ModalNuevoPago.this.dispose();
                 }
                 
@@ -283,6 +296,20 @@ public class ModalNuevoPago extends JDialog {
             	
             }
         });
+        
+        if(indexador==0) {
+        	cliente=combo;
+        	System.out.println(cliente.getSelectedItem().toString());
+        }else if(indexador==1) {
+
+        	articulo=combo;
+        	System.out.println(articulo.getSelectedItem().toString());
+        }else if(indexador==2){
+
+        	tipodepago=combo;
+        	System.out.println(tipodepago.getSelectedItem().toString());
+        }
+        
         this.opciones[indexador]=combo;
         panelCombo.add(combo, BorderLayout.CENTER);
         hola.add(panelCombo);
@@ -316,6 +343,11 @@ public class ModalNuevoPago extends JDialog {
         txtArea.setBorder(null);
         txtArea.setOpaque(false);
         
+        if(textArea==0) {
+        	montotal=txtArea;
+        }else {
+        	nots=txtArea;
+        }
         
         txtArea.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent evt) {
@@ -333,6 +365,8 @@ public class ModalNuevoPago extends JDialog {
         });
         info[textArea]=txtArea;
 
+
+        
         panelArea.add(txtArea);
         hola.add(panelArea);
         return hola;

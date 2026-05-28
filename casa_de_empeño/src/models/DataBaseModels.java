@@ -580,7 +580,8 @@ public class DataBaseModels {
     	        + partes[1]
     	        + "-"
     	        + partes[0];
-    	}
+    }
+    
     public boolean agregarArticulo(
 
     	    String cliente,
@@ -616,10 +617,7 @@ public class DataBaseModels {
     	                buscarCliente
     	            );
 
-    	        psBuscar.setString(
-    	            1,
-    	            cliente
-    	        );
+    	        psBuscar.setString(1,cliente);
 
     	        ResultSet rs =
     	            psBuscar.executeQuery();
@@ -746,7 +744,89 @@ public class DataBaseModels {
     	    }
 
     	    return false;
-    	}
+    }
+    
+    public boolean agregarPago(
+            String cliente,
+            String articuloEmpeñado,
+            String fechaPago,
+            String estado,
+            String montoAbonado,
+            String notas
+    ) {
+        Connection conn = null;
+
+        try {
+            conn = DriverManager.getConnection(URL, USUARIO, PASSWORD);
+
+            String buscarCliente =
+                "SELECT id_cliente FROM clientes " +
+                "WHERE CONCAT(nombres, ' ', apellidos) = ?";
+
+            PreparedStatement psCliente = conn.prepareStatement(buscarCliente);
+            psCliente.setString(1, cliente);
+            ResultSet rsCliente = psCliente.executeQuery();
+
+            if (!rsCliente.next()) {
+                conn.close();
+                return false; 
+            }
+            int idCliente = rsCliente.getInt("id_cliente");
+            rsCliente.close();
+            psCliente.close();
+
+            String buscarArticulo =
+                "SELECT id_articulo FROM articulos " +
+                "WHERE nombre_articulo = ?";
+
+            PreparedStatement psArticulo = conn.prepareStatement(buscarArticulo);
+            psArticulo.setString(1, articuloEmpeñado);
+            ResultSet rsArticulo = psArticulo.executeQuery();
+
+            if (!rsArticulo.next()) {
+                conn.close();
+                return false; 
+            }
+            int idArticulo = rsArticulo.getInt("id_articulo");
+            rsArticulo.close();
+            psArticulo.close();
+
+            double monto = Double.parseDouble(
+                montoAbonado
+                    .replace("$", "")
+                    .replace(",", "")
+                    .trim()
+            );
+
+            java.sql.Date fechaSql = java.sql.Date.valueOf(
+                convertirFecha(fechaPago)
+            );
+
+            String query =
+                "INSERT INTO pagos(" +
+                    "id_cliente, id_articulo, fecha_pago, tipo_pago, " +
+                    "monto_abonado, id_usuario" +
+                ") VALUES (?, ?, ?, ?, ?, ?)";
+
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, idCliente);
+            ps.setInt(2, idArticulo);
+            ps.setDate(3, fechaSql);
+            ps.setString(4, estado.toUpperCase());
+            ps.setDouble(5, monto);
+            ps.setInt(6, 1); 
+
+            boolean ok = ps.executeUpdate() > 0;
+
+            conn.close();
+            return ok;
+
+        } catch (Exception e) {
+            System.out.println("Error al agregar pago: " + e.getMessage());
+        }
+
+        return false;
+    }
 
 	public List<ComboItem> obtenerArticulosPorCliente(
 		    int idCliente
