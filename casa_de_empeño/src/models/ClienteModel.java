@@ -12,14 +12,14 @@
 	
 	
 	    // Login para la base de datos
-	
-	    private final String HOST = "localhost";
+
+	    private final String HOST = "sql.freedb.tech";
 	    private final String PUERTO = "3306";
-	    private final String BASE_DATOS = "la_central_empeno";
-	
+	    private final String BASE_DATOS = "freedb_dywYrdh8";
+
 	    // Usuario y contraseña de la base de datos
-	    private final String USUARIO = "root";
-	    private final String PASSWORD = "793ghjlqASD";
+	    private final String USUARIO = "u_xlk596";
+	    private final String PASSWORD = "wUgVmuYuI82P";
 	
 	    private final String URL ="jdbc:mysql://" +HOST +":" +PUERTO +"/" +BASE_DATOS;
 	

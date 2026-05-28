@@ -34,12 +34,14 @@ public class ModalNuevoPago extends JDialog {
     JPanel datos_pago=new JPanel(null);
 
     DataBaseModels nuevoPago;
+    JLabel lblValorMTP, lblValorTB, lblValorMR;
     
     PanelRedondeado panelFondo = new PanelRedondeado(20, Color.WHITE);
     PanelRedondeado operacion = new PanelRedondeado(20, Color.decode("#C7D3EA"));
     PanelRedondeado btnCrear = new PanelRedondeado(10, Color.decode("#1D4ED8"));
     PanelRedondeado btnCerrar = new PanelRedondeado(10, Color.decode("#EF4444"));
     ToastAlerta advertencia=new ToastAlerta(ModalNuevoPago.this,"Complete los campos vacios");
+    ToastAlerta advertenciaMonto=new ToastAlerta(ModalNuevoPago.this,"El monto es mayor al total restante");
     JTextArea[] info=new JTextArea[2];
     
     public ModalNuevoPago(HomeView home, JFrame parent, List<String[]> baseDatosPagos) {
@@ -102,7 +104,7 @@ public class ModalNuevoPago extends JDialog {
         configurarCampoFecha(txtFechaEmpeno, parent);
         datos_pago.add(fecha);
         
-        txtMonto = crearTextAreaConLabel(panelFondo, "Monto Abonado:*", "500", col1, 310, fullWidth, 40, 0);
+        txtMonto = crearTextAreaConLabel(panelFondo, "Monto Abonado:*", "Ingresa el monto...", col1, 310, fullWidth, 40, 0);
         datos_pago.add(txtMonto);
         
         txtNotas = crearTextAreaConLabel(panelFondo, "Notas:*", "Notas adicionales sobre el pago...", col1, 380, fullWidth, 70, 1);
@@ -114,22 +116,45 @@ public class ModalNuevoPago extends JDialog {
         separator.setVisible(true);
         separator.setBackground(Color.decode("#638ADB"));
         separator.setBounds(10, 60, 500, 5);
-        JLabel MTP =new JLabel("Monto total prestado:");
+
+        // Etiquetas (texto fijo)
+        JLabel MTP = new JLabel("Monto total prestado:");
         MTP.setForeground(Color.decode("#666666"));
         MTP.setFont(new Font("Inter", Font.PLAIN, 13));
-        MTP.setBounds(10,15,150,14);
+        MTP.setBounds(10, 15, 180, 14);
         operacion.add(MTP);
-        JLabel TB =new JLabel("Total abonado:");
+
+        JLabel TB = new JLabel("Total abonado:");
         TB.setForeground(Color.decode("#666666"));
         TB.setFont(new Font("Inter", Font.PLAIN, 13));
-        TB.setBounds(10,15,150,60);
+        TB.setBounds(10, 42, 180, 14);
         operacion.add(separator);
         operacion.add(TB);
-        JLabel MT =new JLabel("Monto restante:");
+
+        JLabel MT = new JLabel("Monto restante:");
         MT.setForeground(Color.decode("#666666"));
         MT.setFont(new Font("Inter", Font.PLAIN, 13));
-        MT.setBounds(10,15,150,115);
+        MT.setBounds(10, 69, 180, 14);
         operacion.add(MT);
+
+        // Valores dinámicos (se actualizan al elegir artículo)
+        lblValorMTP = new JLabel("$0.00");
+        lblValorMTP.setForeground(Color.decode("#1D4ED8"));
+        lblValorMTP.setFont(new Font("Inter", Font.BOLD, 13));
+        lblValorMTP.setBounds(200, 15, 300, 14);
+        operacion.add(lblValorMTP);
+
+        lblValorTB = new JLabel("$0.00");
+        lblValorTB.setForeground(Color.decode("#1D4ED8"));
+        lblValorTB.setFont(new Font("Inter", Font.BOLD, 13));
+        lblValorTB.setBounds(200, 42, 300, 14);
+        operacion.add(lblValorTB);
+
+        lblValorMR = new JLabel("$0.00");
+        lblValorMR.setForeground(Color.decode("#1D4ED8"));
+        lblValorMR.setFont(new Font("Inter", Font.BOLD, 13));
+        lblValorMR.setBounds(200, 69, 300, 14);
+        operacion.add(lblValorMR);
         
         JLabel lblCerrar = new JLabel("Cancelar", SwingConstants.CENTER);
         lblCerrar.setForeground(Color.WHITE);
@@ -158,22 +183,67 @@ public class ModalNuevoPago extends JDialog {
         btnCrear.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(info[0].getText().equals("500") || info[1].getText().equals("Notas adicionales sobre el pago...")||
-                	fechaEmpeño.getText().equals("")||fechaEmpeño.getText().equals("dd/mm/aaaa")|| 
-                	opciones[0].getSelectedItem().equals("Selecciona un cliente")||opciones[1].getSelectedItem().equals("Selecciona un articulo")) 
+                String montoTexto = info[0].getText().trim();
+                boolean montoVacio = montoTexto.isEmpty() || montoTexto.equals("Ingresa el monto...");
+                boolean fechaVacia = fechaEmpeño.getText().trim().isEmpty() || fechaEmpeño.getText().equals("dd/mm/aaaa");
+                boolean clienteNoSeleccionado = opciones[0].getSelectedItem().equals("Selecciona un cliente");
+                boolean articuloNoSeleccionado = opciones[1].getSelectedItem().equals("Selecciona un articulo");
+                if(montoVacio || fechaVacia || clienteNoSeleccionado || articuloNoSeleccionado) 
                 {
                 	advertencia.active();
                 }else 
                 {
-                	pagoCreado.active();
-                	nuevoPago.agregarPago(
-                			cliente.getSelectedItem().toString(), 
-                			articulo.getSelectedItem().toString(), 
-                			txtFechaEmpeno.getText(), 
-                			tipodepago.getSelectedItem().toString(), 
-                			montotal.getText(), 
-                			nots.getText());
-                    ModalNuevoPago.this.dispose();
+                	// Obtener idArticulo y idCliente a partir del nombre seleccionado
+                	String nombreCliente = cliente.getSelectedItem().toString();
+                	String nombreArticulo = articulo.getSelectedItem().toString();
+                	String fechaPago = fechaEmpeño.getText();
+                	String tipoPago = tipodepago.getSelectedItem().toString();
+                	double montoAbonado = 0;
+                	try {
+                	    montoAbonado = Double.parseDouble(
+                	        montoTexto.replace("$", "").replace(",", "").trim()
+                	    );
+                	} catch (NumberFormatException ex) {
+                	    advertencia.active();
+                	    return;
+                	}
+
+                	// Buscar id_cliente e id_articulo en la BD
+                	int idCli = nuevoPago.obtenerIdCliente(nombreCliente);
+                	int idArt = nuevoPago.obtenerIdArticulo(nombreArticulo, idCli);
+
+                	if (idCli <= 0 || idArt <= 0) {
+                	    advertencia.active();
+                	    return;
+                	}
+
+                	// Validar que el monto no exceda la deuda restante
+                	double[] deuda = nuevoPago.obtenerDatosDeudaArticulo(idArt);
+                	double montoRestante = deuda[2];
+                	if (montoAbonado > montoRestante && montoRestante > 0) {
+                	    advertenciaMonto.active();
+                	    return;
+                	}
+
+                	boolean exito = nuevoPago.registrarPago(
+                	    idArt,
+                	    idCli,
+                	    1,
+                	    nuevoPago.convertirFecha(fechaPago),
+                	    montoAbonado,
+                	    0,
+                	    tipoPago.toUpperCase(),
+                	    0
+                	);
+
+                	if (exito) {
+                	    nuevoPago.cargarPagos();
+                	    nuevoPago.cargarArticulos();
+                	    home.refrescarTablaPagos();
+                	    home.refrescarTablaArticulos();
+                	    pagoCreado.active();
+                	    ModalNuevoPago.this.dispose();
+                	}
                 }
                 
             }
@@ -191,9 +261,9 @@ public class ModalNuevoPago extends JDialog {
         add(panelFondo);
     }
 
-    // =========================================================================================
+ //
     // MÉTODOS AUXILIARES PARA REPLICAR EXACTAMENTE EL DISEÑO VISUAL
-    // =========================================================================================
+ //
 	
     private JTextField crearInputConLabel(JPanel contenedor, String titulo, String placeholder, int x, int y, int w) {
     	fecha.setBounds(x, y, w, 70);
@@ -245,31 +315,37 @@ public class ModalNuevoPago extends JDialog {
     	JPanel hola=new JPanel(null);
     	hola.setBounds(x, y, w, 70);
     	hola.setOpaque(false);
-    	
+
     	JLabel lbl = new JLabel(titulo);
         lbl.setFont(new Font("Inter", Font.BOLD, 12));
         lbl.setForeground(Color.decode("#374151"));
         lbl.setBounds(0, 0, w, 20);
         hola.add(lbl);
-        
+
         PanelRedondeado panelCombo = new PanelRedondeado(10, Color.decode("#F9FAFB"));
         panelCombo.setLayout(new BorderLayout());
-        panelCombo.setBounds(0,  + 25, w, 40);
+        panelCombo.setBounds(0, 25, w, 40);
         panelCombo.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.decode("#E5E7EB"), 1),
             BorderFactory.createEmptyBorder(0, 10, 0, 10)
         ));
-        List<String> filtrados = new ArrayList<>();
-        String[] opciones =new String[baseDatosPagos.size()+1];
-        opciones[0]=subtitulo;
-        int i=1;
-        for (String[] dato : baseDatosPagos) {
-            	opciones[i]=dato[index];
-            	i++;
-        }
-        
 
-        
+        // Cargar opciones directamente desde la BD segun el tipo de combo
+        String[] opciones;
+        if (indexador == 0) {
+            // Combo CLIENTES
+            java.util.List<String> lista = nuevoPago.obtenerClientes();
+            opciones = new String[lista.size() + 1];
+            opciones[0] = subtitulo;
+            for (int i = 0; i < lista.size(); i++) opciones[i + 1] = lista.get(i);
+        } else if (indexador == 1) {
+            // Combo ARTICULOS (se carga con todos al inicio; se filtra al elegir cliente)
+            opciones = new String[]{ subtitulo };
+        } else {
+            // Combo TIPO DE PAGO — lista fija del ENUM
+            opciones = new String[]{ subtitulo, "INTERES", "ABONO", "TOTAL" };
+        }
+
         JComboBox<String> combo = new JComboBox<>(opciones);
         combo.setFont(new Font("Inter", Font.PLAIN, 13));
         combo.setForeground(Color.decode("#111827"));
@@ -278,39 +354,60 @@ public class ModalNuevoPago extends JDialog {
         combo.setBorder(null);
         combo.setFocusable(false);
         combo.setOpaque(false);
-        combo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	
-            	if(combo.getSelectedItem()!=subtitulo && index==2) {
-            		
-            		panelFondo.setBounds(((getWidth() -600)/2), ((getWidth()-550)/2)-295, 600, 645);
-            		datos_pago.setLocation(0,100);
-            		btnCrear.setLocation(400, 595);
-            		btnCerrar.setLocation(btnCerrar.getBounds().x, 595);
-                    operacion.setVisible(true);                    
-                    
-            	}else {
-            		
-            	}
-            	
-            }
-        });
-        
-        if(indexador==0) {
-        	cliente=combo;
-        	System.out.println(cliente.getSelectedItem().toString());
-        }else if(indexador==1) {
 
-        	articulo=combo;
-        	System.out.println(articulo.getSelectedItem().toString());
-        }else if(indexador==2){
+        if (indexador == 0) {
+            cliente = combo;
+            // Al elegir cliente, recargar articulos
+            combo.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String selCliente = combo.getSelectedItem().toString();
+                    if (!selCliente.equals(subtitulo) && articulo != null) {
+                        int idCli = nuevoPago.obtenerIdCliente(selCliente);
+                        java.util.List<models.ComboItem> arts = nuevoPago.obtenerArticulosPorCliente(idCli);
+                        articulo.removeAllItems();
+                        articulo.addItem("Selecciona un articulo");
+                        for (models.ComboItem ci : arts) articulo.addItem(ci.getTexto());
+                    }
+                }
+            });
+        } else if (indexador == 1) {
+            articulo = combo;
+            combo.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Object sel = combo.getSelectedItem();
+                    if (sel != null && !sel.toString().equals("Selecciona un articulo")) {
+                        // Expandir panel
+                        panelFondo.setBounds(((getWidth() -600)/2), ((getWidth()-550)/2)-295, 600, 645);
+                        datos_pago.setLocation(0, 100);
+                        btnCrear.setLocation(400, 595);
+                        btnCerrar.setLocation(btnCerrar.getBounds().x, 595);
+                        operacion.setVisible(true);
 
-        	tipodepago=combo;
-        	System.out.println(tipodepago.getSelectedItem().toString());
+                        // Cargar datos reales del artículo en el panel azul
+                        String nombreArticulo = sel.toString();
+                        String nombreCliente = (cliente != null && cliente.getSelectedItem() != null)
+                            ? cliente.getSelectedItem().toString() : "";
+                        int idCli = nuevoPago.obtenerIdCliente(nombreCliente);
+                        int idArt = nuevoPago.obtenerIdArticulo(nombreArticulo, idCli);
+                        if (idArt > 0) {
+                            double[] datos = nuevoPago.obtenerDatosDeudaArticulo(idArt);
+                            // datos[0]=montoPrestado, datos[1]=totalAbonado, datos[2]=montoRestante
+                            lblValorMTP.setText(String.format("$%.2f", datos[0]));
+                            lblValorTB.setText(String.format("$%.2f", datos[1]));
+                            lblValorMR.setText(String.format("$%.2f", datos[2]));
+                        }
+                        operacion.revalidate();
+                        operacion.repaint();
+                    }
+                }
+            });
+        } else {
+            tipodepago = combo;
         }
-        
-        this.opciones[indexador]=combo;
+
+        this.opciones[indexador] = combo;
         panelCombo.add(combo, BorderLayout.CENTER);
         hola.add(panelCombo);
         return hola;

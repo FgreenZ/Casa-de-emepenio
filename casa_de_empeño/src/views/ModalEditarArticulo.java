@@ -118,9 +118,9 @@ public class ModalEditarArticulo extends JDialog {
         add(panelFondo);
     }
 
-    // =========================================================================================
+ //
     // MÉTODOS AUXILIARES PARA REPLICAR EXACTAMENTE EL DISEÑO VISUAL
-    // =========================================================================================
+ //
 
     private JTextField crearInputConLabel(JPanel contenedor, String titulo, String placeholder, int x, int y, int w) {
         // 1. Etiqueta superior (Label)

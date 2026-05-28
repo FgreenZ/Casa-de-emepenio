@@ -20,14 +20,14 @@ public class DataBaseModels {
 
     // Login para la base de datos
 
-    private final String HOST = "localhost";
+    private final String HOST = "sql.freedb.tech";
     private final String PUERTO = "3306";
-    private final String BASE_DATOS = "la_central_empeno";
+    private final String BASE_DATOS = "freedb_dywYrdh8";
 
     // Usuario y contraseña de la base de datos
-    private final String USUARIO = "root";
-    private final String PASSWORD = "793ghjlqASD";
-
+    private final String USUARIO = "u_xlk596";
+    private final String PASSWORD = "wUgVmuYuI82P";
+    
     private final String URL ="jdbc:mysql://" +HOST +":" +PUERTO +"/" +BASE_DATOS;
 
 
@@ -447,18 +447,25 @@ public class DataBaseModels {
                 String colorDetalles =
                     "#AEE7B8";
 
+                String idPago = rs.getString("id_pago");
+                String idArticulo = rs.getString("id_articulo");
+                String idCliente = rs.getString("id_cliente");
+
                 baseDatosPagos.add(
 
                     new String[] {
 
-                        fecha,
-                        cliente,
-                        articulo,
-                        monto,
-                        tipoPago,
-                        colorEliminar,
-                        colorEditar,
-                        colorDetalles
+                        fecha,         // [0]
+                        cliente,       // [1]
+                        articulo,      // [2]
+                        monto,         // [3]
+                        tipoPago,      // [4]
+                        colorEliminar, // [5]
+                        colorEditar,   // [6]
+                        colorDetalles, // [7]
+                        idPago,        // [8]
+                        idArticulo,    // [9]
+                        idCliente      // [10]
                     }
                 );
             }
@@ -843,7 +850,7 @@ public class DataBaseModels {
 		        String query =
 		            "SELECT id_articulo, nombre_articulo "
 		            + "FROM articulos "
-		            + "WHERE id_cliente = ?";
+		            + "WHERE id_cliente = ? AND estado = 'EMPE\u00d1ADO'";
 
 		        PreparedStatement ps =
 		            conn.prepareStatement(query);
@@ -1040,8 +1047,269 @@ public class DataBaseModels {
 		    }
 		}
 
-    // ===== CLASE DE ESTADÍSTICAS =====
-    public static class Estadisticas {
+ // CLASE DE ESTADÍSTICAS
+ //
+    // DATOS DE DEUDA DE UN ARTÍCULO
+    // Retorna: [0]=montoPrestado, [1]=totalAbonado, [2]=montoRestante
+ //
+    public double[] obtenerDatosDeudaArticulo(int idArticulo) {
+        double montoPrestado = 0, totalAbonado = 0;
+        try {
+            Connection conn = conectar();
+
+            PreparedStatement ps1 = conn.prepareStatement(
+                "SELECT monto_prestado FROM articulos WHERE id_articulo = ?"
+            );
+            ps1.setInt(1, idArticulo);
+            ResultSet rs1 = ps1.executeQuery();
+            if (rs1.next()) montoPrestado = rs1.getDouble("monto_prestado");
+
+            PreparedStatement ps2 = conn.prepareStatement(
+                "SELECT COALESCE(SUM(monto_abonado), 0) AS total FROM pagos WHERE id_articulo = ?"
+            );
+            ps2.setInt(1, idArticulo);
+            ResultSet rs2 = ps2.executeQuery();
+            if (rs2.next()) totalAbonado = rs2.getDouble("total");
+
+            conn.close();
+        } catch (Exception e) {
+            System.out.println("Error obtenerDatosDeuda: " + e.getMessage());
+        }
+        double restante = Math.max(0, montoPrestado - totalAbonado);
+        return new double[]{ montoPrestado, totalAbonado, restante };
+    }
+
+
+    // Obtener todos los articulos de un cliente para verDetallesCliente
+    public java.util.List<String[]> obtenerTodosArticulosPorCliente(int idCliente) {
+        java.util.List<String[]> lista = new java.util.ArrayList<>();
+        try {
+            Connection conn = conectar();
+            String query =
+                "SELECT nombre_articulo, categoria, fecha_limite_pago, monto_prestado, estado " +
+                "FROM articulos WHERE id_cliente = ? ORDER BY fecha_empeno DESC";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, idCliente);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String estado = rs.getString("estado");
+                String bgColor = "#FFF9C4", txtColor = "#FBC02D";
+                if ("RECUPERADO".equals(estado)) { bgColor = "#C8E6C9"; txtColor = "#388E3C"; }
+                else if ("REMATADO".equals(estado))  { bgColor = "#FFCDD2"; txtColor = "#D32F2F"; }
+                lista.add(new String[]{
+                    rs.getString("nombre_articulo"),
+                    rs.getString("categoria"),
+                    rs.getString("fecha_limite_pago"),
+                    "$" + rs.getString("monto_prestado"),
+                    estado,
+                    bgColor,
+                    txtColor
+                });
+            }
+            conn.close();
+        } catch (Exception e) {
+            System.out.println("Error obtenerTodosArticulosPorCliente: " + e.getMessage());
+        }
+        return lista;
+    }
+
+    // Contar articulos EMPEÑADOS de un cliente
+    public int contarArticulosEmpenados(int idCliente) {
+        try {
+            Connection conn = conectar();
+            PreparedStatement ps = conn.prepareStatement(
+                "SELECT COUNT(*) FROM articulos WHERE id_cliente = ? AND estado = 'EMPEÑADO'");
+            ps.setInt(1, idCliente);
+            ResultSet rs = ps.executeQuery();
+            int count = rs.next() ? rs.getInt(1) : 0;
+            conn.close();
+            return count;
+        } catch (Exception e) {
+            System.out.println("Error contarArticulosEmpenados: " + e.getMessage());
+            return 0;
+        }
+    }
+
+
+    // Obtener historial de pagos de un articulo (para verDetallesArticulo)
+    public java.util.List<String[]> obtenerHistorialPagosPorArticulo(int idArticulo) {
+        java.util.List<String[]> pagos = new java.util.ArrayList<>();
+        try {
+            Connection conn = conectar();
+            String query =
+                "SELECT fecha_pago, monto_abonado, tipo_pago " +
+                "FROM pagos WHERE id_articulo = ? ORDER BY fecha_pago DESC";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, idArticulo);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                pagos.add(new String[]{
+                    rs.getString("fecha_pago"),
+                    String.format("$%.2f", rs.getDouble("monto_abonado")),
+                    rs.getString("tipo_pago")
+                });
+            }
+            conn.close();
+        } catch (Exception e) {
+            System.out.println("Error obtenerHistorialPagos: " + e.getMessage());
+        }
+        return pagos;
+    }
+
+ //
+    // OBTENER ULTIMO id_pago POR ARTICULO
+ //
+    public int obtenerUltimoPagoPorArticulo(int idArticulo) {
+        try {
+            Connection conn = conectar();
+            String query =
+                "SELECT id_pago FROM pagos " +
+                "WHERE id_articulo = ? " +
+                "ORDER BY id_pago DESC LIMIT 1";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, idArticulo);
+            ResultSet rs = ps.executeQuery();
+            int id = rs.next() ? rs.getInt("id_pago") : -1;
+            conn.close();
+            return id;
+        } catch (Exception e) {
+            System.out.println("Error obtenerUltimoPago: " + e.getMessage());
+            return -1;
+        }
+    }
+
+ //
+    // AUXILIARES: obtener IDs por nombre
+ //
+    public int obtenerIdCliente(String nombreCompleto) {
+        try {
+            Connection conn = conectar();
+            String query = "SELECT id_cliente FROM clientes WHERE CONCAT(nombres, ' ', apellidos) = ?";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setString(1, nombreCompleto);
+            ResultSet rs = ps.executeQuery();
+            int id = rs.next() ? rs.getInt("id_cliente") : -1;
+            conn.close();
+            return id;
+        } catch (Exception e) {
+            System.out.println("Error obtenerIdCliente: " + e.getMessage());
+            return -1;
+        }
+    }
+
+    public int obtenerIdArticulo(String nombreArticulo, int idCliente) {
+        try {
+            Connection conn = conectar();
+            String query = "SELECT id_articulo FROM articulos WHERE nombre_articulo = ? AND id_cliente = ?";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setString(1, nombreArticulo);
+            ps.setInt(2, idCliente);
+            ResultSet rs = ps.executeQuery();
+            int id = rs.next() ? rs.getInt("id_articulo") : -1;
+            conn.close();
+            return id;
+        } catch (Exception e) {
+            System.out.println("Error obtenerIdArticulo: " + e.getMessage());
+            return -1;
+        }
+    }
+
+ //
+    // ELIMINAR PAGO
+ //
+    public boolean eliminarPago(int idPago) {
+        try {
+            Connection conn = conectar();
+            String query = "DELETE FROM pagos WHERE id_pago = ?";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, idPago);
+            boolean ok = ps.executeUpdate() > 0;
+            conn.close();
+            return ok;
+        } catch (Exception e) {
+            System.out.println("Error eliminando pago: " + e.getMessage());
+            return false;
+        }
+    }
+
+ //
+    // ACTUALIZAR PAGO
+ //
+    public boolean actualizarPago(
+            int idPago,
+            int idArticulo,
+            int idCliente,
+            String fechaPago,
+            double montoAbonado,
+            String tipoPago
+    ) {
+        try {
+            Connection conn = conectar();
+
+            // Calcular montoRestante sumando abonos anteriores (excluyendo este pago)
+            String queryPrev =
+                "SELECT SUM(monto_abonado) AS total " +
+                "FROM pagos " +
+                "WHERE id_articulo = ? AND id_pago != ?";
+            PreparedStatement psPrev = conn.prepareStatement(queryPrev);
+            psPrev.setInt(1, idArticulo);
+            psPrev.setInt(2, idPago);
+            ResultSet rsPrev = psPrev.executeQuery();
+            double totalPrevio = 0;
+            if (rsPrev.next()) {
+                totalPrevio = rsPrev.getDouble("total");
+            }
+
+            // Obtener monto prestado del articulo
+            String queryArt =
+                "SELECT monto_prestado FROM articulos WHERE id_articulo = ?";
+            PreparedStatement psArt = conn.prepareStatement(queryArt);
+            psArt.setInt(1, idArticulo);
+            ResultSet rsArt = psArt.executeQuery();
+            double montoPrestado = 0;
+            if (rsArt.next()) {
+                montoPrestado = rsArt.getDouble("monto_prestado");
+            }
+
+            double montoRestante = montoPrestado - totalPrevio - montoAbonado;
+            if (montoRestante < 0) montoRestante = 0;
+            double interesGenerado = montoRestante * 0.10;
+
+            String query =
+                "UPDATE pagos SET " +
+                "fecha_pago = ?, " +
+                "monto_abonado = ?, " +
+                "monto_restante = ?, " +
+                "tipo_pago = ?, " +
+                "interes_generado = ? " +
+                "WHERE id_pago = ?";
+
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setString(1, fechaPago);
+            ps.setDouble(2, montoAbonado);
+            ps.setDouble(3, montoRestante);
+            ps.setString(4, tipoPago.toUpperCase());
+            ps.setDouble(5, interesGenerado);
+            ps.setInt(6, idPago);
+            boolean ok = ps.executeUpdate() > 0;
+
+            // Actualizar estado del articulo si ya esta pagado
+            if (montoRestante <= 0) {
+                String upd = "UPDATE articulos SET estado='RECUPERADO' WHERE id_articulo=?";
+                PreparedStatement psUpd = conn.prepareStatement(upd);
+                psUpd.setInt(1, idArticulo);
+                psUpd.executeUpdate();
+            }
+
+            conn.close();
+            return ok;
+        } catch (Exception e) {
+            System.out.println("Error actualizando pago: " + e.getMessage());
+            return false;
+        }
+    }
+
+        public static class Estadisticas {
         public int totalClientes;
         public int articulosEmpenados;
         public int articulosRecuperados;
@@ -1050,7 +1318,7 @@ public class DataBaseModels {
         public double totalRecuperado;
     }
 
-    // ===== MÉTODO QUE CONSULTA LA BD Y DEVUELVE LAS ESTADÍSTICAS =====
+ // MÉTODO QUE CONSULTA LA BD Y DEVUELVE LAS ESTADÍSTICAS
     public Estadisticas obtenerEstadisticas() {
 
         Estadisticas stats = new Estadisticas();

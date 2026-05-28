@@ -102,6 +102,7 @@ public class HomeView extends JPanel
     String[] clienteParaArticulo;
     
     JComboBox<String> comboCat, comboEstado;
+    JFrame ventanaPagos;
 
     public HomeView() {
 
@@ -162,6 +163,19 @@ public class HomeView extends JPanel
 
         );
 
+    }
+
+    public void refrescarTablaPagos() {
+
+        tableDataBase.cargarPagos();
+
+        if (panelTablaPagos != null && ventanaPagos != null) {
+
+            renderizarTablaPagos(panelTablaPagos, "", ventanaPagos);
+
+            panelTablaPagos.revalidate();
+            panelTablaPagos.repaint();
+        }
     }
     
 	public void home()
@@ -903,6 +917,7 @@ public class HomeView extends JPanel
     public void dashboardPagos() {
         // 1. Configuración de la Ventana Principal
         JFrame ventana = new JFrame();
+        ventanaPagos = ventana;
         ventana.setTitle("Sistema Administrativo - Pagos");
         ventana.setSize(1150, 660);
         ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -1066,6 +1081,15 @@ public class HomeView extends JPanel
                 // Instanciamos y mostramos la nueva ventana modal
             	ModalNuevoPago modal = new ModalNuevoPago(HomeView.this,ventana,baseDatosPagos);
                 modal.setVisible(true);
+                // El modal es bloqueante: cuando regresa aqui ya fue cerrado.
+                // Refrescamos la tabla directamente con la ventana correcta.
+                tableDataBase.cargarPagos();
+                tableDataBase.cargarArticulos();
+                renderizarTablaPagos(panelTablaPagos, "", ventana);
+                panelTablaPagos.revalidate();
+                panelTablaPagos.repaint();
+                ventana.revalidate();
+                ventana.repaint();
             }
         });
 
@@ -1166,7 +1190,7 @@ public class HomeView extends JPanel
         ventana.revalidate();
     }
     
-    // ================= MÉTODOS AUXILIARES ================= //
+ // MÉTODOS AUXILIARES //
     void registrarNuevoCliente(
     	    String nombre,
     	    String telefono,
@@ -1706,8 +1730,8 @@ public class HomeView extends JPanel
             		));
             */
 
-            String filtroCat=comboCat.getSelectedItem().toString();
-            String filtroEstado=comboEstado.getSelectedItem().toString();
+            String filtroCat = (comboCat != null) ? comboCat.getSelectedItem().toString() : "Todas las categorías";
+            String filtroEstado = (comboEstado != null) ? comboEstado.getSelectedItem().toString() : "Todos los estados";
             
 
             
@@ -2195,7 +2219,7 @@ public class HomeView extends JPanel
         btnPdf.add(lblPdf);
         panelContenido.add(btnPdf);
 
-        // ================= TARJETA 1: INFORMACIÓN PERSONAL =================
+ // TARJETA 1: INFORMACIÓN PERSONAL
         PanelRedondeado cardInfo = new PanelRedondeado(15, Color.WHITE);
         cardInfo.setLayout(null);
         cardInfo.setBounds(40, 150, 850, 140);
@@ -2250,61 +2274,85 @@ public class HomeView extends JPanel
         lblArtVal.setBounds(460, 110, 200, 15);
         cardInfo.add(lblArtVal);
 
-        // ================= TARJETA 2: ARTÍCULOS EMPEÑADOS =================
+ // Obtener datos reales del cliente desde la BD
+        int idCli = tableDataBase.obtenerIdCliente(cliente[0]);
+        java.util.List<String[]> todosArticulos = (idCli > 0)
+            ? tableDataBase.obtenerTodosArticulosPorCliente(idCli)
+            : new java.util.ArrayList<>();
+        java.util.List<String[]> artEmpenados = new java.util.ArrayList<>();
+        for (String[] a : todosArticulos) {
+            if ("EMPEÑADO".equals(a[4])) artEmpenados.add(a);
+        }
+        int totalEmpenados = artEmpenados.size();
+
+        // Actualizar el label de articulos empenados con dato real
+        lblArtVal.setText(String.valueOf(totalEmpenados));
+
+ // TARJETA 2: ARTÍCULOS EMPEÑADOS
+        int alturaT2 = Math.max(110, 55 + totalEmpenados * 60 + 10);
         PanelRedondeado cardActivos = new PanelRedondeado(15, Color.WHITE);
         cardActivos.setLayout(null);
-        cardActivos.setBounds(40, 310, 850, 110);
+        cardActivos.setBounds(40, 310, 850, alturaT2);
         panelContenido.add(cardActivos);
 
-        JLabel tActivos = new JLabel("Artículos actualmente empeñados");
+        JLabel tActivos = new JLabel("Artículos actualmente empeñados (" + totalEmpenados + ")");
         tActivos.setFont(new Font("Inter", Font.BOLD, 12));
-        tActivos.setBounds(20, 15, 300, 20);
+        tActivos.setBounds(20, 15, 400, 20);
         cardActivos.add(tActivos);
 
-        PanelRedondeado itemCaja = new PanelRedondeado(10, Color.WHITE);
-        itemCaja.setBorder(new LineBorder(Color.decode("#EAECEF"), 1, true));
-        itemCaja.setLayout(null);
-        itemCaja.setBounds(20, 45, 810, 50);
-        
-        JLabel itmNom = new JLabel("Anillo de Oro 14K");
-        itmNom.setFont(new Font("Inter", Font.BOLD, 12));
-        itmNom.setBounds(20, 10, 200, 15);
-        itemCaja.add(itmNom);
-        JLabel itmDet = new JLabel("Categoría: Joyería - Fecha: 14/3/2025");
-        itmDet.setFont(new Font("Inter", Font.PLAIN, 11));
-        itmDet.setForeground(Color.GRAY);
-        itmDet.setBounds(20, 25, 300, 15);
-        itemCaja.add(itmDet);
-        
-        JLabel itmMonto = new JLabel("$5,000", SwingConstants.RIGHT);
-        itmMonto.setFont(new Font("Inter", Font.BOLD, 12));
-        itmMonto.setBounds(700, 10, 90, 15);
-        itemCaja.add(itmMonto);
-        JLabel itmVence = new JLabel("Vence: 14/6/2025", SwingConstants.RIGHT);
-        itmVence.setFont(new Font("Inter", Font.PLAIN, 11));
-        itmVence.setForeground(Color.GRAY);
-        itmVence.setBounds(680, 25, 110, 15);
-        itemCaja.add(itmVence);
+        if (artEmpenados.isEmpty()) {
+            JLabel lblSinArt = new JLabel("No hay artículos empeñados actualmente");
+            lblSinArt.setFont(new Font("Inter", Font.PLAIN, 12));
+            lblSinArt.setForeground(Color.GRAY);
+            lblSinArt.setBounds(20, 50, 400, 20);
+            cardActivos.add(lblSinArt);
+        } else {
+            int pyA = 45;
+            for (String[] art : artEmpenados) {
+                PanelRedondeado itemCaja = new PanelRedondeado(10, Color.WHITE);
+                itemCaja.setBorder(new LineBorder(Color.decode("#EAECEF"), 1, true));
+                itemCaja.setLayout(null);
+                itemCaja.setBounds(20, pyA, 810, 50);
 
-        cardActivos.add(itemCaja);
+                JLabel itmNom = new JLabel(art[0]);
+                itmNom.setFont(new Font("Inter", Font.BOLD, 12));
+                itmNom.setBounds(20, 8, 250, 15);
+                itemCaja.add(itmNom);
 
-        // ================= TARJETA 3: HISTORIAL =================
+                JLabel itmDet = new JLabel("Categoría: " + art[1] + "  -  Vence: " + art[2]);
+                itmDet.setFont(new Font("Inter", Font.PLAIN, 11));
+                itmDet.setForeground(Color.GRAY);
+                itmDet.setBounds(20, 28, 400, 15);
+                itemCaja.add(itmDet);
+
+                JLabel itmMonto = new JLabel(art[3], SwingConstants.RIGHT);
+                itmMonto.setFont(new Font("Inter", Font.BOLD, 12));
+                itmMonto.setBounds(680, 18, 110, 15);
+                itemCaja.add(itmMonto);
+
+                cardActivos.add(itemCaja);
+                pyA += 58;
+            }
+        }
+
+ // TARJETA 3: HISTORIAL
+        int topHistorial = 310 + alturaT2 + 20;
+        int[] posXH = {20, 150, 280, 420, 560, 700};
+        int alturaT3 = Math.max(120, 85 + todosArticulos.size() * 40 + 10);
         PanelRedondeado cardHistorial = new PanelRedondeado(15, Color.WHITE);
         cardHistorial.setLayout(null);
-        cardHistorial.setBounds(40, 440, 850, 170);
+        cardHistorial.setBounds(40, topHistorial, 850, alturaT3);
         panelContenido.add(cardHistorial);
 
-        JLabel tHistorial = new JLabel("Historial de empeño (2)");
+        JLabel tHistorial = new JLabel("Historial de empeño (" + todosArticulos.size() + ")");
         tHistorial.setFont(new Font("Inter", Font.BOLD, 12));
-        tHistorial.setBounds(20, 15, 200, 20);
+        tHistorial.setBounds(20, 15, 300, 20);
         cardHistorial.add(tHistorial);
 
-        // Cabecera Tabla Historial
         JPanel headerHist = new JPanel(null);
         headerHist.setBackground(Color.decode("#F4F6F9"));
         headerHist.setBounds(20, 45, 810, 30);
         String[] colHist = {"ARTÍCULO", "CATEGORÍA", "FECHA LÍMITE", "MONTO PRESTADO", "ESTADO", "ACCIONES"};
-        int[] posXH = {20, 150, 280, 420, 560, 700};
         for (int i = 0; i < colHist.length; i++) {
             JLabel lblH = new JLabel(colHist[i]);
             lblH.setFont(new Font("Inter", Font.BOLD, 10));
@@ -2313,10 +2361,20 @@ public class HomeView extends JPanel
         }
         cardHistorial.add(headerHist);
 
-        // Fila 1 - Historial (Simulada para diseño)
-        crearFilaHistorial(cardHistorial, 85, posXH, "Anillo de Oro 14K", "Joyería", "14/6/2025", "$5,000", "Empeñado", "#FFF9C4", "#FBC02D");
-        // Fila 2 - Historial
-        crearFilaHistorial(cardHistorial, 125, posXH, "Laptop Dell XPS 15", "Electrónica", "30/4/2025", "$8,000", "Recuperado", "#C8E6C9", "#388E3C");
+        if (todosArticulos.isEmpty()) {
+            JLabel lblSinHist = new JLabel("Sin historial de empeños");
+            lblSinHist.setFont(new Font("Inter", Font.PLAIN, 12));
+            lblSinHist.setForeground(Color.GRAY);
+            lblSinHist.setBounds(20, 85, 300, 20);
+            cardHistorial.add(lblSinHist);
+        } else {
+            int rowY = 85;
+            for (String[] art : todosArticulos) {
+                crearFilaHistorial(cardHistorial, rowY, posXH,
+                    art[0], art[1], art[2], art[3], art[4], art[5], art[6]);
+                rowY += 40;
+            }
+        }
 
         ventana.setVisible(true);
     }
@@ -2331,7 +2389,7 @@ public class HomeView extends JPanel
         ventana.setLocationRelativeTo(null);
         ventana.setLayout(null);
         ventana.getContentPane().setBackground(Color.decode("#F4F6F9")); 
-        // ================= TOP HEADER Y LOGO =================
+ // TOP HEADER Y LOGO
      // 2. Panel Izquierdo (Menú lateral)
         JPanel panelMenu = new JPanel();
         panelMenu.setLayout(null);
@@ -2417,7 +2475,7 @@ public class HomeView extends JPanel
         lblMenuPagos.setCursor(new Cursor(Cursor.HAND_CURSOR));
         panelMenu.add(lblMenuPagos);
 
-        // ================= CONTENEDOR PRINCIPAL =================
+ // CONTENEDOR PRINCIPAL
         JPanel panelContenido = new JPanel();
         panelContenido.setLayout(null);
         panelContenido.setBounds(220, 0, 930, 800); 
@@ -2489,7 +2547,7 @@ public class HomeView extends JPanel
         btnPdf.add(lblPdf);
         panelContenido.add(btnPdf);
 
-        // ================= TARJETA 1: INFORMACIÓN DEL ARTÍCULO (IZQ-ARRIBA) =================
+ // TARJETA 1: INFORMACIÓN DEL ARTÍCULO (IZQ-ARRIBA)
         PanelRedondeado cardInfo = new PanelRedondeado(15, Color.WHITE);
         cardInfo.setLayout(null);
         cardInfo.setBounds(40, 150, 520, 280);
@@ -2538,7 +2596,7 @@ public class HomeView extends JPanel
         lblDescVal.setBounds(25, 260, 400, 15);
         cardInfo.add(lblDescVal);
 
-        // ================= TARJETA 2: RESUMEN FINANCIERO (DER-ARRIBA) =================
+ // TARJETA 2: RESUMEN FINANCIERO (DER-ARRIBA)
         PanelRedondeado cardFinanzas = new PanelRedondeado(15, Color.WHITE);
         cardFinanzas.setLayout(null);
         cardFinanzas.setBounds(580, 150, 310, 280);
@@ -2550,56 +2608,80 @@ public class HomeView extends JPanel
         tFinanzas.setBounds(25, 20, 200, 20);
         cardFinanzas.add(tFinanzas);
 
-        agregarDatoFinanciero(cardFinanzas, 70, "Total prestado", articulo[3], Color.BLACK, 16);
-        agregarDatoFinanciero(cardFinanzas, 120, "Total abonado", "$500", Color.decode("#2E7D32"), 14);
+        // Obtener datos financieros reales desde la BD
+        int idArticuloDetalle = tableDataBase.obtenerIdArticulo(articulo[0], tableDataBase.obtenerIdCliente(articulo[1]));
+        double[] deudaDetalle = (idArticuloDetalle > 0) ? tableDataBase.obtenerDatosDeudaArticulo(idArticuloDetalle) : new double[]{0,0,0};
+        String strTotalPrestado = String.format("$%.2f", deudaDetalle[0]);
+        String strTotalAbonado  = String.format("$%.2f", deudaDetalle[1]);
+        String strTotalRestante = String.format("$%.2f", deudaDetalle[2]);
+
+        agregarDatoFinanciero(cardFinanzas, 70,  "Total prestado",  strTotalPrestado, Color.BLACK, 16);
+        agregarDatoFinanciero(cardFinanzas, 120, "Total abonado",   strTotalAbonado,  Color.decode("#2E7D32"), 14);
 
         JSeparator sepFin = new JSeparator();
         sepFin.setForeground(Color.decode("#EAECEF"));
         sepFin.setBounds(25, 175, 260, 1);
         cardFinanzas.add(sepFin);
 
-        agregarDatoFinanciero(cardFinanzas, 190, "Total abonado", "$500", Color.RED, 14); // Asumiendo que el de rojo es cargo/restante
+        agregarDatoFinanciero(cardFinanzas, 190, "Monto restante",  strTotalRestante, Color.RED, 14);
 
-        // ================= TARJETA 3: HISTORIAL DE PAGOS (IZQ-ABAJO) =================
+ // TARJETA 3: HISTORIAL DE PAGOS (IZQ-ABAJO)
+        java.util.List<String[]> historialPagos = (idArticuloDetalle > 0)
+            ? tableDataBase.obtenerHistorialPagosPorArticulo(idArticuloDetalle)
+            : new java.util.ArrayList<>();
+
         PanelRedondeado cardHistorial = new PanelRedondeado(15, Color.WHITE);
         cardHistorial.setLayout(null);
-        cardHistorial.setBounds(40, 450, 520, 200);
+        int alturaHistorial = Math.max(150, 60 + historialPagos.size() * 80 + 20);
+        cardHistorial.setBounds(40, 450, 520, alturaHistorial);
         cardHistorial.setBorder(new LineBorder(Color.decode("#EAECEF"), 1, true));
         panelContenido.add(cardHistorial);
 
-        JLabel tHistorial = new JLabel("Historial de pagos (1)");
+        JLabel tHistorial = new JLabel("Historial de pagos (" + historialPagos.size() + ")");
         tHistorial.setFont(new Font("Inter", Font.BOLD, 13));
-        tHistorial.setBounds(25, 20, 200, 20);
+        tHistorial.setBounds(25, 20, 250, 20);
         cardHistorial.add(tHistorial);
 
-        // Ítem Historial
-        PanelRedondeado itemPago = new PanelRedondeado(10, Color.WHITE);
-        itemPago.setLayout(null);
-        itemPago.setBounds(25, 60, 470, 70);
-        itemPago.setBorder(new LineBorder(Color.GRAY, 1, true));
-        
-        JLabel lblMontoPago = new JLabel("$500");
-        lblMontoPago.setFont(new Font("Inter", Font.BOLD, 14));
-        lblMontoPago.setBounds(15, 10, 100, 20);
-        itemPago.add(lblMontoPago);
+        if (historialPagos.isEmpty()) {
+            JLabel lblSinPagos = new JLabel("Sin pagos registrados");
+            lblSinPagos.setFont(new Font("Inter", Font.PLAIN, 12));
+            lblSinPagos.setForeground(Color.GRAY);
+            lblSinPagos.setBounds(25, 60, 300, 20);
+            cardHistorial.add(lblSinPagos);
+        } else {
+            int pyH = 60;
+            for (String[] pago : historialPagos) {
+                PanelRedondeado itemPago = new PanelRedondeado(10, Color.WHITE);
+                itemPago.setLayout(null);
+                itemPago.setBounds(25, pyH, 470, 65);
+                itemPago.setBorder(new LineBorder(Color.decode("#E5E7EB"), 1, true));
 
-        JLabel lblFechaPago = new JLabel("19/3/2024");
-        lblFechaPago.setFont(new Font("Inter", Font.PLAIN, 12));
-        lblFechaPago.setForeground(Color.GRAY);
-        lblFechaPago.setBounds(15, 30, 100, 15);
-        itemPago.add(lblFechaPago);
+                JLabel lblMontoPago = new JLabel(pago[1]);
+                lblMontoPago.setFont(new Font("Inter", Font.BOLD, 14));
+                lblMontoPago.setBounds(15, 8, 150, 20);
+                itemPago.add(lblMontoPago);
 
-        JLabel lblConcepto = new JLabel("Pago de interés mensual");
-        lblConcepto.setFont(new Font("Inter", Font.PLAIN, 13));
-        lblConcepto.setBounds(15, 50, 200, 15);
-        itemPago.add(lblConcepto);
+                JLabel lblFechaPago = new JLabel(pago[0]);
+                lblFechaPago.setFont(new Font("Inter", Font.PLAIN, 12));
+                lblFechaPago.setForeground(Color.GRAY);
+                lblFechaPago.setBounds(15, 28, 150, 15);
+                itemPago.add(lblFechaPago);
 
-        cardHistorial.add(itemPago);
+                JLabel lblTipoPago = new JLabel(pago[2]);
+                lblTipoPago.setFont(new Font("Inter", Font.PLAIN, 12));
+                lblTipoPago.setForeground(Color.decode("#1D4ED8"));
+                lblTipoPago.setBounds(200, 18, 150, 20);
+                itemPago.add(lblTipoPago);
 
-        // ================= TARJETA 4: CLIENTE (DER-ABAJO) =================
+                cardHistorial.add(itemPago);
+                pyH += 80;
+            }
+        }
+
+ // TARJETA 4: CLIENTE (DER-ABAJO)
         PanelRedondeado cardCliente = new PanelRedondeado(15, Color.WHITE);
         cardCliente.setLayout(null);
-        cardCliente.setBounds(580, 450, 310, 260);
+        cardCliente.setBounds(580, 450, 310, 200);
         cardCliente.setBorder(new LineBorder(Color.decode("#EAECEF"), 1, true));
         panelContenido.add(cardCliente);
 
@@ -2608,24 +2690,15 @@ public class HomeView extends JPanel
         tCliente.setBounds(25, 20, 200, 20);
         cardCliente.add(tCliente);
 
-        agregarDatoCliente(cardCliente, 60, "Nombre", cliente[1]); // Reemplazar por cliente[1]
-        agregarDatoCliente(cardCliente, 110, "Teléfono", cliente[2]);      // Reemplazar por cliente[2]
-        agregarDatoCliente(cardCliente, 160, "Correo electrónico", cliente[3]); // Reemplazar por cliente[3]
-
-        PanelRedondeado btnPerfil = new PanelRedondeado(10, Color.decode("#829ECF"));
-        btnPerfil.setLayout(null);
-        btnPerfil.setBounds(25, 215, 260, 30);
-        JLabel lblPerfil = new JLabel("Ver perfil completo", SwingConstants.CENTER);
-        lblPerfil.setFont(new Font("Inter", Font.PLAIN, 13));
-        lblPerfil.setForeground(Color.BLACK);
-        lblPerfil.setBounds(0, 0, 260, 30);
-        btnPerfil.add(lblPerfil);
-        cardCliente.add(btnPerfil);
+        // cliente[0]=nombre, [1]=telefono, [2]=correo, [3]=fecha_registro
+        agregarDatoCliente(cardCliente, 50,  "Nombre",              cliente[0]);
+        agregarDatoCliente(cardCliente, 100, "Teléfono",            cliente[1]);
+        agregarDatoCliente(cardCliente, 150, "Correo electrónico",  cliente[2] != null ? cliente[2] : "Sin correo");
 
         ventana.setVisible(true);
     }
 
-    // ================= MÉTODOS AUXILIARES PARA EVITAR REPETIR CÓDIGO =================
+ // MÉTODOS AUXILIARES PARA EVITAR REPETIR CÓDIGO
     private void agregarDatoGrid(JPanel panel, int x, int y, String titulo, String valor) {
         JLabel lblTit = new JLabel(titulo);
         lblTit.setFont(new Font("Inter", Font.PLAIN, 11));
@@ -2731,6 +2804,15 @@ public class HomeView extends JPanel
             }else if(metod==2){
             	baseDatosArticulos.remove(clienteAEliminar);
             }else {
+            	// Eliminar pago de la BD usando id_pago guardado en [8]
+            	if (clienteAEliminar.length > 8 && clienteAEliminar[8] != null) {
+            	    try {
+            	        int idPago = Integer.parseInt(clienteAEliminar[8]);
+            	        tableDataBase.eliminarPago(idPago);
+            	    } catch (NumberFormatException ex) {
+            	        System.out.println("Error parseando id_pago: " + ex.getMessage());
+            	    }
+            	}
             	baseDatosPagos.remove(clienteAEliminar);
             }
             
