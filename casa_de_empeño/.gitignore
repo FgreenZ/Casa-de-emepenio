@@ -4,10 +4,13 @@ bin/
 target/
 build/
 
-# Configuración de Eclipse
+# Configuración de Eclipse (SOLO estos)
 .settings/
 .project
 .metadata/
+
+# NUNCA ignorar .classpath si usas Eclipse sin Maven/Gradle
+# .classpath  ← ¡No lo ignores!
 
 # Archivos de sistema operativo
 .DS_Store

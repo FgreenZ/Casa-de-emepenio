@@ -32,6 +32,8 @@ class ModalNuevoCliente extends JDialog {
     private final String phTelefono = "Ej: 6123456789";
     private final String phCorreo = "Ej: ejemplo@email.com";
     private final String phFecha = "DD/MM/AAAA     📅";
+    PanelRedondeado btnCerrar = new PanelRedondeado(10, Color.decode("#EF4444"));
+
     private HomeView home;
     
     
@@ -84,10 +86,27 @@ class ModalNuevoCliente extends JDialog {
         });
 
         // --- BOTÓN CREAR CLIENTE ---
+        JLabel lblCerrar = new JLabel("Cancelar", SwingConstants.CENTER);
+        lblCerrar.setForeground(Color.WHITE);
+        lblCerrar.setFont(new Font("Inter", Font.BOLD, 14));
+        btnCerrar.setLayout(new BorderLayout());
+        btnCerrar.setBounds(140, 420, 160, 40); 
+        btnCerrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnCerrar.add(lblCerrar);
+        btnCerrar.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            	ModalNuevoCliente.this.dispose();
+            }
+        });
+        panelFondo.add(btnCerrar);
+        
         PanelRedondeado btnCrear = new PanelRedondeado(10, Color.decode("#1D4ED8"));
         btnCrear.setLayout(null);
         btnCrear.setBounds(310, 420, 150, 40);
         btnCrear.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        ToastAlerta alerta = new ToastAlerta(ModalNuevoCliente.this, "Por favor completa todos los campos");
+        ToastAlertaSR userCreado=new ToastAlertaSR(parent,"Usuario creado exitosamente");
 
         JLabel lblCrear = new JLabel("Crear cliente", SwingConstants.CENTER);
         lblCrear.setForeground(Color.WHITE);
@@ -100,22 +119,19 @@ class ModalNuevoCliente extends JDialog {
             @Override
             public void mouseClicked(MouseEvent e) {
             	if (camposIncompletos()) {
-                    ToastAlerta alerta = new ToastAlerta(ModalNuevoCliente.this, "Por favor completa todos los campos");
-                   // alerta.setVisible(true);
+            		alerta.active();
                 } else {
-                    // Como ya tenemos la variable 'home', la usamos directamente
                     if (home != null) {
                         String nombre = txtNombre.getText().trim();
                         String telefono = txtTelefono.getText().trim();
                         String correo = txtCorreo.getText().trim();
                         String fecha = txtFecha.getText().trim();
                         
-                        // Llamamos al método
+                        userCreado.active();
                         home.registrarNuevoCliente(nombre, telefono, correo, fecha);
                     }
-                    
                     System.out.println("Cliente añadido exitosamente.");
-                    dispose(); // Cierra el modal
+                    dispose(); 
                 }
             }
         });
@@ -172,4 +188,14 @@ class ModalNuevoCliente extends JDialog {
     }
     
 }
-
+/*
+ * 
+ * private boolean camposIncompletos() {
+        return txtNombre.getText().equals(phNombre) || txtNombre.getText().trim().isEmpty() ||
+               txtTelefono.getText().equals(phTelefono) || txtTelefono.getText().trim().isEmpty() ||
+               txtCorreo.getText().equals(phCorreo) || txtCorreo.getText().trim().isEmpty() ||
+               txtFecha.getText().equals(phFecha) || txtFecha.getText().trim().isEmpty();
+    }
+ * 
+ * 
+ * */

@@ -149,6 +149,7 @@ public class HomeView extends JPanel
 
         add(panelTablaPagos);
     }
+    
     public void refrescarTablaArticulos() {
 
         tableDataBase.cargarArticulos();
@@ -162,6 +163,7 @@ public class HomeView extends JPanel
         );
 
     }
+    
 	public void home()
 	{
 		
@@ -546,7 +548,7 @@ public class HomeView extends JPanel
                 modal.setVisible(true);
             }
         });
-         
+        
         
         
         // 9. Barra de Búsqueda Interactiva
@@ -734,7 +736,7 @@ public class HomeView extends JPanel
         btnCerrarSesion.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-            	 	
+            		
             	ventana.dispose();
             	AuthController x =new AuthController();
             	
@@ -765,9 +767,10 @@ public class HomeView extends JPanel
         btnNuevoCliente.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                // Instanciamos y mostramos la nueva ventana modal
+
             	ModalNuevoArticulo modal = new ModalNuevoArticulo(HomeView.this, ventana);
                 modal.setVisible(true);
+                
             }
         });
 
@@ -795,19 +798,6 @@ public class HomeView extends JPanel
         inputBusqueda.add(txtBusqueda);
         panelFiltros.add(inputBusqueda);
         
-        
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         // Combobox Estado
         comboEstado = new JComboBox<>(new String[]{"Todos los estados", "EMPEÑADO", "Recuperados", "Rematados"});
         comboEstado.setBounds(290, 15, 260, 40);
@@ -817,7 +807,7 @@ public class HomeView extends JPanel
         comboEstado.setFocusable(false);
         
         // Combobox Categoría
-        comboCat = new JComboBox<>(new String[]{"Todas las categorías", "Joyeria", "Electronica", "Otros"});
+        comboCat = new JComboBox<>(new String[]{"Todas las categorías", "Joyeria", "Electrónica", "Otros"});
         comboCat.setBounds(570, 15, 260, 40);
         comboCat.setBackground(Color.decode("#EAECEF"));
         comboCat.setFont(new Font("Inter", Font.PLAIN, 12));
@@ -838,15 +828,6 @@ public class HomeView extends JPanel
         });
         panelFiltros.add(comboEstado);
         panelFiltros.add(comboCat);
-
-        
-        
-        
-        
-        
-        
-        
-        
         
         // 9. Tarjetas de Resumen (KPIs) - datos desde la BD
         DataBaseModels.Estadisticas statsArts = tableDataBase.obtenerEstadisticas();
@@ -1083,12 +1064,7 @@ public class HomeView extends JPanel
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 // Instanciamos y mostramos la nueva ventana modal
-            	ModalNuevoPago modal = new ModalNuevoPago(
-            		    HomeView.this,
-            		    ventana,
-            		    baseDatosClientes,
-            		    baseDatosArticulos
-            		);
+            	ModalNuevoPago modal = new ModalNuevoPago(HomeView.this,ventana,baseDatosPagos);
                 modal.setVisible(true);
             }
         });
@@ -1231,7 +1207,8 @@ public class HomeView extends JPanel
     	            "No se pudo guardar."
     	        );
     	    }
-    	}
+    }
+    
     public void actualizarCliente(
     	    int index,
     	    String nombre,
@@ -1283,7 +1260,7 @@ public class HomeView extends JPanel
     	            );
     	        }
     	    }
-    	}
+    }
     
     private void configurarBusquedaInteractiva(JTextField txtBusqueda, JFrame ventana, JPanel panelTabla) {
         JPopupMenu popupSugerencias = new JPopupMenu();
@@ -1862,6 +1839,7 @@ public class HomeView extends JPanel
         panelTabla.revalidate();
         panelTabla.repaint();
     }
+    
     public void renderizarTablaArticulos(){
 
         panelTablaArticulos.removeAll();
@@ -1880,6 +1858,7 @@ public class HomeView extends JPanel
         panelTablaArticulos.repaint();
 
     }
+    
     private void renderizarTablaPagos(JPanel panelTabla, String filtro, JFrame ventana) {
     	
     	

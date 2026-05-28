@@ -1,51 +1,59 @@
 package views;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
-class ToastAlertaSR extends JDialog {
-    public ToastAlertaSR(JFrame parent, String mensaje) {
-        super(parent, false);
-        setUndecorated(true);
-        setBackground(Color.decode("#E0F2F1")); // Transparente
+class ToastAlertaSR  {
+
+    PanelRedondeado panel = new PanelRedondeado(20, Color.decode("#FFFFFF"));
+    JFrame panelPadre;
+    
+    public ToastAlertaSR(JFrame panelPadre, String mensaje) {
+        this.panelPadre = panelPadre;
         
-        JPanel panel = new JPanel(null);
-        panel.setBackground(Color.decode("#E0F2F1"));
+        panel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 10));
+        panel.setBackground(Color.decode("#FFEDED"));
         panel.setBorder(new RoundedBorder(10));
-        
-        JLabel icono = new JLabel("✅");
-        icono.setForeground(Color.decode("#065F46"));
-        icono.setFont(new Font("SansSerif", Font.BOLD, 35));
-        icono.setBounds(20, 15, 50, 50);
 
-        
+        JLabel icono = new JLabel("✔️");
+        icono.setFont(new Font("SansSerif", Font.BOLD, 16));
+
         JLabel texto = new JLabel(mensaje);
-        texto.setForeground(Color.decode("#065F46"));
-        texto.setFont(new Font("Inter", Font.PLAIN, 15));
-        texto.setBounds(50, 23, 240, 35);
-        //texto.setSize(100, 20);
-        
+        texto.setForeground(Color.DARK_GRAY);
+        texto.setFont(new Font("Inter", Font.PLAIN, 14));
+
         panel.add(icono);
-        panel.add(texto);
-        add(panel);
-        
-        setSize(320, 80);
+        panel.add(texto);     
 
-        int x, y;
-        
-        if (parent instanceof AuthView) {
-            x = parent.getX() + parent.getWidth() - 400;   
-            y = parent.getY() + 240; 
-        } else {
-            x = parent.getX() + parent.getWidth() - 340;
-            y = parent.getY() + 50;
-        }
-        setLocation(x, y+70);
+        JLayeredPane layeredPane = panelPadre.getLayeredPane();
+        int x = (panelPadre.getWidth() - 300) / 2;
+        int y = 100;
+        panel.setBounds(840, 25, 280, 50);
+        layeredPane.add(panel, JLayeredPane.POPUP_LAYER);
 
+        panel.setVisible(false);
     }
+    
+    public void active() {
+    	panel.setVisible(true);
+    	panel.revalidate();
+    	panel.repaint();
+    	Timer timer = new Timer(3000, e -> panel.setVisible(false));
+        timer.setRepeats(false);
+        timer.start();
+	}
+    
+    
+    
+    
+    
 }

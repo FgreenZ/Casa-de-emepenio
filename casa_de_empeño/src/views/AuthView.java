@@ -317,7 +317,7 @@ public class AuthView extends JFrame {
         cuadroLogin.add(titulo);
         
         ToastAlertaSR aviso=new ToastAlertaSR(AuthView.this,"<html><center>¡Tu cuenta ha sido creada exitosamente!</center></html>");
-        aviso.setVisible(true);
+        aviso.active();
         
         JLabel lblExito = new JLabel("Puedes usar tus credenciales para inisiar sesión ahora.", SwingConstants.CENTER);
         lblExito.setFont(new Font("Inter", Font.BOLD, 12));
@@ -329,7 +329,7 @@ public class AuthView extends JFrame {
         btnVolver.addActionListener(e -> {
             
         	VentanaLogin();
-        	aviso.dispose();
+        	//aviso.dispose();
         	
         });
         cuadroLogin.add(btnVolver);

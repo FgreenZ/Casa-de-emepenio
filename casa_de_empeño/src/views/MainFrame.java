@@ -26,4 +26,5 @@ public class MainFrame extends JFrame {
     public void mostrarVista(String nombre) {
         cardLayout.show(mainPanel, nombre);
     }
+    
 }

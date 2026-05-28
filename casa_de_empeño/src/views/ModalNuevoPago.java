@@ -1,10 +1,6 @@
 package views;
 
 import java.awt.*;
-import models.ComboItem;
-import models.DataBaseModels;
-import models.Cliente;
-import models.ClienteModel;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +9,13 @@ import javax.swing.*;
 
 public class ModalNuevoPago extends JDialog {
 
-    private ClienteModel clienteModel;
-
     private HomeView home;
 
-    private JComboBox<ComboItem> cbCliente;
-    private JComboBox<ComboItem> cbArticulo;
-    private JComboBox cbTipoPago;
+    // Componentes para extraer la información posteriormente
+    private JPanel cbCliente;
+    private JPanel cbArticulo;
+    private JPanel cbEstado;
+
 
     private JTextField txtNombre;
     private JComboBox<String> cbCategoria;
@@ -29,867 +25,344 @@ public class ModalNuevoPago extends JDialog {
     private JTextField txtFechaLimite;
     private JTextField fechaEmpeño;
     private JPanel txtNotas;
+    JComboBox<String>[] opciones = new JComboBox[3];    
+    JPanel fecha=new JPanel(null);
+    JPanel datos_pago=new JPanel(null);
 
-    JComboBox<String>[] opciones = new JComboBox[3];
 
-    JPanel fecha = new JPanel(null);
-    JPanel datos_pago = new JPanel(null);
-
-    PanelRedondeado panelFondo =
-        new PanelRedondeado(20, Color.WHITE);
-
-    PanelRedondeado operacion =
-        new PanelRedondeado(
-            20,
-            Color.decode("#C7D3EA")
-        );
-
-    PanelRedondeado btnCrear =
-        new PanelRedondeado(
-            10,
-            Color.decode("#1D4ED8")
-        );
-
-    ToastAlerta advertencia =
-        new ToastAlerta(
-            ModalNuevoPago.this,
-            "Complete los campos vacios"
-        );
-
-    JTextArea[] info = new JTextArea[2];
-
-    private DataBaseModels db =
-        new DataBaseModels(
-            new ArrayList<>(),
-            new ArrayList<>(),
-            new ArrayList<>()
-        );
-
-    private void cargarClientes() {
-
-        cbCliente.removeAllItems();
-
-        ArrayList<Cliente> clientes =
-            clienteModel.getClientes();
-
-        for (Cliente c : clientes) {
-
-            cbCliente.addItem(
-
-                new ComboItem(
-
-                    c.getIdCliente(),
-
-                    c.getNombres()
-                    + " "
-                    + c.getApellidos()
-                )
-            );
-        }
-    }
-
-    private void cargarArticulosPorCliente(int idCliente) {
-
-        cbArticulo.removeAllItems();
-
-        List<ComboItem> articulos =
-            db.obtenerArticulosPorCliente(idCliente);
-
-        for (ComboItem articulo : articulos) {
-
-            cbArticulo.addItem(articulo);
-        }
-    }
-
-    public ModalNuevoPago(
-
-        HomeView home,
-        JFrame parent,
-        List<String[]> baseDatosClientes,
-        List<String[]> baseDatosArticulos
-    ) {
-
+    PanelRedondeado panelFondo = new PanelRedondeado(20, Color.WHITE);
+    PanelRedondeado operacion = new PanelRedondeado(20, Color.decode("#C7D3EA"));
+    PanelRedondeado btnCrear = new PanelRedondeado(10, Color.decode("#1D4ED8"));
+    PanelRedondeado btnCerrar = new PanelRedondeado(10, Color.decode("#EF4444"));
+    ToastAlerta advertencia=new ToastAlerta(ModalNuevoPago.this,"Complete los campos vacios");
+    JTextArea[] info=new JTextArea[2];
+    
+    public ModalNuevoPago(HomeView home, JFrame parent, List<String[]> baseDatosPagos) {
         super(parent, true);
-
-        clienteModel = new ClienteModel();
-
         this.home = home;
-
         setUndecorated(true);
-
-        setSize(
-            parent.getWidth(),
-            parent.getHeight()
-        );
-
-        datos_pago.setSize(
-            parent.getWidth(),
-            parent.getHeight()
-        );
-
+        setSize(parent.getWidth(), parent.getHeight()); // Ocupa toda la ventana de fondo
+        datos_pago.setSize(parent.getWidth(), parent.getHeight());
         datos_pago.setOpaque(false);
-        datos_pago.setLocation(0, 0);
-
+        datos_pago.setLocation(0,0);
         panelFondo.add(datos_pago);
-
-        operacion.setBounds(
-            40,
-            232,
-            520,
-            105
-        );
-
+        operacion.setBounds(40, 232, 520, 105);
         operacion.setVisible(false);
         operacion.setLayout(null);
-
         setLocationRelativeTo(parent);
-
         setLayout(null);
-
-        setBackground(
-            new Color(0, 0, 0, 100)
-        );
-
+        setBackground(new Color(0, 0, 0, 100)); // Fondo oscuro semitransparente
+        
+        // --- PANEL BLANCO CENTRAL ---
+        // Se aumentan las dimensiones para acomodar todas las filas espaciadas correctamente
+        
         panelFondo.setLayout(null);
 
         int width = 600;
         int height = 550;
+        int posX = (getWidth() - width) / 2;
+        int posY = (getHeight() - height) / 2;
+        panelFondo.setBounds(posX, posY, width, height);
+        
+        // Evitar que el modal se cierre al hacer clic dentro del panel blanco
+        panelFondo.addMouseListener(new MouseAdapter() {});
 
-        int posX =
-            (getWidth() - width) / 2;
-
-        int posY =
-            (getHeight() - height) / 2;
-
-        panelFondo.setBounds(
-            posX,
-            posY,
-            width,
-            height
-        );
-
-        panelFondo.addMouseListener(
-            new MouseAdapter() {}
-        );
-
-        JLabel lblTitulo =
-            new JLabel(
-                "Crear nuevo pago"
-            );
-
-        lblTitulo.setFont(
-            new Font(
-                "Inter",
-                Font.BOLD,
-                22
-            )
-        );
-
-        lblTitulo.setForeground(
-            Color.decode("#111827")
-        );
-
-        lblTitulo.setBounds(
-            40,
-            30,
-            400,
-            30
-        );
-
+        // --- TÍTULO ---
+        JLabel lblTitulo = new JLabel("Crear nuevo pago");
+        lblTitulo.setFont(new Font("Inter", Font.BOLD, 22));
+        lblTitulo.setForeground(Color.decode("#111827"));
+        lblTitulo.setBounds(40, 30, 400, 30);
         panelFondo.add(lblTitulo);
+        
 
+        // --- VARIABLES DE DISEÑO (GRILLA) ---
         int marginX = 40;
-
-        int fullWidth =
-            width - (marginX * 2);
-
+        int fullWidth = width - (marginX * 2); // 520
         int gap = 20;
+        int halfWidth = (fullWidth - gap) / 2; // 250
+        int col1 = marginX;                    // 40
+        int col2 = marginX + halfWidth + gap;  // 310
 
-        int halfWidth =
-            (fullWidth - gap) / 2;
-
-        int col1 = marginX;
-
-        int col2 =
-            marginX + halfWidth + gap;
-
-        // CLIENTE
-
-        JLabel lblCliente =
-            new JLabel("Cliente:*");
-
-        lblCliente.setBounds(
-            col1,
-            55,
-            200,
-            20
-        );
-
-        panelFondo.add(lblCliente);
-
-        cbCliente =
-            new JComboBox<>();
-
-        cbCliente.setBounds(
-            col1,
-            80,
-            fullWidth,
-            35
-        );
-
+        cbCliente = crearComboConLabel(panelFondo, "Cliente:*", "Selecciona un cliente", baseDatosPagos, col1, 80, fullWidth,1,0);
         panelFondo.add(cbCliente);
+        
+        cbArticulo = crearComboConLabel(panelFondo, "Articulo empeñado:*", "Selecciona un articulo", baseDatosPagos, col1, 160, fullWidth,2,1);
+        panelFondo.add(cbArticulo);
+        
+        cbEstado = crearComboConLabel(panelFondo, "Estado:*", "Empeñado", baseDatosPagos, col2, 240, halfWidth,4,2);
+        datos_pago.add(cbEstado);
 
-        cargarClientes();
+        txtFechaEmpeno = crearInputConLabel(panelFondo, "Fecha de pago:*", "dd/mm/aaaa", col1, 240, halfWidth);
+        configurarCampoFecha(txtFechaEmpeno, parent);
+        datos_pago.add(fecha);
+        
+        txtMonto = crearTextAreaConLabel(panelFondo, "Monto Abonado:*", "500", col1, 310, fullWidth, 40, 0);
+        datos_pago.add(txtMonto);
+        
+        txtNotas = crearTextAreaConLabel(panelFondo, "Notas:*", "Notas adicionales sobre el pago...", col1, 380, fullWidth, 70, 1);
+        datos_pago.add(txtNotas);
+        panelFondo.add(operacion);
+        
+        /*OPERACIONES*/
+        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+        separator.setVisible(true);
+        separator.setBackground(Color.decode("#638ADB"));
+        separator.setBounds(10, 60, 500, 5);
+        JLabel MTP =new JLabel("Monto total prestado:");
+        MTP.setForeground(Color.decode("#666666"));
+        MTP.setFont(new Font("Inter", Font.PLAIN, 13));
+        MTP.setBounds(10,15,150,14);
+        operacion.add(MTP);
+        JLabel TB =new JLabel("Total abonado:");
+        TB.setForeground(Color.decode("#666666"));
+        TB.setFont(new Font("Inter", Font.PLAIN, 13));
+        TB.setBounds(10,15,150,60);
+        operacion.add(separator);
+        operacion.add(TB);
+        JLabel MT =new JLabel("Monto restante:");
+        MT.setForeground(Color.decode("#666666"));
+        MT.setFont(new Font("Inter", Font.PLAIN, 13));
+        MT.setBounds(10,15,150,115);
+        operacion.add(MT);
+        
+        JLabel lblCerrar = new JLabel("Cancelar", SwingConstants.CENTER);
+        lblCerrar.setForeground(Color.WHITE);
+        lblCerrar.setFont(new Font("Inter", Font.BOLD, 14));
+        btnCerrar.setLayout(new BorderLayout());
+        btnCerrar.setBounds(width - marginX - 330, 495, 160, 40); 
+        btnCerrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnCerrar.add(lblCerrar);
+        btnCerrar.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            	ModalNuevoPago.this.dispose();
+            }
+        });
+        panelFondo.add(btnCerrar);
+        
+        btnCrear.setLayout(new BorderLayout());
+        btnCrear.setBounds(width - marginX - 160, 495, 160, 40); 
+        btnCrear.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        ToastAlertaSR pagoCreado=new ToastAlertaSR(parent,"Pago creado exitosamente");
 
-        cbCliente.addActionListener(e -> {
+        JLabel lblCrear = new JLabel("Registrar pago", SwingConstants.CENTER);
+        lblCrear.setForeground(Color.WHITE);
+        lblCrear.setFont(new Font("Inter", Font.BOLD, 14));
+        btnCrear.add(lblCrear);
+        btnCrear.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(info[0].getText().equals("500") || info[1].getText().equals("Notas adicionales sobre el pago...")||
+                	fechaEmpeño.getText().equals("")||fechaEmpeño.getText().equals("dd/mm/aaaa")|| 
+                	opciones[0].getSelectedItem().equals("Selecciona un cliente")||opciones[1].getSelectedItem().equals("Selecciona un articulo")) 
+                {
+                	advertencia.active();
+                }else 
+                {
+                	pagoCreado.active();
+                    ModalNuevoPago.this.dispose();
+                }
+                
+            }
+        });
+        panelFondo.add(btnCrear);
 
-            ComboItem clienteSeleccionado =
-                (ComboItem)
-                cbCliente.getSelectedItem();
-
-            if (clienteSeleccionado != null) {
-
-                cargarArticulosPorCliente(
-                    clienteSeleccionado.getId()
-                );
+        // --- CERRAR MODAL AL HACER CLIC AFUERA ---
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                dispose();
             }
         });
 
-        // ARTICULO
-
-        JLabel lblArticulo =
-            new JLabel(
-                "Artículo empeñado:*"
-            );
-
-        lblArticulo.setBounds(
-            col1,
-            135,
-            250,
-            20
-        );
-
-        panelFondo.add(lblArticulo);
-
-        cbArticulo =
-            new JComboBox<>();
-
-        cbArticulo.setBounds(
-            col1,
-            160,
-            fullWidth,
-            35
-        );
-
-        panelFondo.add(cbArticulo);
-
-        // TIPO PAGO
-
-        JLabel lblTipoPago =
-            new JLabel(
-                "Tipo de pago:*"
-            );
-
-        lblTipoPago.setBounds(
-            col2,
-            215,
-            200,
-            20
-        );
-
-        panelFondo.add(lblTipoPago);
-
-        cbTipoPago =
-            new JComboBox<>();
-
-        cbTipoPago.addItem("INTERES");
-        cbTipoPago.addItem("ABONO");
-        cbTipoPago.addItem("TOTAL");
-
-        cbTipoPago.setBounds(
-            col2,
-            240,
-            halfWidth,
-            35
-        );
-
-        panelFondo.add(cbTipoPago);
-
-        txtFechaEmpeno =
-            crearInputConLabel(
-                panelFondo,
-                "Fecha de pago:*",
-                "dd/mm/aaaa",
-                col1,
-                240,
-                halfWidth
-            );
-
-        configurarCampoFecha(
-            txtFechaEmpeno,
-            parent
-        );
-
-        datos_pago.add(fecha);
-
-        txtMonto =
-            crearTextAreaConLabel(
-                panelFondo,
-                "Monto Abonado:*",
-                "500",
-                col1,
-                310,
-                fullWidth,
-                40,
-                0
-            );
-
-        datos_pago.add(txtMonto);
-
-        txtNotas =
-            crearTextAreaConLabel(
-                panelFondo,
-                "Notas:*",
-                "Notas adicionales sobre el pago...",
-                col1,
-                380,
-                fullWidth,
-                70,
-                1
-            );
-
-        datos_pago.add(txtNotas);
-
-        panelFondo.add(operacion);
-
-        JSeparator separator =
-            new JSeparator(
-                SwingConstants.HORIZONTAL
-            );
-
-        separator.setVisible(true);
-
-        separator.setBackground(
-            Color.decode("#638ADB")
-        );
-
-        separator.setBounds(
-            10,
-            60,
-            500,
-            5
-        );
-
-        JLabel MTP =
-            new JLabel(
-                "Monto total prestado:"
-            );
-
-        MTP.setForeground(
-            Color.decode("#666666")
-        );
-
-        MTP.setFont(
-            new Font(
-                "Inter",
-                Font.PLAIN,
-                13
-            )
-        );
-
-        MTP.setBounds(
-            10,
-            15,
-            150,
-            14
-        );
-
-        operacion.add(MTP);
-
-        JLabel TB =
-            new JLabel(
-                "Total abonado:"
-            );
-
-        TB.setForeground(
-            Color.decode("#666666")
-        );
-
-        TB.setFont(
-            new Font(
-                "Inter",
-                Font.PLAIN,
-                13
-            )
-        );
-
-        TB.setBounds(
-            10,
-            15,
-            150,
-            60
-        );
-
-        operacion.add(separator);
-        operacion.add(TB);
-
-        JLabel MT =
-            new JLabel(
-                "Monto restante:"
-            );
-
-        MT.setForeground(
-            Color.decode("#666666")
-        );
-
-        MT.setFont(
-            new Font(
-                "Inter",
-                Font.PLAIN,
-                13
-            )
-        );
-
-        MT.setBounds(
-            10,
-            15,
-            150,
-            115
-        );
-
-        operacion.add(MT);
-
-        btnCrear.setLayout(
-            new BorderLayout()
-        );
-
-        btnCrear.setBounds(
-            width - marginX - 160,
-            495,
-            160,
-            40
-        );
-
-        btnCrear.setCursor(
-            new Cursor(Cursor.HAND_CURSOR)
-        );
-
-        JLabel lblCrear =
-            new JLabel(
-                "Registrar pago",
-                SwingConstants.CENTER
-            );
-
-        lblCrear.setForeground(
-            Color.WHITE
-        );
-
-        lblCrear.setFont(
-            new Font(
-                "Inter",
-                Font.BOLD,
-                14
-            )
-        );
-
-        btnCrear.add(
-            lblCrear,
-            BorderLayout.CENTER
-        );
-
-        panelFondo.add(btnCrear);
-        btnCrear.add(
-        	    lblCrear,
-        	    BorderLayout.CENTER
-        	);
-
-        	panelFondo.add(btnCrear);
-
-
-        	
-        	btnCrear.addMouseListener(new MouseAdapter() {
-
-        	    @Override
-        	    public void mouseClicked(MouseEvent e) {
-
-        	        try {
-
-        	            ComboItem clienteSeleccionado =
-        	                (ComboItem) cbCliente.getSelectedItem();
-
-        	            ComboItem articuloSeleccionado =
-        	                (ComboItem) cbArticulo.getSelectedItem();
-
-        	            if(clienteSeleccionado == null
-        	                || articuloSeleccionado == null) {
-
-        	                JOptionPane.showMessageDialog(
-        	                    null,
-        	                    "Completa todos los campos"
-        	                );
-
-        	                return;
-        	            }
-
-        	            int idCliente =
-        	                clienteSeleccionado.getId();
-
-        	            int idArticulo =
-        	                articuloSeleccionado.getId();
-
-        	            // TEMPORAL
-        	            int idUsuario = 1;
-
-        	            String tipoPago =
-        	                cbTipoPago
-        	                .getSelectedItem()
-        	                .toString();
-
-        	            String fechaTexto =
-        	                txtFechaEmpeno
-        	                .getText()
-        	                .trim();
-
-        	            String fechaPago =
-        	                db.convertirFecha(
-        	                    fechaTexto
-        	                );
-
-        	            String montoTexto =
-        	                info[0]
-        	                .getText()
-        	                .trim();
-
-        	            if(fechaTexto.isEmpty()
-        	                || montoTexto.isEmpty()) {
-
-        	                JOptionPane.showMessageDialog(
-        	                    null,
-        	                    "Completa todos los campos"
-        	                );
-
-        	                return;
-        	            }
-
-        	            double monto =
-        	                Double.parseDouble(
-        	                    montoTexto
-        	                );
-
-        	            boolean ok =
-        	                db.registrarPago(
-
-        	                    idArticulo,
-        	                    idCliente,
-        	                    idUsuario,
-        	                    fechaPago,
-        	                    monto,
-        	                    0,
-        	                    tipoPago,
-        	                    0
-        	                );
-
-        	            if(ok) {
-
-        	                JOptionPane.showMessageDialog(
-        	                    null,
-        	                    "Pago registrado correctamente"
-        	                );
-
-        	                home.dashboardPagos();
-
-        	                dispose();
-        	            }
-        	            else {
-
-        	                JOptionPane.showMessageDialog(
-        	                    null,
-        	                    "No se pudo registrar el pago"
-        	                );
-        	            }
-
-        	        }
-        	        catch(NumberFormatException ex) {
-
-        	            JOptionPane.showMessageDialog(
-        	                null,
-        	                "El monto debe ser numérico"
-        	            );
-        	        }
-        	        catch(Exception ex) {
-
-        	            ex.printStackTrace();
-
-        	            JOptionPane.showMessageDialog(
-        	                null,
-        	                "Error: " + ex.getMessage()
-        	            );
-        	        }
-        	    }
-        	});
-        	addMouseListener(
-        	    new MouseAdapter() {
-
-        	        @Override
-        	        public void mouseClicked(
-        	            MouseEvent e
-        	        ) {
-
-        	            dispose();
-        	        }
-        	    }
-        	);
-
-        	add(panelFondo);
-        addMouseListener(
-            new MouseAdapter() {
-
-                @Override
-                public void mouseClicked(
-                    MouseEvent e
-                ) {
-
-                    dispose();
-                }
-            }
-        );
-        
         add(panelFondo);
-        
     }
-    
 
-    // MÉTODOS AUXILIARES
-
-    private JTextField crearInputConLabel(
-        JPanel contenedor,
-        String titulo,
-        String placeholder,
-        int x,
-        int y,
-        int w
-    ) {
-
-        fecha.setBounds(
-            x,
-            y,
-            w,
-            70
-        );
-
-        fecha.setOpaque(false);
-
-        JLabel lbl =
-            new JLabel(titulo);
-
-        lbl.setFont(
-            new Font(
-                "Inter",
-                Font.BOLD,
-                12
-            )
-        );
-
-        lbl.setForeground(
-            Color.decode("#374151")
-        );
-
-        lbl.setBounds(
-            0,
-            0,
-            w,
-            20
-        );
-
+    // =========================================================================================
+    // MÉTODOS AUXILIARES PARA REPLICAR EXACTAMENTE EL DISEÑO VISUAL
+    // =========================================================================================
+	
+    private JTextField crearInputConLabel(JPanel contenedor, String titulo, String placeholder, int x, int y, int w) {
+    	fecha.setBounds(x, y, w, 70);
+    	fecha.setOpaque(false);
+    	
+    	// 1. Etiqueta superior (Label)
+        JLabel lbl = new JLabel(titulo);
+        lbl.setFont(new Font("Inter", Font.BOLD, 12));
+        lbl.setForeground(Color.decode("#374151")); // Gris oscuro
+        lbl.setBounds(0, 0, w, 20);
         fecha.add(lbl);
 
-        PanelRedondeado panelInput =
-            new PanelRedondeado(
-                10,
-                Color.decode("#F9FAFB")
-            );
-
+        // 2. Contenedor redondeado gris para el input
+        PanelRedondeado panelInput = new PanelRedondeado(10, Color.decode("#F9FAFB"));
         panelInput.setLayout(null);
+        panelInput.setBounds(0, 0 + 25, w, 40);
+        panelInput.setBorder(BorderFactory.createLineBorder(Color.decode("#E5E7EB"), 1)); // Borde sutil
 
-        panelInput.setBounds(
-            0,
-            25,
-            w,
-            40
-        );
-
-        panelInput.setBorder(
-            BorderFactory.createLineBorder(
-                Color.decode("#E5E7EB"),
-                1
-            )
-        );
-
-        JTextField txt =
-            new JTextField(placeholder);
-
-        txt.setBounds(
-            15,
-            0,
-            w - 30,
-            40
-        );
-
+        // 3. Campo de texto nativo sin bordes
+        JTextField txt = new JTextField(placeholder);
+        txt.setBounds(15, 0, w - 30, 40);
         txt.setBorder(null);
-
         txt.setOpaque(false);
-
-        txt.setFont(
-            new Font(
-                "Inter",
-                Font.PLAIN,
-                13
-            )
-        );
-
-        txt.setForeground(
-            Color.decode("#9CA3AF")
-        );
-
-        fechaEmpeño = txt;
+        txt.setFont(new Font("Inter", Font.PLAIN, 13));
+        txt.setForeground(Color.decode("#9CA3AF")); // Color del placeholder
+        fechaEmpeño =txt;
+        // 4. Lógica de Placeholder
+        txt.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent evt) {
+                if (txt.getText().equals(placeholder)) {
+                    txt.setText("");
+                    txt.setForeground(Color.decode("#111827")); // Texto negro al escribir
+                }
+            }
+            public void focusLost(FocusEvent evt) {
+                if (txt.getText().trim().isEmpty()) {
+                    txt.setForeground(Color.decode("#9CA3AF"));
+                    txt.setText(placeholder);
+                }
+            }
+        });
 
         panelInput.add(txt);
-
         fecha.add(panelInput);
-
         return txt;
     }
 
-    private JPanel crearTextAreaConLabel(
-        JPanel contenedor,
-        String titulo,
-        String placeholder,
-        int x,
-        int y,
-        int w,
-        int h,
-        int textArea
-    ) {
-
-        JPanel hola =
-            new JPanel(null);
-
-        hola.setBounds(
-            x,
-            y,
-            w,
-            120
-        );
-
-        hola.setOpaque(false);
-
-        JLabel lbl =
-            new JLabel(titulo);
-
-        lbl.setFont(
-            new Font(
-                "Inter",
-                Font.BOLD,
-                12
-            )
-        );
-
-        lbl.setForeground(
-            Color.decode("#374151")
-        );
-
-        lbl.setBounds(
-            0,
-            10,
-            w,
-            20
-        );
-
+    private JPanel crearComboConLabel(JPanel contenedor, String titulo, String subtitulo, List<String[]> baseDatosPagos , int x, int y, int w,int index,int indexador) {
+    	JPanel hola=new JPanel(null);
+    	hola.setBounds(x, y, w, 70);
+    	hola.setOpaque(false);
+    	
+    	JLabel lbl = new JLabel(titulo);
+        lbl.setFont(new Font("Inter", Font.BOLD, 12));
+        lbl.setForeground(Color.decode("#374151"));
+        lbl.setBounds(0, 0, w, 20);
         hola.add(lbl);
+        
+        PanelRedondeado panelCombo = new PanelRedondeado(10, Color.decode("#F9FAFB"));
+        panelCombo.setLayout(new BorderLayout());
+        panelCombo.setBounds(0,  + 25, w, 40);
+        panelCombo.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.decode("#E5E7EB"), 1),
+            BorderFactory.createEmptyBorder(0, 10, 0, 10)
+        ));
+        List<String> filtrados = new ArrayList<>();
+        String[] opciones =new String[baseDatosPagos.size()+1];
+        opciones[0]=subtitulo;
+        int i=1;
+        for (String[] dato : baseDatosPagos) {
+            	opciones[i]=dato[index];
+            	i++;
+        }
+        
 
-        PanelRedondeado panelArea =
-            new PanelRedondeado(
-                10,
-                Color.decode("#F9FAFB")
-            );
-
-        panelArea.setLayout(
-            new BorderLayout()
-        );
-
-        panelArea.setBounds(
-            0,
-            35,
-            w,
-            h
-        );
-
-        JTextArea txtArea =
-            new JTextArea(placeholder);
-
-        txtArea.setLineWrap(true);
-
-        txtArea.setWrapStyleWord(true);
-
-        info[textArea] = txtArea;
-
-        panelArea.add(txtArea);
-
-        hola.add(panelArea);
-
+        
+        JComboBox<String> combo = new JComboBox<>(opciones);
+        combo.setFont(new Font("Inter", Font.PLAIN, 13));
+        combo.setForeground(Color.decode("#111827"));
+        combo.setBackground(Color.decode("#F9FAFB"));
+        combo.setPreferredSize(new Dimension(500, 40));
+        combo.setBorder(null);
+        combo.setFocusable(false);
+        combo.setOpaque(false);
+        combo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	
+            	if(combo.getSelectedItem()!=subtitulo && index==2) {
+            		
+            		panelFondo.setBounds(((getWidth() -600)/2), ((getWidth()-550)/2)-295, 600, 645);
+            		datos_pago.setLocation(0,100);
+            		btnCrear.setLocation(400, 595);
+            		btnCerrar.setLocation(btnCerrar.getBounds().x, 595);
+                    operacion.setVisible(true);                    
+                    
+            	}else {
+            		
+            	}
+            	
+            }
+        });
+        this.opciones[indexador]=combo;
+        panelCombo.add(combo, BorderLayout.CENTER);
+        hola.add(panelCombo);
         return hola;
     }
 
-    private void configurarCampoFecha(
-        JTextField txtFecha,
-        JFrame parent
-    ) {
+    private JPanel crearTextAreaConLabel(JPanel contenedor, String titulo, String placeholder, int x, int y, int w, int h,int textArea) {
+    	JPanel hola=new JPanel(null);
+    	hola.setBounds(x, y, w, 120);
+    	hola.setOpaque(false);
+    	
+    	JLabel lbl = new JLabel(titulo);
+        lbl.setFont(new Font("Inter", Font.BOLD, 12));
+        lbl.setForeground(Color.decode("#374151"));
+        lbl.setBounds(0, 10, w, 20);
+        hola.add(lbl);
 
-        txtFecha.setEditable(false);
+        PanelRedondeado panelArea = new PanelRedondeado(10, Color.decode("#F9FAFB"));
+        panelArea.setLayout(new BorderLayout());
+        panelArea.setBounds(0, 10 + 25, w, h);
+        panelArea.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.decode("#E5E7EB"), 1),
+            BorderFactory.createEmptyBorder(10, 15, 10, 15)
+        ));
 
-        txtFecha.setCursor(
-            new Cursor(Cursor.HAND_CURSOR)
-        );
-
-        Container panelPadre =
-            txtFecha.getParent();
-
-        JLabel lblIcono =
-            new JLabel("📅");
-
-        lblIcono.setBounds(
-            panelPadre.getWidth() - 35,
-            10,
-            20,
-            20
-        );
-
-        panelPadre.add(lblIcono);
-
-        MouseAdapter abrirCalendario =
-            new MouseAdapter() {
-
-                @Override
-                public void mouseClicked(
-                    MouseEvent e
-                ) {
-
-                    CalendarioModal calendario =
-                        new CalendarioModal(
-                            parent,
-                            txtFecha
-                        );
-
-                    calendario.setVisible(true);
+        JTextArea txtArea = new JTextArea(placeholder);
+        txtArea.setFont(new Font("Inter", Font.PLAIN, 13));
+        txtArea.setForeground(Color.decode("#9CA3AF"));
+        txtArea.setLineWrap(true);
+        txtArea.setWrapStyleWord(true);
+        txtArea.setBorder(null);
+        txtArea.setOpaque(false);
+        
+        
+        txtArea.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent evt) {
+                if (txtArea.getText().equals(placeholder)) {
+                    txtArea.setText("");
+                    txtArea.setForeground(Color.decode("#111827"));
                 }
-            };
+            }
+            public void focusLost(FocusEvent evt) {
+                if (txtArea.getText().trim().isEmpty()) {
+                    txtArea.setForeground(Color.decode("#9CA3AF"));
+                    txtArea.setText(placeholder);
+                }
+            }
+        });
+        info[textArea]=txtArea;
 
-        txtFecha.addMouseListener(
-            abrirCalendario
-        );
-
-        lblIcono.addMouseListener(
-            abrirCalendario
-        );
+        panelArea.add(txtArea);
+        hola.add(panelArea);
+        return hola;
     }
+
+    private void configurarCampoFecha(JTextField txtFecha, JFrame parent) {
+        txtFecha.setEditable(false);
+        txtFecha.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // Agregar icono de calendario flotante a la derecha del contenedor del JTextField
+        Container panelPadre = txtFecha.getParent();
+        JLabel lblIcono = new JLabel("📅");
+        lblIcono.setBounds(panelPadre.getWidth() - 35, 10, 20, 20);
+        lblIcono.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        panelPadre.add(lblIcono);
+        panelPadre.setComponentZOrder(lblIcono, 0); // Traer al frente
+
+        // Evento que abre tu modal
+        MouseAdapter abrirCalendario = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                CalendarioModal calendario = new CalendarioModal(parent, txtFecha);
+                calendario.setVisible(true);
+            }
+        };
+
+        // Asignar el evento tanto al texto como al icono
+        txtFecha.addMouseListener(abrirCalendario);
+        lblIcono.addMouseListener(abrirCalendario);
+    }
+
+    
 }

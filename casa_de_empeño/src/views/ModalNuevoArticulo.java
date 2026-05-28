@@ -17,6 +17,7 @@ public class ModalNuevoArticulo extends JDialog {
     private JTextField txtFechaEmpeno;
     private JTextField txtFechaLimite;
     private JTextArea txtDescripcion;
+    PanelRedondeado btnCerrar = new PanelRedondeado(10, Color.decode("#EF4444"));
 
     public ModalNuevoArticulo(HomeView home, JFrame parent) {
         super(parent, true);
@@ -110,14 +111,28 @@ public class ModalNuevoArticulo extends JDialog {
         txtDescripcion = crearTextAreaConLabel(panelFondo, "Descripción:*", "Descripción detallada del artículo...", col1, 480, fullWidth, 70);
 
         // --- BOTÓN: CREAR ARTÍCULO ---
+        JLabel lblCerrar = new JLabel("Cancelar", SwingConstants.CENTER);
+        lblCerrar.setForeground(Color.WHITE);
+        lblCerrar.setFont(new Font("Inter", Font.BOLD, 14));
+        btnCerrar.setLayout(new BorderLayout());
+        btnCerrar.setBounds(width - marginX - 330, 590, 160, 40); 
+        btnCerrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnCerrar.add(lblCerrar);
+        btnCerrar.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            	ModalNuevoArticulo.this.dispose();
+            }
+        });
+        panelFondo.add(btnCerrar);
+        
         PanelRedondeado btnCrear = new PanelRedondeado(10, Color.decode("#1D4ED8"));
         btnCrear.setLayout(new BorderLayout());
         btnCrear.setBounds(width - marginX - 160, 590, 160, 40); // Alineado a la derecha
         btnCrear.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
         ToastAlerta x=new ToastAlerta(ModalNuevoArticulo.this,"Complete los campos vacios");
-        ToastAlertaSR x1=new ToastAlertaSR(parent,"ya");
-
+        ToastAlertaSR x1=new ToastAlertaSR(parent,"Articulo creado exitosamente");
 
         JLabel lblCrear = new JLabel("Crear artículo", SwingConstants.CENTER);
         lblCrear.setForeground(Color.WHITE);
@@ -132,7 +147,9 @@ public class ModalNuevoArticulo extends JDialog {
                 txtFechaEmpeno.getText().isEmpty() ||
                 txtFechaLimite.getText().isEmpty() ) 
                 {
-                	//x.setVisible(true);
+                	x.active();
+                    x1.active();
+
                 }else
                 {
 
@@ -174,11 +191,10 @@ public class ModalNuevoArticulo extends JDialog {
 
                     if(creado)
                     {
-
                     	home.refrescarTablaArticulos();
-
-                        x1.setVisible(true);
-
+                    	
+                        x1.active();
+                        
                         ModalNuevoArticulo.this.dispose();
 
                     }

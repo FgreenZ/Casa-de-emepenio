@@ -26,7 +26,7 @@ public class DataBaseModels {
 
     // Usuario y contraseña de la base de datos
     private final String USUARIO = "root";
-    private final String PASSWORD = "";
+    private final String PASSWORD = "793ghjlqASD";
 
     private final String URL ="jdbc:mysql://" +HOST +":" +PUERTO +"/" +BASE_DATOS;
 

@@ -100,7 +100,7 @@ public class ModalEditarArticulo extends JDialog {
             public void mouseClicked(MouseEvent e) {
 
 	            System.out.println("Artículo Editado");
-	        	x1.setVisible(true);
+	        	x1.active();
 	            ModalEditarArticulo.this.dispose();
 
             }
