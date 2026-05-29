@@ -587,22 +587,72 @@ public class HomeView extends JPanel
         panelBusquedaC.add(inputBusqueda);
         panelContenido.add(panelBusquedaC);
 
-        // 10. Contenedor de la Tabla de Clientes
+     // 10. Contenedor de la Tabla de Clientes
         panelTablaGlobal = new PanelRedondeado(15, Color.WHITE);
         panelTablaGlobal.setLayout(null);
-        panelTablaGlobal.setBounds(40, 285, 850, 250);
-        panelContenido.add(panelTablaGlobal);
+        // ⚠️ IMPORTANTE: En lugar de setBounds, usamos setPreferredSize para el JScrollPane
+        panelTablaGlobal.setPreferredSize(new Dimension(830, 250)); 
+
+        // Creamos el JScrollPane y le pasamos tu panelTablaGlobal
+        JScrollPane scrollTablaClientes = new JScrollPane(panelTablaGlobal);
+        scrollTablaClientes.setBounds(40, 285, 850, 250); // Los bounds ahora son del Scroll
+        scrollTablaClientes.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollTablaClientes.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollTablaClientes.setBorder(null);
+        scrollTablaClientes.getViewport().setOpaque(true);
+        scrollTablaClientes.getViewport().setBackground(Color.WHITE); 
+        scrollTablaClientes.setOpaque(false);
+
+        // Agregamos el JScrollPane a panelContenido en lugar del panelTablaGlobal directo
+        panelContenido.add(scrollTablaClientes);
 
         // AQUÍ CONECTAMOS LA BARRA DE BÚSQUEDA CON LA TABLA
         configurarBusquedaInteractiva(txtBusqueda, ventana, panelTablaGlobal);
 
         // Renderizamos la tabla inicial (vacío para mostrar a todos)
         renderizarTabla(panelTablaGlobal, "");
+        
+        // Mostrar la ventana
+        ventana.setVisible(true);
+        ventana.repaint();
+        ventana.revalidate();
+        
+        /*
+         *         // 10. Contenedor de la Tabla de Clientes
+        panelTablaArticulos = new PanelRedondeado(15, Color.WHITE);
+        panelTablaArticulos.setLayout(null);
+        // ⚠️ IMPORTANTE: En lugar de setBounds, usamos setPreferredSize para el JScrollPane
+        panelTablaArticulos.setPreferredSize(new Dimension(830, 250)); 
+        
+        // Creamos el JScrollPane y le pasamos tu panelTablaGlobal
+        JScrollPane scrollTablaArticulos = new JScrollPane(panelTablaArticulos);
+        scrollTablaArticulos.setBounds(40, 285, 850, 250); // Los bounds ahora son del Scroll
+        scrollTablaArticulos.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollTablaArticulos.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollTablaArticulos.setBorder(null);
+        scrollTablaArticulos.getViewport().setOpaque(true);
+        scrollTablaArticulos.getViewport().setBackground(Color.WHITE); 
+        scrollTablaArticulos.setOpaque(false);
+        
+        panelTablaArticulos = new PanelRedondeado(15, Color.WHITE);
+        panelTablaArticulos.setLayout(null);
+        panelTablaArticulos.setBounds(40, 255, 850, 280);
+        panelContenido.add(panelTablaArticulos);
+        panelContenido.add(scrollTablaArticulos);
+
+
+        // AQUÍ CONECTAMOS LA BARRA DE BÚSQUEDA CON LA TABLA
+        configurarBusquedaInteractivaArticulos(txtBusqueda, ventana, panelTablaArticulos);
+
+        // Renderizamos la tabla inicial (vacío para mostrar a todos)
+        renderizarTablaArticulos(panelTablaArticulos, "");
 
         // Mostrar la ventana
         ventana.setVisible(true);
         ventana.repaint();
         ventana.revalidate();
+         * */
+        
     }
     
     public void dashboardArticulos() {
@@ -899,8 +949,20 @@ public class HomeView extends JPanel
         // 10. Contenedor de la Tabla de Clientes
         panelTablaArticulos = new PanelRedondeado(15, Color.WHITE);
         panelTablaArticulos.setLayout(null);
-        panelTablaArticulos.setBounds(40, 255, 850, 280);
-        panelContenido.add(panelTablaArticulos);
+        // ⚠️ IMPORTANTE: En lugar de setBounds, usamos setPreferredSize para el JScrollPane
+        panelTablaArticulos.setPreferredSize(new Dimension(830, 200)); 
+        
+        // Creamos el JScrollPane y le pasamos tu panelTablaGlobal
+        JScrollPane scrollTablaArticulos = new JScrollPane(panelTablaArticulos);
+        scrollTablaArticulos.setBounds(40, 370, 850, 200); // Los bounds ahora son del Scroll
+        scrollTablaArticulos.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollTablaArticulos.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollTablaArticulos.setBorder(null);
+        scrollTablaArticulos.getViewport().setOpaque(true);
+        scrollTablaArticulos.getViewport().setBackground(Color.WHITE); 
+        scrollTablaArticulos.setOpaque(false);
+        panelContenido.add(scrollTablaArticulos);
+
 
         // AQUÍ CONECTAMOS LA BARRA DE BÚSQUEDA CON LA TABLA
         configurarBusquedaInteractivaArticulos(txtBusqueda, ventana, panelTablaArticulos);
@@ -1174,15 +1236,26 @@ public class HomeView extends JPanel
         // 10. Contenedor de la Tabla de Clientes
         panelTablaPagos = new PanelRedondeado(15, Color.WHITE);
         panelTablaPagos.setLayout(null);
-        //panelTablaPagos.setBounds(40, 255, 850, 280);
-        panelContenido.add(panelTablaPagos);
+        // ⚠️ IMPORTANTE: En lugar de setBounds, usamos setPreferredSize para el JScrollPane
+        panelTablaPagos.setPreferredSize(new Dimension(830, 200)); 
+        
+        // Creamos el JScrollPane y le pasamos tu panelTablaGlobal
+        JScrollPane scrollTablaArticulos = new JScrollPane(panelTablaPagos);
+        scrollTablaArticulos.setBounds(40, 390, 850, 200); // Los bounds ahora son del Scroll
+        scrollTablaArticulos.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollTablaArticulos.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollTablaArticulos.setBorder(null);
+        scrollTablaArticulos.getViewport().setOpaque(true);
+        scrollTablaArticulos.getViewport().setBackground(Color.WHITE); 
+        scrollTablaArticulos.setOpaque(false);
+        panelContenido.add(scrollTablaArticulos);
+
 
         // AQUÍ CONECTAMOS LA BARRA DE BÚSQUEDA CON LA TABLA
-        renderizarTablaPagos(panelTablaPagos, "1",ventana);
-
-        configurarBusquedaInteractivaPagos(txtBusqueda, ventana, panelTablaPagos);
+        configurarBusquedaInteractivaArticulos(txtBusqueda, ventana, panelTablaPagos);
 
         // Renderizamos la tabla inicial (vacío para mostrar a todos)
+        renderizarTablaArticulos(panelTablaPagos, "");
 
         // Mostrar la ventana
         ventana.setVisible(true);
@@ -1190,7 +1263,7 @@ public class HomeView extends JPanel
         ventana.revalidate();
     }
     
- // MÉTODOS AUXILIARES //
+    // MÉTODOS AUXILIARES //
     void registrarNuevoCliente(
     	    String nombre,
     	    String telefono,
@@ -1494,13 +1567,13 @@ public class HomeView extends JPanel
     }
     
     private void renderizarTabla(JPanel panelTabla, String filtro) {
-        panelTabla.removeAll(); // Limpiamos la tabla actual
+        panelTabla.removeAll(); 
         
-        // 1. Volvemos a dibujar el Encabezado
+        // 1. Encabezado Fijo
         JPanel headerTabla = new JPanel();
         headerTabla.setLayout(null);
         headerTabla.setBackground(Color.decode("#F4F6F9"));
-        headerTabla.setBounds(0, 0, 850, 40);
+        headerTabla.setPreferredSize(new Dimension(850, 40));
         
         String[] columnas = {"NOMBRE", "TELÉFONO", "CORREO", "FECHA DE REGISTRO", "ARTÍCULOS ACT.", "ACCIONES"};
         int[] posX = {20, 180, 290, 430, 580, 700};
@@ -1511,25 +1584,32 @@ public class HomeView extends JPanel
             lblColumna.setBounds(posX[i], 10, 140, 20);
             headerTabla.add(lblColumna);
         }
-        panelTabla.add(headerTabla);
+
+        // Anclamos el encabezado al JScrollPane para que no se mueva al scrollear hacia abajo
+        if (panelTabla.getParent() instanceof JViewport) {
+            JScrollPane scrollPane = (JScrollPane) panelTabla.getParent().getParent();
+            scrollPane.setColumnHeaderView(headerTabla);
+        } else {
+            // Fallback por si acaso
+            headerTabla.setBounds(0, 0, 850, 40);
+            panelTabla.add(headerTabla);
+        }
 
         // 2. Filtramos y dibujamos los datos
         boolean hayResultados = false;
-        int rowY = 50; 
+        // Si el encabezado está fijo en el scroll, iniciamos a dibujar en Y = 10
+        int rowY = (panelTabla.getParent() instanceof JViewport) ? 10 : 50; 
 
         String busqueda = filtro.trim().toLowerCase();
         if (busqueda.equals("busca por nombre, teléfono o correo...")) {
-            busqueda = ""; // Ignorar el texto de placeholder
+            busqueda = ""; 
         }
 
         for (String[] cliente : baseDatosClientes) {
-            // Verifica si el nombre, teléfono o correo contienen el texto buscado
-        	// Refrescar panel visualmente
             if (busqueda.isEmpty() || 
                 cliente[0].toLowerCase().contains(busqueda) || 
                 cliente[1].toLowerCase().contains(busqueda) || 
                 cliente[2].toLowerCase().contains(busqueda)) {
-                panelTabla.setPreferredSize(new Dimension(panelTabla.getWidth(), rowY + 50));
 
                 hayResultados = true;
 
@@ -1564,7 +1644,6 @@ public class HomeView extends JPanel
                 panelTabla.add(circuloActivos);
 
                 //|-ACCIONES-|
-                // Crear una copia final del cliente para poder usarla dentro del ActionListener
                 ImageIcon iconD = new ImageIcon("src/img/verDetalles.png");
                 final String[] clienteSeleccionado = cliente; 
                 JButton lblVer = new JButton(iconD);
@@ -1577,20 +1656,18 @@ public class HomeView extends JPanel
                 lblVer.setBounds(posX[5], rowY-10, lblVer.getPreferredSize().width, lblVer.getPreferredSize().height);
                 lblVer.setCursor(new Cursor(Cursor.HAND_CURSOR));
                 
-                // --- NUEVO EVENTO PARA ABRIR LOS DETALLES --- //
                 lblVer.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        // Obtener la ventana actual para cerrarla
                         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(panelTabla);
                         if (topFrame != null) {
                             topFrame.dispose();
                         }
-                        // Abrir la nueva vista pasándole los datos del cliente
                         verDetallesCliente(clienteSeleccionado);
                     }
                 });
                 panelTabla.add(lblVer);
+
                 ImageIcon iconDe = new ImageIcon("src/img/verOpciones.png");
                 final int indexCliente = baseDatosClientes.indexOf(cliente);
                 JButton lblEditar = new JButton(iconDe);
@@ -1614,7 +1691,6 @@ public class HomeView extends JPanel
                 panelTabla.add(lblEditar);
                 
                 ImageIcon icon = new ImageIcon("src/img/verBasura.png");
-                // Código existente...
                 JButton lblEliminar = new JButton(icon);
                 lblEliminar.setForeground(Color.RED);
                 lblEliminar.setFont(new Font("SansSerif", Font.PLAIN, 25));
@@ -1625,17 +1701,13 @@ public class HomeView extends JPanel
                 lblEliminar.setBounds(posX[5]+80, rowY-10, lblVer.getPreferredSize().width, lblVer.getPreferredSize().height);
                 lblEliminar.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-                // --- NUEVO CÓDIGO: EVENTO DE ELIMINACIÓN ---
                 lblEliminar.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        confirmarEliminacion(clienteSeleccionado, panelTabla,1);
+                        confirmarEliminacion(clienteSeleccionado, panelTabla, 1);
                     }
                 });
-                // -------------------------------------------
-
-                panelTabla.add(lblEliminar); // Esta línea ya la tienes
-	            
+                panelTabla.add(lblEliminar); 
 
                 JPanel separador = new JPanel();
                 separador.setBackground(Color.decode("#F0F0F0"));
@@ -1646,19 +1718,21 @@ public class HomeView extends JPanel
             }
         }
 
-        // 3. Si no hubo coincidencias, mostramos el mensaje
         if (!hayResultados) {
             JLabel lblSinResultados = new JLabel("No hay resultados coincidentes");
             lblSinResultados.setFont(new Font("Inter", Font.ITALIC, 14));
             lblSinResultados.setForeground(Color.GRAY);
             lblSinResultados.setHorizontalAlignment(SwingConstants.CENTER);
-            lblSinResultados.setBounds(0, 120, 850, 30);
+            lblSinResultados.setBounds(0, 100, 850, 30);
             panelTabla.add(lblSinResultados);
+            rowY += 60;
         }
 
+        // *** CORRECCIÓN CRÍTICA PARA EL SCROLL ***
+        // Definimos el tamaño total del panel calculándolo desde aquí afuera del for,
+        // garantizando un ancho absoluto de 830 para que no colapse a 0.
+        panelTabla.setPreferredSize(new Dimension(830, rowY + 20));
         
-        
-        // 3. REFRESCAR LA INTERFAZ
         panelTabla.revalidate();
         panelTabla.repaint();
     }
@@ -1672,15 +1746,13 @@ public class HomeView extends JPanel
     }
 
     private void renderizarTablaArticulos(JPanel panelTabla, String filtro) {
-
-    	limpiarPanelTabla(panelTabla);
-    	panelTabla.setBounds(40, 350, 850, 250);
-    	//panelTabla.setLocation(40, 350);
-        // 1. Volvemos a dibujar el Encabezado
+        panelTabla.removeAll(); 
+        
+        // 1. Encabezado Fijo
         JPanel headerTabla = new JPanel();
         headerTabla.setLayout(null);
         headerTabla.setBackground(Color.decode("#F4F6F9"));
-        headerTabla.setBounds(0, 0, 850, 40);
+        headerTabla.setPreferredSize(new Dimension(850, 40));
         
         String[] columnas = {"ARTÍCULO", "CLIENTE", "CATEGORÍA", "MONTO PRESTADO", "FECHA LÍMITE", "ESTADO", "ACCIONES"};
         int[] posX = {20, 150, 300, 400, 520, 620, 720};
@@ -1692,13 +1764,23 @@ public class HomeView extends JPanel
             headerTabla.add(lblColumna);
         }
         panelTabla.add(headerTabla);
+     // Anclamos el encabezado al JScrollPane para que no se mueva al scrollear hacia abajo
+        if (panelTabla.getParent() instanceof JViewport) {
+            JScrollPane scrollPane = (JScrollPane) panelTabla.getParent().getParent();
+            scrollPane.setColumnHeaderView(headerTabla);
+        } else {
+            // Fallback por si acaso
+            headerTabla.setBounds(0, 0, 850, 40);
+            panelTabla.add(headerTabla);
+        }
 
+        // 2. Filtramos y dibujamos los datos
         boolean hayResultados = false;
-        int rowY = 50;
-        
-        String busqueda = filtro.trim().toLowerCase();
+        // Si el encabezado está fijo en el scroll, iniciamos a dibujar en Y = 10
+        int rowY = (panelTabla.getParent() instanceof JViewport) ? 10 : 50; 
 
-        if (busqueda.equals("buscar artículo...") || busqueda.equals("busca por nombre, teléfono o correo...")) {
+        String busqueda = filtro.trim().toLowerCase();
+        if (busqueda.equals("busca por nombre, teléfono o correo...")) {
             busqueda = ""; 
         }
         for (String[] articulo : baseDatosArticulos) {
@@ -1859,42 +1941,20 @@ public class HomeView extends JPanel
             panelTabla.add(lblSinResultados);
         }
         
+        panelTabla.setPreferredSize(new Dimension(830, rowY + 20));
         // 4. REFRESCAR LA INTERFAZ
         panelTabla.revalidate();
         panelTabla.repaint();
     }
     
-    public void renderizarTablaArticulos(){
-
-        panelTablaArticulos.removeAll();
-
-        panelTablaArticulos.add(
-
-            tableDataBase
-            .crearTablaArticulos(),
-
-            BorderLayout.CENTER
-
-        );
-
-        panelTablaArticulos.revalidate();
-
-        panelTablaArticulos.repaint();
-
-    }
-    
     private void renderizarTablaPagos(JPanel panelTabla, String filtro, JFrame ventana) {
-    	
-    	
-    	limpiarPanelTabla(panelTabla);
-    	
-    	panelTabla.setSize(850, 185);
-    	panelTabla.setLocation(40, 395);
-        // 1. Volvemos a dibujar el Encabezado
+        panelTabla.removeAll(); 
+        
+        // 1. Encabezado Fijo
         JPanel headerTabla = new JPanel();
         headerTabla.setLayout(null);
         headerTabla.setBackground(Color.decode("#F4F6F9"));
-        headerTabla.setBounds(0, 0, 850, 40);
+        headerTabla.setPreferredSize(new Dimension(850, 40));
         
         String[] columnas = {"FECHA", "CLIENTE", "ARTICULO", "MONTO ABONADO", "TIPO DE PAGO", "ACCIONES"};
         int[] posX = {20, 150, 300, 450, 580, 730};
@@ -1906,14 +1966,23 @@ public class HomeView extends JPanel
             headerTabla.add(lblColumna);
         }
         panelTabla.add(headerTabla);
+     // Anclamos el encabezado al JScrollPane para que no se mueva al scrollear hacia abajo
+        if (panelTabla.getParent() instanceof JViewport) {
+            JScrollPane scrollPane = (JScrollPane) panelTabla.getParent().getParent();
+            scrollPane.setColumnHeaderView(headerTabla);
+        } else {
+            // Fallback por si acaso
+            headerTabla.setBounds(0, 0, 850, 40);
+            panelTabla.add(headerTabla);
+        }
 
         // 2. Filtramos y dibujamos los datos
         boolean hayResultados = false;
-        int rowY = 50;
+        // Si el encabezado está fijo en el scroll, iniciamos a dibujar en Y = 10
+        int rowY = (panelTabla.getParent() instanceof JViewport) ? 10 : 50; 
 
         String busqueda = filtro.trim().toLowerCase();
-        // CUIDADO AQUÍ: Asegúrate de que coincida con el placeholder de tu JTextField en dashboardArticulos
-        if (busqueda.equals("buscar artículo...") || busqueda.equals("busca por nombre, teléfono o correo...")) {
+        if (busqueda.equals("busca por nombre, teléfono o correo...")) {
             busqueda = ""; 
         }
         for (String[] pago : baseDatosPagos) {
@@ -2698,7 +2767,7 @@ public class HomeView extends JPanel
         ventana.setVisible(true);
     }
 
- // MÉTODOS AUXILIARES PARA EVITAR REPETIR CÓDIGO
+    // MÉTODOS AUXILIARES PARA EVITAR REPETIR CÓDIGO
     private void agregarDatoGrid(JPanel panel, int x, int y, String titulo, String valor) {
         JLabel lblTit = new JLabel(titulo);
         lblTit.setFont(new Font("Inter", Font.PLAIN, 11));
