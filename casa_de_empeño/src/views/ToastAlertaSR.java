@@ -35,9 +35,8 @@ class ToastAlertaSR  {
         panel.add(texto);     
 
         JLayeredPane layeredPane = panelPadre.getLayeredPane();
-        int x = (panelPadre.getWidth() - 300) / 2;
-        int y = 100;
-        panel.setBounds(840, 25, 280, 50);
+
+        panel.setBounds(840, 23, 280, 50);
         layeredPane.add(panel, JLayeredPane.POPUP_LAYER);
 
         panel.setVisible(false);
@@ -51,9 +50,5 @@ class ToastAlertaSR  {
         timer.setRepeats(false);
         timer.start();
 	}
-    
-    
-    
-    
     
 }

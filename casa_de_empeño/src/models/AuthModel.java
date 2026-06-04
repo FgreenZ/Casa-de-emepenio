@@ -8,13 +8,13 @@ import java.sql.ResultSet;
 public class AuthModel {
 
     // Login para la base de datos
-    private final String HOST = "localhost";
+    private final String HOST = "sql3.freesqldatabase.com";
     private final String PUERTO = "3306";
-    private final String BASE_DATOS = "la_central_empeno";
+    private final String BASE_DATOS = "sql3828674";
 
     // Usuario y contraseña de la base de datos
-    private final String USUARIO = "root";
-    private final String PASSWORD = "793ghjlqASD";
+    private final String USUARIO = "sql3828674";
+    private final String PASSWORD = "tW6II1gGRw";
 
     private final String URL ="jdbc:mysql://" +HOST +":" +PUERTO +"/" +BASE_DATOS;
 

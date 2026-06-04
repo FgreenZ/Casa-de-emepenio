@@ -20,13 +20,13 @@ public class DataBaseModels {
 
     // Login para la base de datos
 
-    private final String HOST = "localhost";
+    private final String HOST = "sql3.freesqldatabase.com";
     private final String PUERTO = "3306";
-    private final String BASE_DATOS = "la_central_empeno";
+    private final String BASE_DATOS = "sql3828674";
 
     // Usuario y contraseña de la base de datos
-    private final String USUARIO = "root";
-    private final String PASSWORD = "793ghjlqASD";
+    private final String USUARIO = "sql3828674";
+    private final String PASSWORD = "tW6II1gGRw";
     
     private final String URL ="jdbc:mysql://" +HOST +":" +PUERTO +"/" +BASE_DATOS;
 
@@ -450,22 +450,26 @@ public class DataBaseModels {
                 String idPago = rs.getString("id_pago");
                 String idArticulo = rs.getString("id_articulo");
                 String idCliente = rs.getString("id_cliente");
+                String montoRestante = "$" + rs.getString("monto_restante");
+                String interesGenerado = "$" + rs.getString("interes_generado");
 
                 baseDatosPagos.add(
 
                     new String[] {
 
-                        fecha,         // [0]
-                        cliente,       // [1]
-                        articulo,      // [2]
-                        monto,         // [3]
-                        tipoPago,      // [4]
-                        colorEliminar, // [5]
-                        colorEditar,   // [6]
-                        colorDetalles, // [7]
-                        idPago,        // [8]
-                        idArticulo,    // [9]
-                        idCliente      // [10]
+                        fecha,           // [0]
+                        cliente,         // [1]
+                        articulo,        // [2]
+                        monto,           // [3]
+                        tipoPago,        // [4]
+                        colorEliminar,   // [5]
+                        colorEditar,     // [6]
+                        colorDetalles,   // [7]
+                        idPago,          // [8]
+                        idArticulo,      // [9]
+                        idCliente,       // [10]
+                        montoRestante,   // [11]
+                        interesGenerado  // [12]
                     }
                 );
             }

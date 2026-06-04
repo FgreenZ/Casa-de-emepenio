@@ -89,7 +89,7 @@ public class AuthView extends JFrame {
         ImageIcon icon2 = new ImageIcon("src/img/logo y titulo.png");
         Image img2 = icon2.getImage().getScaledInstance(450, 245, Image.SCALE_SMOOTH);
         JLabel fondo2 = new JLabel(new ImageIcon(img2));
-        fondo2.setBounds(-70, -60, 550, 300);
+        fondo2.setBounds(-100, -60, 550, 300);
         cuadroLogin.add(fondo2);
         
         // Título
@@ -133,12 +133,11 @@ public class AuthView extends JFrame {
 
             if(usuario.isEmpty() || contrasena.isEmpty())
             {
-
+            	
                 lblTitulo.setBounds(80,170,300,30);
-
                 ventanaEmergente.setVisible(true);
-
                 return;
+                
             }
 
             boolean acceso =
@@ -149,21 +148,26 @@ public class AuthView extends JFrame {
 
             if(acceso)
             {
-
-                ventanaEmergente.dispose();
-
                 HomeView x = new HomeView();
+                lblTitulo.setBounds(80, 200, 300, 30);
+            	cargandoDash();
 
-                dispose();
-
-                x.bienvenidoDashboard();
-
+            	Timer timer = new Timer(2000, t ->{
+                	dispose();
+                    x.bienvenidoDashboard();
+            	});
+            	timer.setRepeats(false);
+            	timer.start();
+            	
+                ventanaEmergente.dispose();
+              
+                
+                
             }
             else
             {
-
+            	
                 lblTitulo.setBounds(80,170,300,30);
-
                 ventanaEmergente.setVisible(true);
 
             }
@@ -207,7 +211,30 @@ public class AuthView extends JFrame {
         cuadroLogin.revalidate();
         setVisible(true);
     }
+    
+    public void cargandoDash() {
+    	
+    	cuadroLogin.remove(2);
+    	cuadroLogin.remove(2);
+    	cuadroLogin.remove(2);
+    	cuadroLogin.remove(2);
 
+    	
+    	ImageIcon icon2 = new ImageIcon("src/img/loading6.gif");
+		
+		JLabel fondo2 = new JLabel(icon2);
+		fondo2.setPreferredSize(new Dimension(200, 200));
+		fondo2.setBounds(100, 230, 200, 200);
+		fondo2.setVisible(true);
+		cuadroLogin.add(fondo2);
+		
+		cuadroLogin.repaint();
+		cuadroLogin.revalidate();
+		repaint();
+		revalidate();
+		
+	}
+    
     public void VentanaRegistro() {
         cuadroLogin.removeAll();
 

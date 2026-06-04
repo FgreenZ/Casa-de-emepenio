@@ -19,21 +19,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import java.util.ArrayList;
@@ -44,6 +29,10 @@ import controllers.AuthController;
 import controllers.ClienteController;
 import controllers.HomeController;
 import models.DataBaseModels;
+import models.ABBClientes;
+import models.ABBArticulos;
+import models.ABBPagos;
+import views.GeneradorReciboPDF;
 
 class PanelRedondeado extends JPanel {
     private int radio;
@@ -95,6 +84,11 @@ public class HomeView extends JPanel
 	private List<String[]> baseDatosClientes =new ArrayList<>();
 	private List<String[]> baseDatosArticulos =new ArrayList<>();
 	private List<String[]> baseDatosPagos =new ArrayList<>();
+
+	// ── Árboles Binarios de Búsqueda ────────────────────────────────
+	private ABBClientes abbClientes = new ABBClientes();
+	private ABBArticulos abbArticulos = new ABBArticulos();
+	private ABBPagos abbPagos = new ABBPagos();
 	
 	DataBaseModels tableDataBase=new DataBaseModels(baseDatosClientes,baseDatosArticulos,baseDatosPagos);
 	
@@ -103,14 +97,21 @@ public class HomeView extends JPanel
     
     JComboBox<String> comboCat, comboEstado;
     JFrame ventanaPagos;
+    
+    JFrame ventana= new JFrame();
+;
+    JPanel panelMenu;
 
     public HomeView() {
 
         tableDataBase.cargarClientes();
+        abbClientes.reconstruir(baseDatosClientes);
 
         tableDataBase.cargarArticulos();
+        abbArticulos.reconstruir(baseDatosArticulos);
 
         tableDataBase.cargarPagos();
+        abbPagos.reconstruir(baseDatosPagos);
 
         setLayout(new BorderLayout());
 
@@ -154,6 +155,7 @@ public class HomeView extends JPanel
     public void refrescarTablaArticulos() {
 
         tableDataBase.cargarArticulos();
+        abbArticulos.reconstruir(baseDatosArticulos);
 
         renderizarTablaArticulos(
 
@@ -168,6 +170,7 @@ public class HomeView extends JPanel
     public void refrescarTablaPagos() {
 
         tableDataBase.cargarPagos();
+        abbPagos.reconstruir(baseDatosPagos);
 
         if (panelTablaPagos != null && ventanaPagos != null) {
 
@@ -180,7 +183,36 @@ public class HomeView extends JPanel
     
 	public void home()
 	{
-		
+		ventana.setTitle("Sistema Administrativo - Dashboard");
+		ventana.setSize(1150, 660);
+		ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		ventana.setLocationRelativeTo(null); // Centra la ventana en la pantalla
+		ventana.setLayout(null); // Diseño absoluto para usar setBounds
+		ventana.getContentPane().setBackground(Color.decode("#F4F6F9")); // Fondo base de la ventana
+		ventana.setResizable(false);
+
+        // 2. Panel Izquierdo (Menú lateral)
+		 // 2. Panel Izquierdo (Menú lateral)
+        panelMenu = new JPanel();
+        panelMenu.setLayout(null);
+        panelMenu.setBounds(0, 140, 220, 540); 
+        panelMenu.setBackground(Color.decode("#375A9B"));
+        ventana.add(panelMenu);
+        
+        // 3. Logo y Título del Sistema
+        ImageIcon icon = new ImageIcon("src/img/logo (1).png");
+        Image img = icon.getImage().getScaledInstance(67, 100, Image.SCALE_SMOOTH);
+        JLabel logo = new JLabel(new ImageIcon(img));
+        logo.setBounds(80, 20, 67, 100);
+        ventana.add(logo);
+        
+        JLabel titleimg = new JLabel("Sistema administrativo");
+        titleimg.setFont(new Font("Inter", Font.PLAIN, 12));
+        titleimg.setBounds(55, 105, 200, 14);
+        titleimg.setForeground(Color.GRAY);
+        ventana.add(titleimg);
+		  
+		/*
 		JFrame ventana = new JFrame();
 		
 		ventana.setSize(1000, 640);
@@ -201,50 +233,26 @@ public class HomeView extends JPanel
 		ventana.add(panel);
 		
 		ventana.setVisible(true);
-		
+		*/
 	}
 	
     public void bienvenidoDashboard() {
     // 1. Configuración de la Ventana Principal
-		JFrame ventana = new JFrame();
-		ventana.setTitle("Sistema Administrativo - Dashboard");
-		ventana.setSize(1150, 660);
-		ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		ventana.setLocationRelativeTo(null); // Centra la ventana en la pantalla
-		ventana.setLayout(null); // Diseño absoluto para usar setBounds
-		ventana.getContentPane().setBackground(Color.decode("#F4F6F9")); // Fondo base de la ventana
-		ventana.setResizable(false);
-
-        // 2. Panel Izquierdo (Menú lateral)
-		 // 2. Panel Izquierdo (Menú lateral)
-        JPanel panelMenu = new JPanel();
-        panelMenu.setLayout(null);
-        panelMenu.setBounds(0, 140, 220, 540); 
-        panelMenu.setBackground(Color.decode("#375A9B"));
-        ventana.add(panelMenu);
+		home();
+		
+        ToastAlertaSR userCreado=new ToastAlertaSR(ventana," ✔ Bienvenido!");
+        userCreado.active();
         
-        // 3. Logo y Título del Sistema
-        ImageIcon icon = new ImageIcon("src/img/logo (1).png");
-        Image img = icon.getImage().getScaledInstance(67, 100, Image.SCALE_SMOOTH);
-        JLabel logo = new JLabel(new ImageIcon(img));
-        logo.setBounds(80, 20, 67, 100);
-        ventana.add(logo);
-        
-        JLabel titleimg = new JLabel("Sistema administrativo");
-        titleimg.setFont(new Font("Inter", Font.PLAIN, 12));
-        titleimg.setBounds(55, 105, 200, 14);
-        titleimg.setForeground(Color.GRAY);
-        ventana.add(titleimg);
-        
+		JPanel panelContenido = new JPanel();;
         // 4. Botones del Menú
         // Botón: Dashboard (Activo)
         PanelRedondeado btnDashboard = new PanelRedondeado(10, new Color(138, 172, 235, 100)); // Color con transparencia
         btnDashboard.setLayout(null);
-        btnDashboard.setBounds(25, 30, 200, 40);
+        btnDashboard.setBounds(20, 42, 200, 40);        
         JButton lblMenuDash = new JButton("  \u25A6  Dashboard");
         lblMenuDash.setForeground(Color.WHITE);
         lblMenuDash.setFont(new Font("Inter", Font.BOLD, 18));
-        lblMenuDash.setBounds(11, 0, 200, 40);
+        lblMenuDash.setBounds(0, 0, 200, 40);
         lblMenuDash.setBackground(Color.decode("#375A9B"));
         lblMenuDash.setBorderPainted(false);
         lblMenuDash.setFocusPainted(false);
@@ -253,11 +261,12 @@ public class HomeView extends JPanel
         btnDashboard.add(lblMenuDash);
         panelMenu.add(btnDashboard);
 
+        
         // Botón: Clientes
         JButton lblMenuClientes = new JButton("  \u25A6  Clientes");
         lblMenuClientes.setForeground(Color.decode("#C8C8C8"));
         lblMenuClientes.setFont(new Font("Inter", Font.PLAIN, 18));
-        lblMenuClientes.setBounds(20, 150, 200, 40);
+        lblMenuClientes.setBounds(30, 150, 200, 40);
         lblMenuClientes.setBackground(Color.decode("#375A9B"));
         lblMenuClientes.setBorderPainted(false);
         lblMenuClientes.setFocusPainted(false);
@@ -267,8 +276,15 @@ public class HomeView extends JPanel
         lblMenuClientes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ventana.dispose();       // 1. Cierra la ventana actual (Dashboard)
-                dashboardClientes();     // 2. Abre la ventana de Clientes
+            	cargarDashboard(panelContenido,1);
+            	Timer timer = new Timer(500, t ->{
+            		ventana.getContentPane().removeAll();
+            		ventana.repaint();
+                    ventana.revalidate();
+            		dashboardClientes();
+            		});
+            	timer.setRepeats(false);
+                timer.start();
             }
         });
 
@@ -276,17 +292,24 @@ public class HomeView extends JPanel
         JButton lblMenuArticulos = new JButton("  \u25A6  Artículos");
         lblMenuArticulos.setForeground(Color.decode("#C8C8C8"));
         lblMenuArticulos.setFont(new Font("Inter", Font.PLAIN, 18));
-        lblMenuArticulos.setBounds(20, 270, 200, 40);
+        lblMenuArticulos.setBounds(30, 270, 200, 40);
         lblMenuArticulos.setBackground(Color.decode("#375A9B"));
         lblMenuArticulos.setBorderPainted(false);
         lblMenuArticulos.setFocusPainted(false);
         lblMenuArticulos.setBorder(null);
         lblMenuArticulos.setCursor(new Cursor(Cursor.HAND_CURSOR));
         lblMenuArticulos.addActionListener(new ActionListener() {
-            @Override
+        	@Override
             public void actionPerformed(ActionEvent e) {
-                ventana.dispose();       // 1. Cierra la ventana actual (Dashboard)
-                dashboardArticulos();     // 2. Abre la ventana de Clientes
+            	cargarDashboard(panelContenido,1);
+            	Timer timer = new Timer(3000, t ->{
+            		ventana.getContentPane().removeAll();
+            		ventana.repaint();
+                    ventana.revalidate();
+            		dashboardArticulos();
+            		});
+            	timer.setRepeats(false);
+                timer.start();
             }
         });
         panelMenu.add(lblMenuArticulos);
@@ -295,43 +318,62 @@ public class HomeView extends JPanel
         JButton lblMenuPagos = new JButton("  \u25A6  Pagos");
         lblMenuPagos.setForeground(Color.decode("#C8C8C8"));
         lblMenuPagos.setFont(new Font("Inter", Font.PLAIN, 18));
-        lblMenuPagos.setBounds(20, 390, 200, 40);
+        lblMenuPagos.setBounds(35, 390, 200, 40);
         lblMenuPagos.setBackground(Color.decode("#375A9B"));
         lblMenuPagos.setBorderPainted(false);
         lblMenuPagos.setFocusPainted(false);
         lblMenuPagos.setBorder(null);
         lblMenuPagos.setCursor(new Cursor(Cursor.HAND_CURSOR));
         lblMenuPagos.addActionListener(new ActionListener() {
-            @Override
+        	@Override
             public void actionPerformed(ActionEvent e) {
-                ventana.dispose();       // 1. Cierra la ventana actual (Dashboard)
-                dashboardPagos();     // 2. Abre la ventana de Clientes
+            	cargarDashboard(panelContenido,1);
+            	Timer timer = new Timer(3000, t ->{
+            		ventana.getContentPane().removeAll();
+            		ventana.repaint();
+                    ventana.revalidate();
+            		dashboardPagos();
+            		});
+            	timer.setRepeats(false);
+                timer.start();
             }
         });
         panelMenu.add(lblMenuPagos);
 
         // 5. Contenedor Principal (El área derecha)
-        JPanel panelContenido = new JPanel();
+        
         panelContenido.setLayout(null);
         panelContenido.setBounds(220, 0, 930, 660); // Ocupa el resto de la ventana
         panelContenido.setBackground(Color.decode("#F4F6F9"));
         ventana.add(panelContenido);
 
         // 6. Tarjeta de Bienvenida
-        PanelRedondeado panelBienvenida = new PanelRedondeado(15, Color.WHITE);
-        panelBienvenida.setLayout(null);
-        panelBienvenida.setBounds(680, 20, 220, 40);
+        JLabel lblAdmin = new JLabel("Administrador", SwingConstants.RIGHT);
+        lblAdmin.setFont(new Font("Inter", Font.BOLD, 12));
+        lblAdmin.setBounds(600, 18, 130, 20);
+        panelContenido.add(lblAdmin);
         
-        JLabel lblCheck = new JLabel("✔");
-        lblCheck.setForeground(Color.GRAY);
-        lblCheck.setBounds(40, 10, 20, 20);
-        panelBienvenida.add(lblCheck);
+        JLabel lblEmail = new JLabel("1234@email.com", SwingConstants.RIGHT);
+        lblEmail.setFont(new Font("Inter", Font.PLAIN, 10));
+        lblEmail.setForeground(Color.GRAY);
+        lblEmail.setBounds(600, 38, 130, 20);
+        panelContenido.add(lblEmail);
         
-        JLabel lblBienvenida = new JLabel("¡Bienvenido!");
-        lblBienvenida.setFont(new Font("Inter", Font.BOLD, 14));
-        lblBienvenida.setBounds(70, 10, 150, 20);
-        panelBienvenida.add(lblBienvenida);
-        panelContenido.add(panelBienvenida);
+        PanelRedondeado btnCerrarSesion = new PanelRedondeado(10, Color.decode("#8AACED"));
+        btnCerrarSesion.setLayout(null);
+        btnCerrarSesion.setBounds(768, 25, 120, 30);
+        btnCerrarSesion.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR)); 
+        JLabel lblCerrarSesion = new JLabel("→]  Cerrar sesión", SwingConstants.CENTER);
+        lblCerrarSesion.setFont(new Font("Inter", Font.PLAIN, 12));
+        lblCerrarSesion.setBounds(0, 0, 120, 30);
+        btnCerrarSesion.add(lblCerrarSesion);
+        panelContenido.add(btnCerrarSesion);
+        btnCerrarSesion.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+            	confirmarCerrarSesion();
+            }
+        });
 
         // 7. Etiqueta de Título y Subtítulo
         JLabel lblTitulo = new JLabel("Dashboard");
@@ -390,38 +432,10 @@ public class HomeView extends JPanel
     }
     
     public void dashboardClientes() {
-        // 1. Configuración de la Ventana Principal
-        JFrame ventana = new JFrame();
-        ventana.setTitle("Sistema Administrativo - Clientes");
-        ventana.setSize(1150, 660);
-        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        ventana.setLocationRelativeTo(null);
-        ventana.setLayout(null);
-        ventana.getContentPane().setBackground(Color.decode("#F4F6F9")); 
-		ventana.setResizable(false);
+    	home();
+    	JPanel panelContenido = new JPanel();
 
-        //setCursor(new Cursor(Cursor.HAND_CURSOR));
-        ///////////////////////////////////////////////////
-        // 2. Panel Izquierdo (Menú lateral)
-        JPanel panelMenu = new JPanel();
-        panelMenu.setLayout(null);
-        panelMenu.setBounds(0, 140, 220, 540); 
-        panelMenu.setBackground(Color.decode("#375A9B"));
-        ventana.add(panelMenu);
-        
-        // 3. Logo y Título del Sistema
-        ImageIcon icon = new ImageIcon("src/img/logo (1).png");
-        Image img = icon.getImage().getScaledInstance(67, 100, Image.SCALE_SMOOTH);
-        JLabel logo = new JLabel(new ImageIcon(img));
-        logo.setBounds(80, 20, 67, 100);
-        ventana.add(logo);
-        
-        JLabel titleimg = new JLabel("Sistema administrativo");
-        titleimg.setFont(new Font("Inter", Font.PLAIN, 12));
-        titleimg.setBounds(55, 105, 200, 14);
-        titleimg.setForeground(Color.GRAY);
-        ventana.add(titleimg);
-        //////////////////////////////////////////////
+    	
         // 4. Botones del Menú
         JButton lblMenuDash = new JButton("  \u25A6  Dashboard");
         lblMenuDash.setForeground(Color.decode("#C8C8C8"));
@@ -434,21 +448,28 @@ public class HomeView extends JPanel
         lblMenuDash.setCursor(new Cursor(Cursor.HAND_CURSOR));
         panelMenu.add(lblMenuDash);
         lblMenuDash.addActionListener(new ActionListener() {
-            @Override
+        	@Override
             public void actionPerformed(ActionEvent e) {
-                ventana.dispose();       // 1. Cierra la ventana actual (Clientes)
-                bienvenidoDashboard();   // 2. Abre la ventana del Dashboard
+            	cargarDashboard(panelContenido,2);
+            	Timer timer = new Timer(500, t ->{
+            		ventana.getContentPane().removeAll();
+            		ventana.repaint();
+                    ventana.revalidate();
+                    bienvenidoDashboard();
+            	});
+            	timer.setRepeats(false);
+                timer.start();
             }
         });
 
         // Botón: Clientes (Activo)
         PanelRedondeado btnDashboard = new PanelRedondeado(10, new Color(138, 172, 235, 100)); // Color con transparencia
         btnDashboard.setLayout(null);
-        btnDashboard.setBounds(20, 150, 200, 40);
+        btnDashboard.setBounds(25, 150, 200, 40);
         JButton lblMenuClientes = new JButton("  \u25A6  Clientes");
         lblMenuClientes.setForeground(Color.WHITE);
         lblMenuClientes.setFont(new Font("Inter", Font.BOLD, 18));
-        lblMenuClientes.setBounds(0, 0, 200, 40);
+        lblMenuClientes.setBounds(5, 0, 200, 40);
         lblMenuClientes.setBackground(Color.decode("#375A9B"));
         lblMenuClientes.setBorderPainted(false);
         lblMenuClientes.setFocusPainted(false);
@@ -461,7 +482,7 @@ public class HomeView extends JPanel
         JButton lblMenuArticulos = new JButton("  \u25A6  Artículos");
         lblMenuArticulos.setForeground(Color.decode("#C8C8C8"));
         lblMenuArticulos.setFont(new Font("Inter", Font.PLAIN, 18));
-        lblMenuArticulos.setBounds(20, 270, 200, 40);
+        lblMenuArticulos.setBounds(30, 270, 200, 40);
         lblMenuArticulos.setBackground(Color.decode("#375A9B"));
         lblMenuArticulos.setBorderPainted(false);
         lblMenuArticulos.setFocusPainted(false);
@@ -470,8 +491,15 @@ public class HomeView extends JPanel
         lblMenuArticulos.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ventana.dispose();       // 1. Cierra la ventana actual (Dashboard)
-                dashboardArticulos();     // 2. Abre la ventana de Clientes
+            	cargarDashboard(panelContenido,2);
+            	Timer timer = new Timer(500, t ->{
+            		ventana.getContentPane().removeAll();
+            		ventana.repaint();
+                    ventana.revalidate();
+                    dashboardArticulos();
+            	});
+            	timer.setRepeats(false);
+                timer.start();
             }
         });
         panelMenu.add(lblMenuArticulos);
@@ -480,7 +508,7 @@ public class HomeView extends JPanel
         JButton lblMenuPagos = new JButton("  \u25A6  Pagos");
         lblMenuPagos.setForeground(Color.decode("#C8C8C8"));
         lblMenuPagos.setFont(new Font("Inter", Font.PLAIN, 18));
-        lblMenuPagos.setBounds(20, 390, 200, 40);
+        lblMenuPagos.setBounds(35, 390, 200, 40);
         lblMenuPagos.setBackground(Color.decode("#375A9B"));
         lblMenuPagos.setBorderPainted(false);
         lblMenuPagos.setFocusPainted(false);
@@ -489,14 +517,21 @@ public class HomeView extends JPanel
         lblMenuPagos.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ventana.dispose();       // 1. Cierra la ventana actual (Dashboard)
-                dashboardPagos();     // 2. Abre la ventana de Clientes
+            	cargarDashboard(panelContenido,2);
+            	Timer timer = new Timer(500, t ->{
+            		ventana.getContentPane().removeAll();
+            		ventana.repaint();
+                    ventana.revalidate();
+                    dashboardPagos();
+            	});
+            	timer.setRepeats(false);
+                timer.start();
             }
         });
         panelMenu.add(lblMenuPagos);
         
         // 5. Contenedor Principal (El área derecha)
-        JPanel panelContenido = new JPanel();
+        
         panelContenido.setLayout(null);
         panelContenido.setBounds(220, 0, 930, 660); 
         panelContenido.setBackground(Color.decode("#F4F6F9"));
@@ -505,30 +540,29 @@ public class HomeView extends JPanel
         // 6. Header Derecho (Usuario y Cerrar Sesión)
         JLabel lblAdmin = new JLabel("Administrador", SwingConstants.RIGHT);
         lblAdmin.setFont(new Font("Inter", Font.BOLD, 12));
-        lblAdmin.setBounds(580, 25, 130, 20);
+        lblAdmin.setBounds(600, 18, 130, 20);
         panelContenido.add(lblAdmin);
         
         JLabel lblEmail = new JLabel("1234@email.com", SwingConstants.RIGHT);
         lblEmail.setFont(new Font("Inter", Font.PLAIN, 10));
         lblEmail.setForeground(Color.GRAY);
-        lblEmail.setBounds(580, 45, 130, 20);
+        lblEmail.setBounds(600, 38, 130, 20);
         panelContenido.add(lblEmail);
         
         PanelRedondeado btnCerrarSesion = new PanelRedondeado(10, Color.decode("#8AACED"));
         btnCerrarSesion.setLayout(null);
-        btnCerrarSesion.setBounds(730, 25, 160, 40);
+        btnCerrarSesion.setBounds(768, 25, 120, 30);
         btnCerrarSesion.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR)); 
         JLabel lblCerrarSesion = new JLabel("→]  Cerrar sesión", SwingConstants.CENTER);
-        lblCerrarSesion.setFont(new Font("Inter", Font.PLAIN, 14));
-        lblCerrarSesion.setBounds(0, 0, 160, 40);
+        lblCerrarSesion.setFont(new Font("Inter", Font.PLAIN, 12));
+        lblCerrarSesion.setBounds(0, 0, 120, 30);
         btnCerrarSesion.add(lblCerrarSesion);
         panelContenido.add(btnCerrarSesion);
         btnCerrarSesion.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
             	 	
-            	ventana.dispose();
-            	AuthController x =new AuthController();
+            	confirmarCerrarSesion();
             	
             }
         });
@@ -617,80 +651,19 @@ public class HomeView extends JPanel
         ventana.repaint();
         ventana.revalidate();
         
-        /*
-         *         // 10. Contenedor de la Tabla de Clientes
-        panelTablaArticulos = new PanelRedondeado(15, Color.WHITE);
-        panelTablaArticulos.setLayout(null);
-        // ⚠️ IMPORTANTE: En lugar de setBounds, usamos setPreferredSize para el JScrollPane
-        panelTablaArticulos.setPreferredSize(new Dimension(830, 250)); 
-        
-        // Creamos el JScrollPane y le pasamos tu panelTablaGlobal
-        JScrollPane scrollTablaArticulos = new JScrollPane(panelTablaArticulos);
-        scrollTablaArticulos.setBounds(40, 285, 850, 250); // Los bounds ahora son del Scroll
-        scrollTablaArticulos.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollTablaArticulos.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollTablaArticulos.setBorder(null);
-        scrollTablaArticulos.getViewport().setOpaque(true);
-        scrollTablaArticulos.getViewport().setBackground(Color.WHITE); 
-        scrollTablaArticulos.setOpaque(false);
-        
-        panelTablaArticulos = new PanelRedondeado(15, Color.WHITE);
-        panelTablaArticulos.setLayout(null);
-        panelTablaArticulos.setBounds(40, 255, 850, 280);
-        panelContenido.add(panelTablaArticulos);
-        panelContenido.add(scrollTablaArticulos);
 
-
-        // AQUÍ CONECTAMOS LA BARRA DE BÚSQUEDA CON LA TABLA
-        configurarBusquedaInteractivaArticulos(txtBusqueda, ventana, panelTablaArticulos);
-
-        // Renderizamos la tabla inicial (vacío para mostrar a todos)
-        renderizarTablaArticulos(panelTablaArticulos, "");
-
-        // Mostrar la ventana
-        ventana.setVisible(true);
-        ventana.repaint();
-        ventana.revalidate();
-         * */
         
     }
     
     public void dashboardArticulos() {
-        // 1. Configuración de la Ventana Principal
-        JFrame ventana = new JFrame();
-        ventana.setTitle("Sistema Administrativo - Artículos");
-        ventana.setSize(1150, 660);
-        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        ventana.setLocationRelativeTo(null);
-        ventana.setLayout(null);
-        ventana.getContentPane().setBackground(Color.decode("#F4F6F9")); 
-		ventana.setResizable(false);
+    	home();
+        JPanel panelContenido = new JPanel();
 
-        // 2. Panel Izquierdo (Menú lateral)
-        JPanel panelMenu = new JPanel();
-        panelMenu.setLayout(null);
-        panelMenu.setBounds(0, 140, 220, 540); 
-        panelMenu.setBackground(Color.decode("#375A9B"));
-        ventana.add(panelMenu);
-        
-        // 3. Logo y Título del Sistema
-        ImageIcon icon = new ImageIcon("src/img/logo (1).png");
-        Image img = icon.getImage().getScaledInstance(67, 100, Image.SCALE_SMOOTH);
-        JLabel logo = new JLabel(new ImageIcon(img));
-        logo.setBounds(80, 20, 67, 100);
-        ventana.add(logo);
-        
-        JLabel titleimg = new JLabel("Sistema administrativo");
-        titleimg.setFont(new Font("Inter", Font.PLAIN, 12));
-        titleimg.setBounds(55, 105, 200, 14);
-        titleimg.setForeground(Color.GRAY);
-        ventana.add(titleimg);
-        //////////////////////////////////////////////
         // 4. Botones del Menú
         JButton lblMenuDash = new JButton("  \u25A6  Dashboard");
         lblMenuDash.setForeground(Color.decode("#C8C8C8"));
         lblMenuDash.setFont(new Font("Inter", Font.PLAIN, 18));
-        lblMenuDash.setBounds(20, 42, 200, 40);
+        lblMenuDash.setBounds(20, 42, 200, 40);        
         lblMenuDash.setBackground(Color.decode("#375A9B"));
         lblMenuDash.setBorderPainted(false);
         lblMenuDash.setFocusPainted(false);
@@ -700,31 +673,47 @@ public class HomeView extends JPanel
         lblMenuDash.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ventana.dispose();       // 1. Cierra la ventana actual (Clientes)
-                bienvenidoDashboard();   // 2. Abre la ventana del Dashboard
+            	cargarDashboard(panelContenido,3);
+            	Timer timer = new Timer(500, t ->{
+            		ventana.getContentPane().removeAll();
+            		ventana.repaint();
+                    ventana.revalidate();
+                    bienvenidoDashboard();
+            	});
+            	timer.setRepeats(false);
+                timer.start();
             }
         });
 
-        // Botón: Clientes (Activo)
         
         JButton lblMenuClientes = new JButton("  \u25A6  Clientes");
         lblMenuClientes.setForeground(Color.decode("#C8C8C8"));
         lblMenuClientes.setFont(new Font("Inter", Font.PLAIN, 18));
-        lblMenuClientes.setBounds(20, 150, 200, 40);
+        lblMenuClientes.setBounds(30, 150, 200, 40);
         lblMenuClientes.setBackground(Color.decode("#375A9B"));
         lblMenuClientes.setBorderPainted(false);
         lblMenuClientes.setFocusPainted(false);
         lblMenuClientes.setBorder(null);
         lblMenuClientes.setCursor(new Cursor(Cursor.HAND_CURSOR));
         panelMenu.add(lblMenuClientes);
-        lblMenuClientes.addActionListener(e -> {
-            ventana.dispose();
-            dashboardClientes();
+        lblMenuClientes.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	cargarDashboard(panelContenido,3);
+            	Timer timer = new Timer(500, t ->{
+            		ventana.getContentPane().removeAll();
+            		ventana.repaint();
+                    ventana.revalidate();
+                    dashboardClientes();
+            	});
+            	timer.setRepeats(false);
+                timer.start();
+            }
         });
         
         PanelRedondeado btnMenuArticulos = new PanelRedondeado(10, new Color(138, 172, 235, 100));
         btnMenuArticulos.setLayout(null);
-        btnMenuArticulos.setBounds(20, 270, 200, 40);
+        btnMenuArticulos.setBounds(35, 270, 200, 40);
         JButton lblMenuArticulos = new JButton("  \u25A6  Artículos");
         lblMenuArticulos.setForeground(Color.WHITE);
         lblMenuArticulos.setFont(new Font("Inter", Font.BOLD, 18));
@@ -741,7 +730,7 @@ public class HomeView extends JPanel
         JButton lblMenuPagos = new JButton("  \u25A6  Pagos");
         lblMenuPagos.setForeground(Color.decode("#C8C8C8"));
         lblMenuPagos.setFont(new Font("Inter", Font.PLAIN, 18));
-        lblMenuPagos.setBounds(20, 390, 200, 40);
+        lblMenuPagos.setBounds(35, 390, 200, 40);
         lblMenuPagos.setBackground(Color.decode("#375A9B"));
         lblMenuPagos.setBorderPainted(false);
         lblMenuPagos.setFocusPainted(false);
@@ -750,14 +739,20 @@ public class HomeView extends JPanel
         lblMenuPagos.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ventana.dispose();       // 1. Cierra la ventana actual (Dashboard)
-                dashboardPagos();     // 2. Abre la ventana de Clientes
+            	cargarDashboard(panelContenido,3);
+            	Timer timer = new Timer(500, t ->{
+            		ventana.getContentPane().removeAll();
+            		ventana.repaint();
+                    ventana.revalidate();
+                    dashboardPagos();
+            	});
+            	timer.setRepeats(false);
+                timer.start();
             }
         });
         panelMenu.add(lblMenuPagos);
         
         // 5. Contenedor Principal Derecho
-        JPanel panelContenido = new JPanel();
         panelContenido.setLayout(null);
         panelContenido.setBounds(220, 0, 930, 660); 
         panelContenido.setBackground(Color.decode("#F4F6F9"));
@@ -766,43 +761,29 @@ public class HomeView extends JPanel
         // 6. Header Derecho (Usuario y Cerrar Sesión)
         JLabel lblAdmin = new JLabel("Administrador", SwingConstants.RIGHT);
         lblAdmin.setFont(new Font("Inter", Font.BOLD, 12));
-        lblAdmin.setBounds(580, 25, 130, 20);
+        lblAdmin.setBounds(600, 18, 130, 20);
         panelContenido.add(lblAdmin);
-
+        
         JLabel lblEmail = new JLabel("1234@email.com", SwingConstants.RIGHT);
         lblEmail.setFont(new Font("Inter", Font.PLAIN, 10));
         lblEmail.setForeground(Color.GRAY);
-        lblEmail.setBounds(580, 45, 130, 20);
+        lblEmail.setBounds(600, 38, 130, 20);
         panelContenido.add(lblEmail);
-
-        /*
-        PanelRedondeado btnCerrarSesion = new PanelRedondeado(10, Color.decode("#8AACED"));
-        btnCerrarSesion.setLayout(null);
-        btnCerrarSesion.setBounds(730, 25, 160, 40);
-        btnCerrarSesion.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        JLabel lblCerrarSesion = new JLabel("→]  Cerrar sesión", SwingConstants.CENTER);
-        lblCerrarSesion.setFont(new Font("Inter", Font.PLAIN, 14));
-        lblCerrarSesion.setBounds(0, 0, 160, 40);
-        btnCerrarSesion.add(lblCerrarSesion);
-        panelContenido.add(btnCerrarSesion);
-        */
-        ///
         
         PanelRedondeado btnCerrarSesion = new PanelRedondeado(10, Color.decode("#8AACED"));
         btnCerrarSesion.setLayout(null);
-        btnCerrarSesion.setBounds(730, 25, 160, 40);
+        btnCerrarSesion.setBounds(768, 25, 120, 30);
         btnCerrarSesion.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR)); 
         JLabel lblCerrarSesion = new JLabel("→]  Cerrar sesión", SwingConstants.CENTER);
-        lblCerrarSesion.setFont(new Font("Inter", Font.PLAIN, 14));
-        lblCerrarSesion.setBounds(0, 0, 160, 40);
+        lblCerrarSesion.setFont(new Font("Inter", Font.PLAIN, 12));
+        lblCerrarSesion.setBounds(0, 0, 120, 30);
         btnCerrarSesion.add(lblCerrarSesion);
         panelContenido.add(btnCerrarSesion);
         btnCerrarSesion.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-            		
-            	ventana.dispose();
-            	AuthController x =new AuthController();
+            	 	
+            	confirmarCerrarSesion();
             	
             }
         });
@@ -977,42 +958,15 @@ public class HomeView extends JPanel
     }
     
     public void dashboardPagos() {
-        // 1. Configuración de la Ventana Principal
-        JFrame ventana = new JFrame();
-        ventanaPagos = ventana;
-        ventana.setTitle("Sistema Administrativo - Pagos");
-        ventana.setSize(1150, 660);
-        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        ventana.setLocationRelativeTo(null);
-        ventana.setLayout(null);
-        ventana.getContentPane().setBackground(Color.decode("#F4F6F9")); 
-		ventana.setResizable(false);
+    	home();
+        JPanel panelContenido = new JPanel();
 
-        // 2. Panel Izquierdo (Menú lateral)
-        JPanel panelMenu = new JPanel();
-        panelMenu.setLayout(null);
-        panelMenu.setBounds(0, 140, 220, 540); 
-        panelMenu.setBackground(Color.decode("#375A9B"));
-        ventana.add(panelMenu);
-        
-        // 3. Logo y Título del Sistema
-        ImageIcon icon = new ImageIcon("src/img/logo (1).png");
-        Image img = icon.getImage().getScaledInstance(67, 100, Image.SCALE_SMOOTH);
-        JLabel logo = new JLabel(new ImageIcon(img));
-        logo.setBounds(80, 20, 67, 100);
-        ventana.add(logo);
-        
-        JLabel titleimg = new JLabel("Sistema administrativo");
-        titleimg.setFont(new Font("Inter", Font.PLAIN, 12));
-        titleimg.setBounds(55, 105, 200, 14);
-        titleimg.setForeground(Color.GRAY);
-        ventana.add(titleimg);
         //////////////////////////////////////////////
         // 4. Botones del Menú
         JButton lblMenuDash = new JButton("  \u25A6  Dashboard");
         lblMenuDash.setForeground(Color.decode("#C8C8C8"));
         lblMenuDash.setFont(new Font("Inter", Font.PLAIN, 18));
-        lblMenuDash.setBounds(20, 42, 200, 40);
+        lblMenuDash.setBounds(20, 42, 200, 40);        
         lblMenuDash.setBackground(Color.decode("#375A9B"));
         lblMenuDash.setBorderPainted(false);
         lblMenuDash.setFocusPainted(false);
@@ -1021,8 +975,15 @@ public class HomeView extends JPanel
         lblMenuDash.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ventana.dispose();       // 1. Cierra la ventana actual (Clientes)
-                bienvenidoDashboard();   // 2. Abre la ventana del Dashboard
+            	cargarDashboard(panelContenido,4);
+            	Timer timer = new Timer(500, t ->{
+            		ventana.getContentPane().removeAll();
+            		ventana.repaint();
+                    ventana.revalidate();
+                    bienvenidoDashboard();
+            	});
+            	timer.setRepeats(false);
+                timer.start();
             }
         });
         panelMenu.add(lblMenuDash);
@@ -1031,22 +992,32 @@ public class HomeView extends JPanel
         JButton lblMenuClientes = new JButton("  \u25A6  Clientes");
         lblMenuClientes.setForeground(Color.decode("#C8C8C8"));
         lblMenuClientes.setFont(new Font("Inter", Font.PLAIN, 18));
-        lblMenuClientes.setBounds(20, 150, 200, 40);
+        lblMenuClientes.setBounds(30, 150, 200, 40);
         lblMenuClientes.setBackground(Color.decode("#375A9B"));
         lblMenuClientes.setBorderPainted(false);
         lblMenuClientes.setFocusPainted(false);
         lblMenuClientes.setBorder(null);
         lblMenuClientes.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        lblMenuClientes.addActionListener(e -> {
-            ventana.dispose();
-            dashboardClientes();
+        lblMenuClientes.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	cargarDashboard(panelContenido,4);
+            	Timer timer = new Timer(500, t ->{
+            		ventana.getContentPane().removeAll();
+            		ventana.repaint();
+                    ventana.revalidate();
+                    dashboardClientes();
+            	});
+            	timer.setRepeats(false);
+                timer.start();
+            }
         });
         panelMenu.add(lblMenuClientes);
         
         JButton lblMenuArticulos = new JButton("  \u25A6  Artículos");
         lblMenuArticulos.setForeground(Color.decode("#C8C8C8"));
-        lblMenuArticulos.setFont(new Font("Inter", Font.BOLD, 18));
-        lblMenuArticulos.setBounds(20, 270, 200, 40);
+        lblMenuArticulos.setFont(new Font("Inter", Font.PLAIN, 18));
+        lblMenuArticulos.setBounds(30, 270, 200, 40);
         lblMenuArticulos.setBackground(Color.decode("#375A9B"));
         lblMenuArticulos.setBorderPainted(false);
         lblMenuArticulos.setBorder(null);
@@ -1055,8 +1026,15 @@ public class HomeView extends JPanel
         lblMenuArticulos.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ventana.dispose();       // 1. Cierra la ventana actual (Clientes)
-                dashboardArticulos();   // 2. Abre la ventana del Dashboard
+            	cargarDashboard(panelContenido,4);
+            	Timer timer = new Timer(500, t ->{
+            		ventana.getContentPane().removeAll();
+            		ventana.repaint();
+                    ventana.revalidate();
+                    dashboardArticulos();
+            	});
+            	timer.setRepeats(false);
+                timer.start();
             }
         });
         panelMenu.add(lblMenuArticulos);
@@ -1065,11 +1043,11 @@ public class HomeView extends JPanel
         //(activo)
         PanelRedondeado btnMenuArticulos = new PanelRedondeado(10, new Color(138, 172, 235, 100));
         btnMenuArticulos.setLayout(null);
-        btnMenuArticulos.setBounds(20, 390, 200, 40);
+        btnMenuArticulos.setBounds(55, 390, 200, 40);
         JButton lblMenuPagos = new JButton("  \u25A6  Pagos");
         lblMenuPagos.setForeground(Color.WHITE);
         lblMenuPagos.setFont(new Font("Inter", Font.BOLD, 18));
-        lblMenuPagos.setBounds(20, 390, 200, 40);
+        lblMenuPagos.setBounds(35, 390, 200, 40);
         lblMenuPagos.setContentAreaFilled(false);
         lblMenuPagos.setBorderPainted(false);
         lblMenuPagos.setFocusPainted(false);
@@ -1079,7 +1057,6 @@ public class HomeView extends JPanel
 
         
         // 5. Contenedor Principal Derecho
-        JPanel panelContenido = new JPanel();
         panelContenido.setLayout(null);
         panelContenido.setBounds(220, 0, 930, 660); 
         panelContenido.setBackground(Color.decode("#F4F6F9"));
@@ -1088,34 +1065,31 @@ public class HomeView extends JPanel
         // 6. Header Derecho (Usuario y Cerrar Sesión)
         JLabel lblAdmin = new JLabel("Administrador", SwingConstants.RIGHT);
         lblAdmin.setFont(new Font("Inter", Font.BOLD, 12));
-        lblAdmin.setBounds(580, 25, 130, 20);
+        lblAdmin.setBounds(600, 18, 130, 20);
         panelContenido.add(lblAdmin);
-
+        
         JLabel lblEmail = new JLabel("1234@email.com", SwingConstants.RIGHT);
         lblEmail.setFont(new Font("Inter", Font.PLAIN, 10));
         lblEmail.setForeground(Color.GRAY);
-        lblEmail.setBounds(580, 45, 130, 20);
+        lblEmail.setBounds(600, 38, 130, 20);
         panelContenido.add(lblEmail);
         
         PanelRedondeado btnCerrarSesion = new PanelRedondeado(10, Color.decode("#8AACED"));
         btnCerrarSesion.setLayout(null);
-        btnCerrarSesion.setBounds(730, 25, 160, 40);
+        btnCerrarSesion.setBounds(768, 25, 120, 30);
         btnCerrarSesion.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR)); 
         JLabel lblCerrarSesion = new JLabel("→]  Cerrar sesión", SwingConstants.CENTER);
-        lblCerrarSesion.setFont(new Font("Inter", Font.PLAIN, 14));
-        lblCerrarSesion.setBounds(0, 0, 160, 40);
+        lblCerrarSesion.setFont(new Font("Inter", Font.PLAIN, 12));
+        lblCerrarSesion.setBounds(0, 0, 120, 30);
         btnCerrarSesion.add(lblCerrarSesion);
         panelContenido.add(btnCerrarSesion);
         btnCerrarSesion.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-            	 	
-            	ventana.dispose();
-            	AuthController x =new AuthController();
-            	
+            	confirmarCerrarSesion();
             }
         });
-
+        
         // 7. Título y Subtítulo
         JLabel lblTitulo = new JLabel("Pagos");
         lblTitulo.setFont(new Font("Inter", Font.BOLD, 22));
@@ -1146,7 +1120,9 @@ public class HomeView extends JPanel
                 // El modal es bloqueante: cuando regresa aqui ya fue cerrado.
                 // Refrescamos la tabla directamente con la ventana correcta.
                 tableDataBase.cargarPagos();
+                abbPagos.reconstruir(baseDatosPagos);
                 tableDataBase.cargarArticulos();
+                abbArticulos.reconstruir(baseDatosArticulos);
                 renderizarTablaPagos(panelTablaPagos, "", ventana);
                 panelTablaPagos.revalidate();
                 panelTablaPagos.repaint();
@@ -1250,12 +1226,12 @@ public class HomeView extends JPanel
         scrollTablaArticulos.setOpaque(false);
         panelContenido.add(scrollTablaArticulos);
 
-
+        
         // AQUÍ CONECTAMOS LA BARRA DE BÚSQUEDA CON LA TABLA
-        configurarBusquedaInteractivaArticulos(txtBusqueda, ventana, panelTablaPagos);
+        configurarBusquedaInteractivaPagos(txtBusqueda, ventana, panelTablaPagos);
 
         // Renderizamos la tabla inicial (vacío para mostrar a todos)
-        renderizarTablaArticulos(panelTablaPagos, "");
+        renderizarTablaPagos(panelTablaPagos, "", ventana);
 
         // Mostrar la ventana
         ventana.setVisible(true);
@@ -1359,6 +1335,40 @@ public class HomeView extends JPanel
     	    }
     }
     
+    public void cargarDashboard(JPanel panel, int dashboard) {
+    	
+    	if(dashboard==1) {
+    		panel.remove(12);
+    		panel.remove(11);
+    		panel.remove(10);
+    		panel.remove(9);
+    	}else if(dashboard==2){
+    		panel.remove(7);
+    	}else if(dashboard==3) {
+    		panel.remove(10);
+    		panel.remove(8);
+    		panel.remove(7);
+    		panel.remove(6);
+    	}else{
+    		panel.remove(10);
+    		panel.remove(9);
+    		panel.remove(8);
+    		panel.remove(7);
+    	}
+    	
+    	ImageIcon icon2 = new ImageIcon("src/img/cargando1.gif");
+		
+		JLabel fondo2 = new JLabel(icon2);
+		fondo2.setPreferredSize(new Dimension(400, 400));
+		fondo2.setBounds(250, 230, 400, 400);
+		fondo2.setVisible(true);
+		panel.add(fondo2);
+    	
+    	panel.repaint();
+    	panel.revalidate();
+	    	
+    }
+    
     private void configurarBusquedaInteractiva(JTextField txtBusqueda, JFrame ventana, JPanel panelTabla) {
         JPopupMenu popupSugerencias = new JPopupMenu();
         DefaultListModel<String> modeloLista = new DefaultListModel<>();
@@ -1395,13 +1405,8 @@ public class HomeView extends JPanel
                     return;
                 }
 
-                // Generar sugerencias para la barra desplegable basadas en el arreglo global
-                List<String> filtrados = new ArrayList<>();
-                for (String[] cliente : baseDatosClientes) {
-                    if (cliente[0].toLowerCase().contains(texto)) {
-                        filtrados.add(cliente[0]);
-                    }
-                }
+                // Sugerencias usando el Árbol Binario de Búsqueda (ABB)
+                List<String> filtrados = abbClientes.buscarNombres(texto);
 
                 if (!filtrados.isEmpty()) {
                     filtrados.forEach(modeloLista::addElement);
@@ -1464,13 +1469,8 @@ public class HomeView extends JPanel
                     return;
                 }
 
-                // Generar sugerencias para la barra desplegable basadas en el arreglo global
-                List<String> filtrados = new ArrayList<>();
-                for (String[] cliente : baseDatosArticulos) {
-                    if (cliente[0].toLowerCase().contains(texto)) {
-                        filtrados.add(cliente[0]);
-                    }
-                }
+                // Sugerencias usando el Árbol Binario de Búsqueda (ABB)
+                List<String> filtrados = abbArticulos.buscarNombres(texto);
 
                 if (!filtrados.isEmpty()) {
                     filtrados.forEach(modeloLista::addElement);
@@ -1533,13 +1533,8 @@ public class HomeView extends JPanel
                     return;
                 }
 
-                // Generar sugerencias para la barra desplegable basadas en el arreglo global
-                List<String> filtrados = new ArrayList<>();
-                for (String[] cliente : baseDatosPagos) {
-                    if (cliente[0].toLowerCase().contains(texto)) {
-                        filtrados.add(cliente[0]);
-                    }
-                }
+                // Sugerencias usando el Árbol Binario de Búsqueda (ABB)
+                List<String> filtrados = abbPagos.buscarNombres(texto);
 
                 if (!filtrados.isEmpty()) {
                     filtrados.forEach(modeloLista::addElement);
@@ -1795,22 +1790,7 @@ public class HomeView extends JPanel
                 }
             }
             clienteParaArticulo = clienteEncontrado;
-        	/*
 
-            private List<String[]> baseDatosClientes = new ArrayList<>(Arrays.asList(
-                    new String[]{"Juan Pérez García", "6121234567", "juan.perez@email.com", "14/1/2025", "1", "#AEE7B8"},
-                    new String[]{"María López Hernández", "6121418223", "maria.lopez@email.com", "19/2/2025", "1", "#AEE7B8"},
-                    new String[]{"Carlos Rodríguez Martínez", "6122898724", "carlos.rdgz@email.com", "9/3/2025", "0", "#AEE7B8"},
-                    new String[]{"Emmanuel García", "6125551234", "emmanuel@email.com", "10/4/2025", "2", "#AEE7B8"}
-                ));
-            
-            private List<String[]> baseDatosArticulos = new ArrayList<>(Arrays.asList(
-            		new String[]{"Anillo de Oro 14K", "Juan Pérez García", "Joyería", "$5,000", "14/6/2025", "Empeñado", "#FFF9C4", "#FBC02D","$10,000","20/13/2027","Sin descripcion por el momento"},
-            		new String[]{"Laptop Dell XPS 15", "Juan Pérez García", "Electrónica", "$8,000", "30/4/2025", "Recuperado", "#C8E6C9", "#388E3C","$10,000","20/13/2027","Sin descripcion por el momento"},
-            		new String[]{"Collar de Perlas", "María López Hernández", "Joyería", "$3,500", "19/6/2025", "Empeñado", "#FFF9C4", "#FBC02D","$10,000","20/13/2027","Sin descripcion por el momento"},
-            		new String[] {"iPhone 14 Pro", "Carlos Rodríguez Martínez", "Electrónica", "$10,000", "9/4/2025", "Rematado", "#FFCDD2", "#D32F2F","$10,000","20/13/2027","Sin descripcion por el momento"}
-            		));
-            */
 
             String filtroCat = (comboCat != null) ? comboCat.getSelectedItem().toString() : "Todas las categorías";
             String filtroEstado = (comboEstado != null) ? comboEstado.getSelectedItem().toString() : "Todos los estados";
@@ -1818,10 +1798,14 @@ public class HomeView extends JPanel
 
             
             // Filtro interactivo: Busca en Nombre de Artículo [0], Nombre de Cliente [1] y Categoría [2]
-            if (  filtroCat.equals("Todas las categorías")&&filtroEstado.equals("Todos los estados")||
-               (  filtroCat.equals("Todas las categorías")&&filtroEstado.equals(articulo[5].toString()))||
-               (  filtroCat.equals(articulo[2].toString())&&filtroEstado.equals("Todos los estados"))||
-               (  filtroCat.equals(articulo[2].toString()))&&(filtroEstado.equals(articulo[5].toString()))) {
+            boolean coincideTexto = busqueda.isEmpty()
+                || articulo[0].toLowerCase().contains(busqueda)
+                || articulo[1].toLowerCase().contains(busqueda)
+                || articulo[2].toLowerCase().contains(busqueda);
+            boolean coincideCombos =
+                (filtroCat.equals("Todas las categorías") || filtroCat.equals(articulo[2].toString())) &&
+                (filtroEstado.equals("Todos los estados") || filtroEstado.equals(articulo[5].toString()));
+            if (coincideTexto && coincideCombos) {
                 
                 hayResultados = true;
 
@@ -2052,10 +2036,11 @@ public class HomeView extends JPanel
                 lblVer.setFocusPainted(false);
                 lblVer.setBounds(posX[5] - 15, rowY-5, 50, 30);
                 lblVer.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                final String[] pagoFinal = pago;
                 lblVer.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-
+                        GeneradorReciboPDF.generarYGuardar(pagoFinal, ventana);
                     }
                 });
                 panelTabla.add(lblVer);
@@ -2104,8 +2089,9 @@ public class HomeView extends JPanel
                 rowY += 50;
             }
         }
-        
-        
+
+        // Ajustar el tamaño del panel según los registros renderizados
+        panelTabla.setPreferredSize(new Dimension(830, rowY + 20));
 
         // 3. Si no hubo coincidencias, mostramos el mensaje
         if (!hayResultados) {
@@ -2898,6 +2884,66 @@ public class HomeView extends JPanel
             	renderizarTablaPagos(panelTabla, "",ventanaPadre);
             }
             
+        });
+        panel.add(btnEliminarConfirmar);
+
+        dialogo.add(panel);
+        dialogo.setVisible(true);
+    }
+    
+    private void confirmarCerrarSesion() {
+    	JFrame ventanaPadre=ventana;    
+    	
+        JDialog dialogo = new JDialog(ventanaPadre, true);
+        dialogo.setUndecorated(true);
+        dialogo.setBackground(new Color(0, 0, 0, 150)); // Fondo oscuro traslúcido
+        dialogo.setSize(ventanaPadre.getWidth(), ventanaPadre.getHeight());
+        dialogo.setLocationRelativeTo(ventanaPadre);
+        dialogo.setLayout(null);
+
+        // Panel blanco central
+        PanelRedondeado panel = new PanelRedondeado(20, Color.WHITE);
+        panel.setLayout(null);
+        panel.setBounds((dialogo.getWidth() - 420) / 2, (dialogo.getHeight() - 130) / 2, 500, 140);
+
+        // Título
+        JLabel lblTitulo = new JLabel("¿Estás seguro?", SwingConstants.CENTER);
+        lblTitulo.setFont(new Font("Inter", Font.BOLD, 19));
+        lblTitulo.setBounds(-100, 20, 400, 30);
+        panel.add(lblTitulo);
+        
+        JLabel lblMsg = new JLabel("Tendras que volver a iniciar sesión");
+        lblMsg.setFont(new Font("Inter", Font.PLAIN, 14));
+        lblMsg.setForeground(Color.GRAY);
+        lblMsg.setBounds(40, 50, 440, 50);
+        panel.add(lblMsg);
+
+        // Botón Cancelar
+        JButton btnCancelar = new JButton("Confirmar");
+        btnCancelar.setBounds(260, 97, 100, 27);
+        btnCancelar.setFocusPainted(false);
+        btnCancelar.setForeground(Color.WHITE);
+        btnCancelar.setBackground(Color.decode("#375A9B"));
+        btnCancelar.setFont(new Font("Inter", Font.BOLD, 12));
+        btnCancelar.setBorder(new LineBorder(new Color(200, 200, 200)));
+        btnCancelar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnCancelar.addActionListener(e -> {
+        	AuthView x= new AuthView();
+        	ventana.dispose();
+        });
+        panel.add(btnCancelar);
+        
+        // Botón Eliminar
+        JButton btnEliminarConfirmar = new JButton("Cancelar");
+        btnEliminarConfirmar.setBounds(385, 97, 100, 27);
+        btnEliminarConfirmar.setFocusPainted(false);
+        btnEliminarConfirmar.setBackground(Color.WHITE);
+        btnEliminarConfirmar.setForeground(Color.BLACK);
+        btnEliminarConfirmar.setFont(new Font("Inter", Font.BOLD, 12));
+        btnEliminarConfirmar.setBorderPainted(true);
+        btnEliminarConfirmar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnEliminarConfirmar.addActionListener(e -> {
+        	dialogo.dispose();
         });
         panel.add(btnEliminarConfirmar);
 
