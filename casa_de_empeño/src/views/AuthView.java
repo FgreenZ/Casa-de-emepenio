@@ -84,9 +84,9 @@ public class AuthView extends JFrame {
         
         // Limpiamos el contenido previo por si venimos de "Registro"
         cuadroLogin.removeAll();
-
+        
         // Logo superior (el que ya tenías)
-        ImageIcon icon2 = new ImageIcon("src/img/logo y titulo.png");
+        ImageIcon icon2 = new ImageIcon(getClass().getResource("/img/logo y titulo.png"));
         Image img2 = icon2.getImage().getScaledInstance(450, 245, Image.SCALE_SMOOTH);
         JLabel fondo2 = new JLabel(new ImageIcon(img2));
         fondo2.setBounds(-100, -60, 550, 300);
@@ -220,7 +220,7 @@ public class AuthView extends JFrame {
     	cuadroLogin.remove(2);
 
     	
-    	ImageIcon icon2 = new ImageIcon("src/img/loading6.gif");
+    	ImageIcon icon2 = new ImageIcon(getClass().getResource("/img/loading6.gif"));
 		
 		JLabel fondo2 = new JLabel(icon2);
 		fondo2.setPreferredSize(new Dimension(200, 200));
@@ -457,22 +457,22 @@ public class AuthView extends JFrame {
 
     private void agregarAdornosFondo() {
         // (Aquí pegué tu código original de las imágenes de fondo para no perderlo)
-        ImageIcon icon4 = new ImageIcon("src/img/lock1.png");
+        ImageIcon icon4 = new ImageIcon(getClass().getResource("/img/lock1.png"));
         JLabel fondo4 = new JLabel(new ImageIcon(icon4.getImage().getScaledInstance(100, 172, Image.SCALE_SMOOTH)));
         fondo4.setBounds(200, 420, 100, 172);
         add(fondo4);
 
-        ImageIcon icon3 = new ImageIcon("src/img/img (2).png");
+        ImageIcon icon3 = new ImageIcon(getClass().getResource("/img/img (2).png"));
         JLabel fondo3 = new JLabel(new ImageIcon(icon3.getImage().getScaledInstance(400, 307, Image.SCALE_SMOOTH)));
         fondo3.setBounds(15, 10, 500, 385);
         add(fondo3);
 
-        ImageIcon fondo1 = new ImageIcon("src/img/fondoadorno123.png");
+        ImageIcon fondo1 = new ImageIcon(getClass().getResource("/img/fondoadorno123.png"));
         JLabel fondo21 = new JLabel(new ImageIcon(fondo1.getImage().getScaledInstance(620, 650, Image.SCALE_SMOOTH)));
         fondo21.setBounds(-5, -75, 620, 800);
         add(fondo21);
 
-        ImageIcon icon = new ImageIcon("src/img/fondoadorno4.png");
+        ImageIcon icon = new ImageIcon(getClass().getResource("/img/fondoadorno4.png"));
         JLabel fondoImg = new JLabel(new ImageIcon(icon.getImage().getScaledInstance(620, 650, Image.SCALE_SMOOTH)));
         fondoImg.setBounds(0, -75, 647, 800);
         add(fondoImg);

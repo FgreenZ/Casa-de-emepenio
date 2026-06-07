@@ -200,7 +200,7 @@ public class HomeView extends JPanel
         ventana.add(panelMenu);
         
         // 3. Logo y Título del Sistema
-        ImageIcon icon = new ImageIcon("src/img/logo (1).png");
+        ImageIcon icon = new ImageIcon(getClass().getResource("/img/logo (1).png"));
         Image img = icon.getImage().getScaledInstance(67, 100, Image.SCALE_SMOOTH);
         JLabel logo = new JLabel(new ImageIcon(img));
         logo.setBounds(80, 20, 67, 100);
@@ -1356,7 +1356,7 @@ public class HomeView extends JPanel
     		panel.remove(7);
     	}
     	
-    	ImageIcon icon2 = new ImageIcon("src/img/cargando1.gif");
+    	ImageIcon icon2 = new ImageIcon(getClass().getResource("/img/cargando1.gif"));
 		
 		JLabel fondo2 = new JLabel(icon2);
 		fondo2.setPreferredSize(new Dimension(400, 400));
@@ -1639,7 +1639,7 @@ public class HomeView extends JPanel
                 panelTabla.add(circuloActivos);
 
                 //|-ACCIONES-|
-                ImageIcon iconD = new ImageIcon("src/img/verDetalles.png");
+                ImageIcon iconD = new ImageIcon(getClass().getResource("/img/verDetalles.png"));
                 final String[] clienteSeleccionado = cliente; 
                 JButton lblVer = new JButton(iconD);
                 lblVer.setForeground(Color.BLACK);
@@ -1663,7 +1663,7 @@ public class HomeView extends JPanel
                 });
                 panelTabla.add(lblVer);
 
-                ImageIcon iconDe = new ImageIcon("src/img/verOpciones.png");
+                ImageIcon iconDe = new ImageIcon(getClass().getResource("/img/verOpciones.png"));
                 final int indexCliente = baseDatosClientes.indexOf(cliente);
                 JButton lblEditar = new JButton(iconDe);
                 lblEditar.setForeground(Color.DARK_GRAY);
@@ -1685,7 +1685,7 @@ public class HomeView extends JPanel
                 });
                 panelTabla.add(lblEditar);
                 
-                ImageIcon icon = new ImageIcon("src/img/verBasura.png");
+                ImageIcon icon = new ImageIcon(getClass().getResource("/img/verBasura.png"));
                 JButton lblEliminar = new JButton(icon);
                 lblEliminar.setForeground(Color.RED);
                 lblEliminar.setFont(new Font("SansSerif", Font.PLAIN, 25));
@@ -1851,7 +1851,7 @@ public class HomeView extends JPanel
                 panelTabla.add(badge);
 
                 // |-ACCIONES-| (Reutilizamos la lógica gráfica, solo ajustando posiciones)
-                ImageIcon iconD = new ImageIcon("src/img/verDetalles.png");
+                ImageIcon iconD = new ImageIcon(getClass().getResource("/img/verDetalles.png"));
                 JButton lblVer = new JButton(iconD);
                 lblVer.setForeground(Color.BLACK);
                 lblVer.setFont(new Font("SansSerif", Font.PLAIN, 16));
@@ -1868,7 +1868,7 @@ public class HomeView extends JPanel
                     }
                 });
                 panelTabla.add(lblVer);
-                ImageIcon iconDe = new ImageIcon("src/img/verOpciones.png");
+                ImageIcon iconDe = new ImageIcon(getClass().getResource("/img/verOpciones.png"));
                 JButton lblEditar = new JButton(iconDe);
                 lblEditar.setForeground(Color.DARK_GRAY);
                 lblEditar.setFont(new Font("SansSerif", Font.PLAIN, 16));
@@ -1886,7 +1886,7 @@ public class HomeView extends JPanel
                     }
                 });
                 panelTabla.add(lblEditar);
-                ImageIcon icon = new ImageIcon("src/img/verBasura.png");
+                ImageIcon icon = new ImageIcon(getClass().getResource("/img/verBasura.png"));
                 JButton lblEliminar = new JButton(icon);
                 lblEliminar.setForeground(Color.RED);
                 lblEliminar.setFont(new Font("SansSerif", Font.PLAIN, 20));
@@ -2027,7 +2027,7 @@ public class HomeView extends JPanel
                 panelTabla.add(badge);
 
                 // |-ACCIONES-| (Reutilizamos la lógica gráfica, solo ajustando posiciones)
-                ImageIcon iconDes = new ImageIcon("src/img/descargar.png");
+                ImageIcon iconDes = new ImageIcon(getClass().getResource("/img/descargar.png"));
                 JButton lblVer = new JButton(iconDes);
                 lblVer.setForeground(Color.BLACK);
                 lblVer.setFont(new Font("SansSerif", Font.PLAIN, 16));
@@ -2046,7 +2046,7 @@ public class HomeView extends JPanel
                 panelTabla.add(lblVer);
                 
                 
-                ImageIcon iconDe = new ImageIcon("src/img/verOpciones.png");
+                ImageIcon iconDe = new ImageIcon(getClass().getResource("/img/verOpciones.png"));
                 JButton lblEditar = new JButton(iconDe);
                 lblEditar.setForeground(Color.DARK_GRAY);
                 lblEditar.setFont(new Font("SansSerif", Font.PLAIN, 16));
@@ -2063,7 +2063,7 @@ public class HomeView extends JPanel
                     }
                 });
                 panelTabla.add(lblEditar);
-                ImageIcon icon = new ImageIcon("src/img/verBasura.png");
+                ImageIcon icon = new ImageIcon(getClass().getResource("/img/verBasura.png"));
                 JButton lblEliminar = new JButton(icon);
                 lblEliminar.setForeground(Color.RED);
                 lblEliminar.setFont(new Font("SansSerif", Font.PLAIN, 20));
