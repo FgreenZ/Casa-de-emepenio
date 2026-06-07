@@ -28,26 +28,9 @@ pagos e intereses, hasta la venta de artículos no reclamados.
 
 ### Prerrequisitos
 
-- Java JDK 24
-
-# Problema al importar el proyecto
-
-Al importar el proyecto, este no incluirá la librería de Java necesaria. Aparecerá un signo de admiración "!" en el proyecto y no se encontrarán las clases al momento de ejecutar el `Main`.
-
-## Solución
-
-Para poder ejecutarlo correctamente es necesario seguir los siguientes pasos:
-
-| Paso | Instrucción |
-|------|-------------|
-| 1 | Doble clic en el proyecto |
-| 2 | Build Path |
-| 3 | Configure Build Path |
-| 4 | Pestaña Libraries |
-| 5 | Borrar el JRE que aparezca |
-| 6 | Clic en Modulepath |
-| 7 | Add Library |
-| 8 | Execution Environment |
-| 9 | Seleccionar una librería que **no sea Unbound** |
-| 10 | Apply and Close |
+1. Java Runtime Environment (JRE) versión 21 o superior
+   - Verificar versión instalada: Abrir terminal y ejecutar "java -version"
+   - Si no está instalado o es versión anterior, descargar desde:
+     * Eclipse Temurin : https://adoptium.net/
+     * Oracle Java: https://www.oracle.com/java/technologies/downloads/
 
